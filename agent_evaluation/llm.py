@@ -27,8 +27,8 @@ class LLM:
         """
         return None
         
-class OpenAI (LLM):
-    def __init__(self, model_name, temperature, max_tokens):
+class OpenAI_LLM (LLM):
+    def __init__(self, model_name, temperature=0, max_tokens=2048):
         """
         Initializes a new OpenAI instance.
 
@@ -38,7 +38,7 @@ class OpenAI (LLM):
         """
         super().__init__(model_name, temperature, max_tokens)
         
-    def query(self, context, prompt):
+    def query(self, context="you are a helpful assistant", prompt="What number is the meaning of life?"):
         """
         Queries the model with the given prompt.
 
@@ -100,7 +100,7 @@ class OpenAI (LLM):
                 print("Max retries exceeded. Please try again later.")
                 return None, None
 
-class genai (LLM):
+class GenAI_LMM (LLM):
     def __init__(self, model_name, temperature, max_tokens):
         """
         Initializes a new genai instance.
@@ -163,7 +163,7 @@ class genai (LLM):
             return None, response._error, total_tokens      
 
 
-class server_model (LLM):
+class ServerModel_LLM (LLM):
     def __init__(self, model_name, temperature, max_tokens, seed=42, url=None):
         """
         Initializes a new server model instance.
@@ -231,3 +231,17 @@ class server_model (LLM):
                 print(f"An unexpected error occurred: {e}")
                 return None, str(e)
         return None, "Error: Max retries exceeded, last response error was: " + str(response.status_code)
+    
+
+class LocalOllama_LLM (LLM)
+    def __init__(self, model_name, temperature, max_tokens, seed=42):
+        """
+        Initializes a new local model instance.
+
+        :param model: The model to query
+        :param temperature: The temperature to use when querying the model
+        :param max_tokens: The maximum number of tokens to generate
+        :param seed: The seed to use when querying the model, controls randomness
+        """
+        super().__init__(model_name, temperature, max_tokens)
+        self.seed=seed
