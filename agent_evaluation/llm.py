@@ -194,55 +194,60 @@ class ServerModel_LLM (LLM):
         max_retries = 5
 
         ##load messages 
-        messages = [{"role": "system", "content": context},{"role": "user", "content": prompt}]
+        messages = [{"role": "system", "content": context}, {"role": "user", "content": prompt}]
+        print('messages: ' + str(messages))
         # Set up the data for the POST request
         data = {
             "model": self.model_name,
+            "prompt": 'Tell me a joke',
             "stream": False,
-            "messages":messages,
             "options": {
                 "seed": self.seed,
                 "temperature": self.temperature,
                 "num_predict": self.max_tokens
             }
         }
-        headers = {
-            "authorization": f'Basic {self.key}'
-        }
+        headers = None
+        # headers = {
+        #    "authorization": f'Basic {self.key}'
+        # }
         
         while retries < max_retries: ## allow a max of 5 retries if the server is busy or overloaded
             try:
-                response = requests.post(self.url, headers=headers, json = data, timeout= 120)
+                response = requests.post(self.url, headers=headers, json=data,
+                                         timeout=120)
 
                 # Check if the request was successful
                 if response.status_code == 200:
                     # return the response
-                    # print(response.json())
-                    output = response.json()
-                    analysis = output['message']['content']                   
-                    return  analysis, None # second value is error message 
+                    return response.json()
                 elif response.status_code in [500, 502, 503, 504]:
+                    print(response.text)
                     print(f'Encountering server issue {response.status_code}. Retrying in ', backoff_time, ' seconds')                    
                     time.sleep(backoff_time)
                     retries += 1
                     backoff_time *= 2                
                 else:
+                    print(response.text)
                     error_message = f'The request failed with status code: {response.status_code}'
                     print(error_message)
                     return None, error_message
             except requests.exceptions.RequestException as e:
+                print(response.text)
+                print('status code: ' + str(response.status_code))
                 print('The request failed with an exception: ', e, ' Retrying in ', backoff_time, ' seconds')
                 time.sleep(backoff_time)
                 retries += 1 
                 backoff_time *= 2 # Double the backoff time for the next retry
             except Exception as e:
-                print(f"An unexpected error occurred: {e}")
+                print('An unexpected error occurred: ' + str(e))
                 return None, str(e)
         return None, "Error: Max retries exceeded, last response error was: " + str(response.status_code)
     
 
 class LocalOllama_LLM(LLM):
-    def __init__(self, model_name, temperature, max_tokens, seed=42, ollama_binary='ollama'):
+    def __init__(self, model_name, temperature, max_tokens, seed=42,
+                 ollama_binary='/usr/local/bin/ollama'):
         """
         Initializes a new local model instance.
 
@@ -314,9 +319,13 @@ class LocalOllama_LLM(LLM):
 
 def main(args):
     print('Hello world')
-    testmodel = LocalOllama_LLM('llama2:latest', 0, 1000, ollama_binary='/usr/local/bin/ollama')
+    # testmodel = LocalOllama_LLM('llama2:latest', 0, 1000, ollama_binary='/usr/local/bin/ollama')
+    # print(str(testmodel.query('You are a researcher', 'Tell me a joke')))
 
-    print(str(testmodel.query('You are a researcher', 'Tell me a joke')))
+    servertestmodel = ServerModel_LLM('llama2', 0, 1000,
+                                      url=os.environ.get("LOCAL_MODEL_HOST"))
+
+    print(str(servertestmodel.query('You are a researcher', 'Tell me a joke')))
 
     return 0
 
