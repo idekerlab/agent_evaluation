@@ -1,12 +1,18 @@
 import os
 import openai
 import time
-import json
 import requests
 import genai
+import subprocess
+import logging
+import subprocess
+import os
+
+logger = logging.getLogger(__name__)
+
 
 class LLM:
-    def __init__(self, model_name, temperature, max_tokens):
+    def __init__(self, model_name, temperature=0, max_tokens=1000, seed=42):
         """
         Initializes a new LLM instance.
 
@@ -17,6 +23,9 @@ class LLM:
         self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.seed = seed
+
+        print(f"Model: {self.model_name}, Temperature: {self.temperature}, Max Tokens: {self.max_tokens}, Seed: {self.seed}")
         
     def query(self, context, prompt):
         """
@@ -28,7 +37,7 @@ class LLM:
         return None
         
 class OpenAI_LLM (LLM):
-    def __init__(self, model_name, temperature=0, max_tokens=2048):
+    def __init__(self, model_name, temperature=0, max_tokens=2048, seed=42):
         """
         Initializes a new OpenAI instance.
 
@@ -36,7 +45,7 @@ class OpenAI_LLM (LLM):
         :param temperature: The temperature to use when querying the model
         :param max_tokens: The maximum number of tokens to generate
         """
-        super().__init__(model_name, temperature, max_tokens)
+        super().__init__(model_name, temperature, max_tokens, seed)
         
     def query(self, context="you are a helpful assistant", prompt="What number is the meaning of life?"):
         """
@@ -57,7 +66,7 @@ class OpenAI_LLM (LLM):
 
         while retries <= 5: ## allow a max of 5 retries if the server is busy or overloaded
             try:
-                response = openai.chat.completions.create(
+                response = openai.ChatCompletion.create(
                     model=self.model_name,
                     messages=[{"role": "system", "content": context},{"role": "user", "content": prompt}],
                     max_tokens=self.max_tokens,
@@ -71,22 +80,14 @@ class OpenAI_LLM (LLM):
                 system_fingerprint = response.system_fingerprint
                 return response_content, system_fingerprint, tokens_used
             
-            except openai.RateLimitError as e:
-                print("Rate limit exceeded. Please increate the limit before re-run.")
+            except openai.OpenAIError as e:
+                print(f"An API error occurred: {e}")
                 return None, None
-            except openai.APIConnectionError as e:
-                print(f"AIP connection error, retrying in {backoff_time} seconds...")
-                time.sleep(backoff_time)
-                retries += 1
-                backoff_time *= 2 # Double the backoff time for the next retry
             except openai.InternalServerError as e:
                 print(f"Server issue detected, retrying in {backoff_time} seconds...")
                 time.sleep(backoff_time)
                 retries += 1
                 backoff_time *= 2 # Double the backoff time for the next retry
-            except openai.APIError as e:
-                print(f"An API error occurred: {e}")
-                return None, None
             except requests.exceptions.RequestException as e:
                 print('The request failed with an exception: ', e, ' Retrying in ', backoff_time, ' seconds')
                 time.sleep(backoff_time)
@@ -94,8 +95,7 @@ class OpenAI_LLM (LLM):
                 backoff_time *= 2 # Double the backoff time for the next retry
             except Exception as e:
                 print(f"An unexpected error occurred: {e}")
-                return None, str(e)  
-                 
+                return None, str(e)     
             if retries > 5:
                 print("Max retries exceeded. Please try again later.")
                 return None, None
@@ -164,7 +164,7 @@ class GenAI_LMM (LLM):
 
 
 class ServerModel_LLM (LLM):
-    def __init__(self, model_name, temperature, max_tokens, seed=42, url=None):
+    def __init__(self, model_name, temperature=0, max_tokens=1000, seed=42, url=None, key=None):
         """
         Initializes a new server model instance.
 
@@ -173,8 +173,9 @@ class ServerModel_LLM (LLM):
         :param max_tokens: The maximum number of tokens to generate
         :param seed: The seed to use when querying the model, controls randomness
         """
-        super().__init__(model_name, temperature, max_tokens)
-        self.seed=seed
+        super().__init__(model_name, temperature, max_tokens, seed)
+        self.url=url
+        self.key=key
 
 
     def query(self, context, prompt):
@@ -202,9 +203,13 @@ class ServerModel_LLM (LLM):
                 "num_predict": self.max_tokens
             }
         }
+        headers = {
+            "authorization": f'Basic {self.key}'
+        }
+        
         while retries < max_retries: ## allow a max of 5 retries if the server is busy or overloaded
             try:
-                response = requests.post(self.url, json = data, timeout= 120)
+                response = requests.post(self.url, headers=headers, json = data, timeout= 120)
 
                 # Check if the request was successful
                 if response.status_code == 200:
@@ -233,8 +238,8 @@ class ServerModel_LLM (LLM):
         return None, "Error: Max retries exceeded, last response error was: " + str(response.status_code)
     
 
-class LocalOllama_LLM (LLM)
-    def __init__(self, model_name, temperature, max_tokens, seed=42):
+class LocalOllama_LLM (LLM):
+    def __init__(self, model_name, temperature, max_tokens, seed=42, ollama_binary='ollama'):
         """
         Initializes a new local model instance.
 
@@ -243,5 +248,64 @@ class LocalOllama_LLM (LLM)
         :param max_tokens: The maximum number of tokens to generate
         :param seed: The seed to use when querying the model, controls randomness
         """
-        super().__init__(model_name, temperature, max_tokens)
-        self.seed=seed
+        super().__init__(model_name, temperature, max_tokens, seed=seed)
+        self.ollama_binary = ollama_binary
+
+    def _run_cmd(self, cmd, cwd=None, timeout=360):
+        """
+        Runs command as a command line process
+
+        :param cmd: command to run
+        :type cmd: list
+        :param cwd: current working directory
+        :type cwd: str
+        :param timeout: timeout in seconds before killing process
+        :type timeout: int or float
+        :raises CellMapsProvenanceError: If **raise_on_error** passed
+                                         into constructor is ``True`` and
+                                         process times out before completing
+        :return: (return code, standard out, standard error)
+        :rtype: tuple
+        """
+        logger.debug('Running command under ' + str(cwd) +
+                     ' path: ' + str(cmd))
+        print('Running command under ' + str(cwd) +
+                     ' path: ' + str(cmd))
+        p = subprocess.Popen(cmd, cwd=cwd,
+                             text=True,
+                             shell=True,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        try:
+            out, err = p.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            logger.warning('Timeout reached. Killing process')
+            p.kill()
+            out, err = p.communicate()
+            raise Exception('Process timed out. '
+                                             'exit code: ' +
+                                             str(p.returncode) +
+                                             ' stdout: ' + str(out) +
+                                             ' stderr: ' + str(err))
+
+        # Removing ending new line if value is not None
+        if out is not None:
+            out = out.rstrip()
+        return p.returncode, out, err
+    
+    def query(self, context, prompt):
+        """
+        Queries the model with the given prompt.
+
+
+        """
+        updated_prompt = context + " " + prompt
+        # cwd = os.getcwd()
+        #cmd = f'{self.ollama_binary} run {self.model_name} "{updated_prompt}"'
+        cmd = ' '.join([self.ollama_binary, 'run', self.model_name, "'", updated_prompt, "'"])
+
+        # cmd = [self.ollama_binary, 'run', self.model_name, updated_prompt]
+
+        e_code, out, err = self._run_cmd(cmd, timeout=45)
+
+        return out, e_code + " " + str(err)

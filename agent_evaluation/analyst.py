@@ -1,10 +1,7 @@
-from hre.llm.llm_query import llm_query
-from hre.analysis.hypothesis import Hypothesis
+from agent_evaluation.hypothesis import Hypothesis
 
 class Analyst:
-    def __init__(self, llm, context, prompt_template, name, description, 
-                 temperature=0.0, 
-                 max_tokens=1000):
+    def __init__(self, llm, context, prompt_template, name, description):
         """
         Initializes a new Analyst instance.
 
@@ -18,8 +15,6 @@ class Analyst:
         self.prompt_template = prompt_template
         self.name = name
         self.description = description
-        self.temperature = temperature
-        self.max_tokens = max_tokens
 
     def generate_hypothesis(self, dataset, log_file=None):
         """
@@ -29,11 +24,6 @@ class Analyst:
         :return: A Hypothesis instance.
         """
         prompt = self.prompt_template.format(data=dataset.data)
-        response = llm_query(self.context,
-                             prompt, 
-                             self.llm, 
-                             self.temperature, 
-                             self.max_tokens,
-                             log_file)
+        response = self.llm.query(self.context, prompt)
         return Hypothesis(dataset=dataset, description=response, analyst=self)
 

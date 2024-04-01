@@ -1,7 +1,6 @@
-from llm import llm_query
-from hypothesis import Hypothesis
-from review import Review
-from comparison import Comparison
+from agent_evaluation.hypothesis import Hypothesis
+from agent_evaluation.review import Review
+from agent_evaluation.comparison import Comparison
 
 
 
@@ -28,15 +27,29 @@ class Reviewer:
         :param hypothesis_b: A Hypothesis instance.
         :return: A Comparison instance.
         """
-        comparison = Comparison()
+        
         prompt = self.prompt_template.format(experiment_description=dataset.experiment_description, 
                                              data=dataset.data,
                                              hypothesis_a=hypothesis_a.text,
                                              hypothesis_b=hypothesis_b.text)
         
-        response = llm_query(self.context,
+        response = self.llm.query(self.context,
                              prompt, 
                              self.llm, 
                              self.temperature, 
                              self.max_tokens,
                              log_file)
+        
+        # Parse the response to extract the comparison values
+        
+        comparison = Comparison(hypothesis_a, hypothesis_b, self, 
+                                factuality=None, 
+                                novelty=None, 
+                                significance=None, 
+                                plausibility=None, 
+                                logic=None, 
+                                combined=None,
+                                comment="")
+
+        return comparison
+    
