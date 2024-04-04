@@ -5,7 +5,7 @@ from agent_evaluation.comparison import Comparison
 
 
 class Reviewer:
-    def __init__(self, llm, context, prompt_template, name):
+    def __init__(self, llm, context, prompt_template, name, description):
         """
         Initializes a new Reviewer instance.
 
@@ -13,11 +13,13 @@ class Reviewer:
         :param context: The context used for generating queries for the LLM.
         :param prompt_template: A template used to generate queries for the LLM.
         :param name: Name of the Reviewer.
+        :param description: Description of the Reviewer.
         """
         self.llm = llm
         self.context = context
         self.prompt_template = prompt_template
         self.name = name
+        self.description = description
 
     def generate_comparison(self, hypothesis_a, hypothesis_b, dataset, log_file=None):
         """
@@ -30,26 +32,23 @@ class Reviewer:
         
         prompt = self.prompt_template.format(experiment_description=dataset.experiment_description, 
                                              data=dataset.data,
-                                             hypothesis_a=hypothesis_a.text,
-                                             hypothesis_b=hypothesis_b.text)
+                                             hypothesis_a=hypothesis_a.description,
+                                             hypothesis_b=hypothesis_b.description)
         
-        response = self.llm.query(self.context,
-                             prompt, 
-                             self.llm, 
-                             self.temperature, 
-                             self.max_tokens,
-                             log_file)
+        response = self.llm.query(self.context, prompt)
+        
         
         # Parse the response to extract the comparison values
         
-        comparison = Comparison(hypothesis_a, hypothesis_b, self, 
+        comparison= Comparison(hypothesis_a, hypothesis_b, self,
                                 factuality=None, 
                                 novelty=None, 
                                 significance=None, 
                                 plausibility=None, 
                                 logic=None, 
                                 combined=None,
-                                comment="")
+                                comment=response)
 
         return comparison
+        
     
