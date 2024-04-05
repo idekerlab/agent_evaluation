@@ -319,8 +319,8 @@ class LocalOllama_LLM(LLM):
 
 def main(args):
     print('Hello world')
-    # testmodel = LocalOllama_LLM('llama2:latest', 0, 1000, ollama_binary='/usr/local/bin/ollama')
-    # print(str(testmodel.query('You are a researcher', 'Tell me a joke')))
+    testmodel = LocalOllama_LLM('llama2:latest', 0, 1000, ollama_binary='/usr/local/bin/ollama')
+    print(str(testmodel.query('You are a researcher', 'Tell me a joke')))
 
     servertestmodel = ServerModel_LLM('llama2', 0, 1000,
                                       url=os.environ.get("LOCAL_MODEL_HOST"))
