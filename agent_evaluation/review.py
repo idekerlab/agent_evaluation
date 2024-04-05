@@ -30,6 +30,7 @@ class Review:
             for hypothesis_a in self.review_plan.test.hypotheses:
                 for hypothesis_b in self.review_plan.test.hypotheses:
                     if hypothesis_a != hypothesis_b and hypothesis_a.dataset == hypothesis_b.dataset:
+                        print(f"Generating comparison by {reviewer.name}...")
                         comparison = reviewer.generate_comparison(hypothesis_a, 
                                                                   hypothesis_b, 
                                                                   hypothesis_a.dataset, 
