@@ -33,7 +33,10 @@ class Reviewer:
         prompt = self.prompt_template.format(experiment_description=dataset.experiment_description, 
                                              data=dataset.data,
                                              hypothesis_a=hypothesis_a.description,
-                                             hypothesis_b=hypothesis_b.description)
+                                             hypothesis_b=hypothesis_b.description,
+                                             analyst_a = hypothesis_a.analyst.name,
+                                             analyst_b = hypothesis_b.analyst.name)
+                                        
         
         response = self.llm.query(self.context, prompt)
         
