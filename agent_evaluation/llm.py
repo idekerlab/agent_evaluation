@@ -312,6 +312,7 @@ class LocalOllama_LLM(LLM):
         cmd = [self.ollama_binary, 'run', self.model_name,
                updated_prompt, '--nowordwrap']
         logger.debug('Running: ' + str(cmd))
+        print('Running: ' + str(cmd))
         e_code, out, err = self._run_cmd(cmd=cmd, cwd=cwd, timeout=45)
 
         return out, str(e_code) + ' ' + str(err)
