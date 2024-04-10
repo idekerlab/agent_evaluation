@@ -22,7 +22,7 @@ class Review:
         self.comparisons = []
         self.time = None
 
-    def run(self, log_file=None):
+    def old_run(self, log_file=None):
         """
         Executes the review according to the review plan.
         """
@@ -36,4 +36,36 @@ class Review:
                                                                   hypothesis_a.dataset, 
                                                                   log_file)
                         self.comparisons.append(comparison) 
+        self.time = datetime.now()
+
+    def run(self, comparison_order='AB', reverse=False, log_file=None):
+        """
+        Executes the review according to the review plan.
+
+        Parameters:
+        - comparison_order: str, optional (default='Both')
+            Controls the order of comparisons: 'AB', 'BA', or 'Both'.
+        - reverse: bool, optional (default=False)
+            Specifies whether hypotheses are reviewed in reverse order.
+        - log_file: str, optional
+            Path to a log file where the review log will be written.
+        """
+        hypotheses = self.review_plan.test.hypotheses
+        if reverse:
+            hypotheses = reversed(hypotheses)
+
+        for reviewer in self.review_plan.reviewers:
+            for i, hypothesis_a in enumerate(hypotheses):
+                for hypothesis_b in (list(hypotheses)[i + 1:] if comparison_order != 'Both' else hypotheses):
+                    if hypothesis_a != hypothesis_b and hypothesis_a.dataset == hypothesis_b.dataset:
+                        # Perform A-B comparison
+                        if comparison_order in ('AB', 'Both'):
+                            print(f"Generating A-B comparison by {reviewer.name}...")
+                            comparison = reviewer.generate_comparison(hypothesis_a, hypothesis_b, hypothesis_a.dataset, log_file)
+                            self.comparisons.append(comparison)
+                        # Perform B-A comparison if needed
+                        if comparison_order in ('BA', 'Both'):
+                            print(f"Generating B-A comparison by {reviewer.name}...")
+                            comparison = reviewer.generate_comparison(hypothesis_b, hypothesis_a, hypothesis_a.dataset, log_file)
+                            self.comparisons.append(comparison)
         self.time = datetime.now()
