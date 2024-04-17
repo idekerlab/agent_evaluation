@@ -24,7 +24,7 @@ class Database:
         try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
         except ServiceUnavailable as e:
-            raise ServiceUnavailable("Database connection could not be established.") from e
+            raise ServiceUnavailable("Database_Object: Database connection could not be established.") from e
 
     def close(self):
         """
@@ -32,7 +32,7 @@ class Database:
         """
         self.driver.close()
 
-    def add(self, obj):
+    def add(self, obj, label="Node"):
         """
         Adds an object to the database as a new node.
 
@@ -46,9 +46,9 @@ class Database:
             raise ValueError("Object must include a 'properties' key.")
         try:
             with self.driver.session() as session:
-                session.write_transaction(self._create_node, obj)
+                session.write_transaction(self._create_node, obj, label)
         except Neo4jError as e:
-            raise Neo4jError(f"Failed to add object to the database. {e}") from e
+            raise Neo4jError(f"Database_Object: Failed to add object to the database. {e}") from e
 
     def get(self, id):
         """
@@ -64,7 +64,7 @@ class Database:
             with self.driver.session() as session:
                 return session.read_transaction(self._get_node, id)
         except Neo4jError as e:
-            raise Neo4jError(f"Failed to retrieve object from the database. {e}") from e
+            raise Neo4jError(f"Database_Object: Failed to retrieve object from the database. {e}") from e
 
     def remove(self, id):
         """
@@ -78,7 +78,7 @@ class Database:
             with self.driver.session() as session:
                 session.write_transaction(self._delete_node, id)
         except Neo4jError as e:
-            raise Neo4jError("Failed to remove object from the database.") from e
+            raise Neo4jError("Database_Object: Failed to remove object from the database.") from e
 
     def query(self, query):
         """
@@ -94,17 +94,17 @@ class Database:
             with self.driver.session() as session:
                 return session.read_transaction(self._execute_query, query)
         except Neo4jError as e:
-            raise Neo4jError("Query execution failed.") from e
+            raise Neo4jError("Database_Object: Query execution failed.") from e
 
     # Example of a private method; not included in the Sphinx documentation
     @staticmethod
-    def _create_node(tx, obj):
+    def _create_node(tx, obj, label):
         # query = """
         # CREATE (n:Node {id: $id})
         # SET n += $properties
         # RETURN n
         # """
-        query = f"CREATE (n:{obj['label']} {{id: $id}}) SET n += $properties RETURN n"
+        query = f"CREATE (n:{label} {{id: $id}}) SET n += $properties RETURN n"
 
         # Assuming 'obj' contains an 'id' and a 'properties' dictionary
         tx.run(query, id=obj["id"], properties=obj["properties"])
@@ -130,7 +130,7 @@ class Database:
 
     @staticmethod
     def _delete_node(tx, id):
-        query = "MATCH (n:Node {id: $id}) DELETE n"
+        query = "MATCH (n {id: $id}) DELETE n"
         tx.run(query, id=id)
 
     @staticmethod

@@ -1,9 +1,17 @@
-from agent_evaluation.database import Database
 import sys
 import os
 
-# Append the path of the parent directory to sys.path to find the agent_evaluation module
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+cwd = os.getcwd() # Current working directory
+dirname = os.path.dirname(cwd) # Parent directory
+print("================")
+print(cwd)
+print(dirname)
+sys.path.append(cwd)# Add the parent directory to the Python path
+print("================")
+print(sys.path)
+print("================")
+
+from agent_evaluation.database import Database
 
 # Define the database connection details
 uri = "bolt://localhost:7687"
@@ -18,17 +26,16 @@ try:
     obj = {
         'id': 'test_node',
         'properties': {
-            'name': 'test',
             'text': 'hello world!'
         }
     }
 
     # Add the node to the database
-    db.add(obj)
+    db.add(obj, label="test_node")
     print("Node added to the database.")
 
     # Retrieve the node using a custom query
-    query = "MATCH (n:Node {id: 'test_node'}) RETURN n"
+    query = "MATCH (n {id: 'test_node'}) RETURN n"
     result = db.query(query)
     if result:
         print("Retrieved node:", result)

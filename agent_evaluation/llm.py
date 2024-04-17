@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+from agent_evaluation.db_object import DB_Object 
 
 class LLM(DB_Object, ABC):
-    def __init__(self, db, db_unique_id, model_name, temperature=0.5, max_tokens=1000, seed=None, persist=False):
+    def __init__(self, db, model_name,  db_unique_id=None, temperature=0.5, max_tokens=1000, seed=None, persist=False):
         """
         Initializes a new LLM instance, setting up the model parameters and database interaction.
 
@@ -53,11 +54,10 @@ class LLM(DB_Object, ABC):
 
 import openai
 import os
-import time
 import requests
 
 class OpenAI_LLM(LLM):
-    def __init__(self, db, db_unique_id, model_name="text-davinci-002", temperature=0.5, max_tokens=2048, seed=None, persist=False):
+    def __init__(self, db, model_name="text-davinci-002", db_unique_id=None, temperature=0.5, max_tokens=2048, seed=None, persist=False):
         """
         Initializes a new instance of OpenAI_LLM with specific configurations for the OpenAI model.
 
@@ -69,7 +69,7 @@ class OpenAI_LLM(LLM):
         :param seed: The seed for random number generation to ensure reproducibility.
         :param persist: Whether to persist the model instance upon initialization.
         """
-        super().__init__(db, db_unique_id, model_name, temperature, max_tokens, seed, persist)
+        super().__init__(db, model_name, db_unique_id, temperature, max_tokens, seed, persist)
 
     def query(self, context, prompt):
         """
