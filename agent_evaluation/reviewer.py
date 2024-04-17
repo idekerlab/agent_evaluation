@@ -5,7 +5,7 @@ from agent_evaluation.comparison import Comparison
 
 
 class Reviewer:
-    def __init__(self, llm, context, prompt_template, name, description):
+    def __init__(self, llm, context, prompt_template, name, label):
         """
         Initializes a new Reviewer instance.
 
@@ -13,13 +13,13 @@ class Reviewer:
         :param context: The context used for generating queries for the LLM.
         :param prompt_template: A template used to generate queries for the LLM.
         :param name: Name of the Reviewer.
-        :param description: Description of the Reviewer.
+        :param label: Description of the Reviewer.
         """
         self.llm = llm
         self.context = context
         self.prompt_template = prompt_template
         self.name = name
-        self.description = description
+        self.label = label
 
     def generate_comparison(self, hypothesis_a, hypothesis_b, dataset, log_file=None):
         """

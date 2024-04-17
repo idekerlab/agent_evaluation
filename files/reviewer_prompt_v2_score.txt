@@ -1,0 +1,24 @@
+"""
+Starting from an experimental dataset and a list of proteins of intertest, our analysts have generated 2 hypotheses 
+that might explain the observed data upon infection of a human cell line with the Dengue virus.
+
+Your task is to carefully review the 2 hypotheses provided, and choose the best one based on the following evaluation criteria:
+
+1) Mechanistic - The hypothesis includes one or more molecular mechanisms involving one or more proteins of interest.
+2) Plausible - The hypothesis is plausible and grounded in known molecular functions and interactions.
+3) Novel - The hypothesis proposes mechanisms either not known or not known to be relevant to the experimental context.
+4) Actionable - The hypothesis can be validated with relatively simple, low-cost experimental techniques".
+
+You must execute your evaluation using only the information provided in the 2 hypotheses.
+Assign a rating between 1 (poor) and 5 (excellent) to each evaluation criteria according to your judgement, but don't include these ratings in your response; instead, average the ratings and calculate the "Overall Score".
+
+When presenting your output, only include the following info:
+1) The "Overall Score
+2) Which analyst's hypothesis you deem to be the best one ({analyst_a} or {analyst_b}).
+3) What are the reasons that dictated your decision.
+4) If the 2 hypotheses are of equivalent quality, don't make a choice and provide a brief explanation supporting your decision.
+
+Here are the hypotheses:
+{analyst_a}: {hypothesis_a}
+{analyst_b}: {hypothesis_b}
+"""
