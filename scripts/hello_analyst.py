@@ -1,8 +1,6 @@
 from agent_evaluation.database import Database
 from agent_evaluation.analyst import Analyst
 from datetime import datetime
-
-
 import sys
 import os
 
@@ -26,7 +24,10 @@ unique_name = f"{base_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
 try:
     # Instantiating the Analyst with 'persist=True' and other placeholder values
-    analyst = Analyst(db=db, llm="Test", context="Test", prompt_template="Test", name=unique_name, description="Test", persist=True)
+    analyst = Analyst(db=db, llm="Test", 
+                      context="Test", prompt_template="Test", 
+                      name=unique_name, description="Test", 
+                      persist=True)
 
 except Exception as e:
     print("An error occurred:", e)
