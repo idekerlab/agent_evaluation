@@ -13,12 +13,13 @@ class LLM(DB_Object, ABC):
         :param max_tokens: The maximum number of tokens to generate.
         :param seed: The seed for random number generation to ensure reproducibility.
         :param persist: Whether to persist the model instance upon initialization.
-        """
-        super().__init__(db, db_unique_id, persist)
+        """  
+        # properties that must be persisted
         self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.seed = seed
+        super().__init__(db, db_unique_id, persist)
 
     @abstractmethod
     def query(self, context, prompt):
@@ -52,7 +53,7 @@ class LLM(DB_Object, ABC):
         self.seed = properties.get('seed', None)
 
 
-import openai
+from openai import OpenAI, APIError
 import os
 import requests
 
@@ -70,6 +71,8 @@ class OpenAI_LLM(LLM):
         :param persist: Whether to persist the model instance upon initialization.
         """
         super().__init__(db, model_name, db_unique_id, temperature, max_tokens, seed, persist)
+        # Not persisted:
+        self.client = OpenAI()
 
     def query(self, context, prompt):
         """
@@ -83,21 +86,32 @@ class OpenAI_LLM(LLM):
         if not key:
             raise EnvironmentError("OPENAI_API_KEY environment variable not set.")
         
-        openai.api_key = key
+        self.client.api_key = key
         try:
-            response = openai.Completion.create(
-                engine=self.model_name,
-                prompt=f"{context}\n\n{prompt}",
-                max_tokens=self.max_tokens,
-                temperature=self.temperature,
-                n=1,
-                stop=None,
-                seed=self.seed
-            )
-            response_content = response.choices[0].text.strip()
+            # response = openai.Completion.create(
+            #     engine=self.model_name,
+            #     prompt=f"{context}\n\n{prompt}",
+            #     max_tokens=self.max_tokens,
+            #     temperature=self.temperature,
+            #     n=1,
+            #     stop=None,
+            #     seed=self.seed
+            # )
+            response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "system", "content": context},
+                        {"role": "user", "content": prompt}],
+                    max_tokens=self.max_tokens,
+                    n=1,
+                    stop=None,
+                    seed=self.seed,
+                    temperature=self.temperature,
+                )
+            response_content = response.choices[0].message.content.strip()
             tokens_used = response.usage.total_tokens
             return response_content, tokens_used
-        except openai.APIError as e:
+        except APIError as e:
             raise Exception(f"API error occurred: {e}")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Request failed with an exception: {e}")

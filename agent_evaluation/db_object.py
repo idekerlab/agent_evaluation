@@ -6,6 +6,7 @@ from neo4j import GraphDatabase
 class DB_Object:
     def __init__(self, db, db_unique_id=None, persist=False):
         self.db = db
+        self.persisted = False
         if db_unique_id is None:
             timestamp = datetime.datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
             self.db_unique_id = f"{self.__class__.__name__}_{timestamp}"
@@ -20,6 +21,7 @@ class DB_Object:
             'label' : self.db_unique_id,
             'properties': self.to_dict()
         }
+        self.persisted = True
         self.db.add(obj)
 
     def load(self):
