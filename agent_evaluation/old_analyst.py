@@ -87,4 +87,4 @@ class Analyst(AE_Object):
         """
         prompt = self.prompt_template.format(data=dataset.data)
         response = self.llm.query(self.context, prompt)
-        return Hypothesis(dataset=dataset, description=response, analyst=self)
+        return Hypothesis(dataset=dataset, hypothesis_text=response, analyst=self)

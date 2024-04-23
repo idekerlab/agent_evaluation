@@ -1,3 +1,7 @@
+from agent_evaluation.db_object import DB_Object 
+from agent_evaluation.hypothesis import Hypothesis 
+
+
 class Analyst(DB_Object):
     def __init__(self, db, db_unique_id, llm_unique_id, description, prompt_template, context, persist=False):
         """
@@ -11,12 +15,15 @@ class Analyst(DB_Object):
         :param context: Context information provided to the LLM for generating responses.
         :param persist: Whether to persist the Analyst instance upon initialization.
         """
-        super().__init__(db, db_unique_id, persist)
+        # properties that must be persisted
         self.llm_unique_id = llm_unique_id
         self.description = description
         self.prompt_template = prompt_template
         self.context = context
         self.llm = None  # This will be loaded separately if needed
+
+        super().__init__(db, db_unique_id, persist)
+
 
     def load_llm(self):
         """
@@ -59,4 +66,5 @@ class Analyst(DB_Object):
         response = self.llm.query(self.context, prompt)
 
         # Assuming Hypothesis is defined elsewhere
-        return Hypothesis(dataset=dataset, description=response, analyst=self)
+        return Hypothesis(dataset=dataset, hypothesis_text=response, analyst=self)
+

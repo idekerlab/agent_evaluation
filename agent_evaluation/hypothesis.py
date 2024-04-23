@@ -1,5 +1,5 @@
 class Hypothesis:
-    def __init__(self, dataset, analyst, description):
+    def __init__(self, dataset, analyst, hypothesis_text):
         """
         Initializes a new Hypothesis instance.
 
@@ -10,5 +10,5 @@ class Hypothesis:
         """
         self.dataset = dataset
         self.analyst = analyst
-        self.description = description
+        self.description = hypothesis_text
         # self.predictions = predictions
