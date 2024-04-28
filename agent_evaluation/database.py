@@ -50,7 +50,7 @@ class Database:
         except Neo4jError as e:
             raise Neo4jError(f"Database_Object: Failed to add object to the database. {e}") from e
 
-    def get(self, id):
+    def load(self, id):
         """
         Retrieves an object from the database by its ID.
 
@@ -96,38 +96,24 @@ class Database:
         except Neo4jError as e:
             raise Neo4jError("Database_Object: Query execution failed.") from e
 
-    # Example of a private method; not included in the Sphinx documentation
+    # Create a node in the database based on the provided object and label,
+    # where the object is a dictionary expected to have an 'id' and 'properties' dictionary.
     @staticmethod
     def _create_node(tx, obj, label):
-        # query = """
-        # CREATE (n:Node {id: $id})
-        # SET n += $properties
-        # RETURN n
-        # """
         query = f"CREATE (n:{label} {{id: $id}}) SET n += $properties RETURN n"
-
-        # Assuming 'obj' contains an 'id' and a 'properties' dictionary
         tx.run(query, id=obj["id"], properties=obj["properties"])
 
-    # def _create_node(tx, obj):
-    # # Assuming 'obj' has an 'id' and other properties to be added to the node
-    # # and 'properties' is a dictionary of these properties.
-    #     query = "CREATE (n:Node {id: $id, properties})"
-    #     parameters = {"id": obj["id"]}
-    #     parameters.update(obj["properties"])  # Flattens the properties dictionary into the parameters
-    #     print(parameters)
-    #     print("------")
-    #     tx.run(query, parameters)
-    #def _create_node(tx, obj):
-    #    query = "CREATE (n:Node {id: $id, properties: $properties}) RETURN n"
-    #    tx.run(query, id=obj['id'], properties=obj.get('properties', {}))
-
+    # Retrieve a node from the database by its ID, does not require a label.
     @staticmethod
     def _get_node(tx, id):
-        query = "MATCH (n:Node {id: $id}) RETURN n"
+        query = "MATCH (n {id: $id}) RETURN n"
         result = tx.run(query, id=id)
-        return result.single()[0] if result.single() else None
+        node = result.single()
+        if node is not None:
+            return node[0]
+        return None 
 
+    # Delete a node from the database by its ID.
     @staticmethod
     def _delete_node(tx, id):
         query = "MATCH (n {id: $id}) DELETE n"
@@ -136,4 +122,4 @@ class Database:
     @staticmethod
     def _execute_query(tx, query):
         result = tx.run(query)
-        return [record[0] for record in result]
+        return [record[0] for record in result] # Extracting the first column from the result as a list

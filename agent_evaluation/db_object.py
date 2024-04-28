@@ -26,8 +26,11 @@ class DB_Object:
 
     def load(self):
         result = self.db.get(self.db_unique_id)
+        print(f'result: {result} ')
+        print(f'properties: {result["properties"]} ')   
+
         if result:
-            self.from_dict(result['properties'])
+            self.from_dict(result.properties)
         else:
             logging.error(f"DB_Object loading: No object found with unique ID {self.db_unique_id}")
 
