@@ -11,7 +11,7 @@ print("================")
 print(sys.path)
 print("================")
 
-from agent_evaluation.database import Database
+from app.database import Database
 
 # Define the database connection details
 uri = "bolt://localhost:7687"

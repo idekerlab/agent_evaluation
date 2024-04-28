@@ -2,7 +2,7 @@ import unittest
 from neo4j import GraphDatabase
 from unittest.mock import MagicMock
 
-from agent_evaluation.database import Database
+from app.database import Database
 from unittest.mock import MagicMock
 
 class TestDatabase(unittest.TestCase):

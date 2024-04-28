@@ -4,8 +4,8 @@ import os
 cwd = os.getcwd() # Current working directory
 sys.path.append(cwd)# Add to the Python path
 
-from agent_evaluation.temporary_database import TemporaryDatabase
-import agent_evaluation.core as ae
+from app.temporary_database import TemporaryDatabase
+import app.ae as ae
 
 # Define the database connection details
 uri = "bolt://localhost:7687"

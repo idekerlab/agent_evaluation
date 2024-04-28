@@ -11,7 +11,7 @@ sys.path.append(cwd)# Add the parent directory to the Python path
 # print(sys.path)
 # print("================")
 
-from agent_evaluation.database import Database
+from app.database import Database
 from agent_evaluation.llm import OpenAI_LLM
 
 # Define the database connection details

@@ -1,4 +1,4 @@
-from agent_evaluation.database import Database
+from app.database import Database
 from agent_evaluation.analyst import Analyst
 from agent_evaluation.llm import OpenAI_LLM
 from datetime import datetime

@@ -11,7 +11,7 @@ sys.path.append(cwd)# Add the parent directory to the Python path
 # print(sys.path)
 # print("================")
 
-from agent_evaluation.database import Database
+from app.database import Database
 from agent_evaluation.dataset import Dataset
 
 # Define the database connection details
@@ -47,7 +47,7 @@ try:
 
     print("Loading the existing dataset")
     existing_dataset.load()
-    
+
     print(f"Existing Dataset: {existing_dataset.db_unique_id} experiment_description: {existing_dataset.experiment_description} data: {existing_dataset.data}  genes_of_interest: {existing_dataset.genes_of_interest}  ")
 
     # Print details to verify

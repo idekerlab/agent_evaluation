@@ -1,0 +1,15 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tests</title>
+</head>
+<body>
+    <h1>Available Tests</h1>
+    <ul>
+        {% for test in tests %}
+        <li><a href="/test/{{ test.id }}">{{ test.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
