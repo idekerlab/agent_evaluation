@@ -1,4 +1,3 @@
-from agent_evaluation.db_object import DB_Object 
 from openai import OpenAI, APIError
 import os
 import requests
@@ -7,7 +6,7 @@ def load_dataset(db, dataset_id):
     dataset = db.get(dataset_id)
     return dataset
 
-def create_llm(db, type, model_name, max_tokens=None, seed=None, temperature=None, persist=False):
+def create_llm(db, type, model_name, max_tokens=None, seed=None, temperature=None):
     llm = {"label": "LLM",
            "type": type,
            "model_name": model_name,
@@ -66,7 +65,7 @@ def query_openai(llm, context, prompt):
             raise Exception(f"Request failed with an exception: {e}")
 
 
-def create_analyst(db, llm_id, context, prompt_template, name, persist=False):
+def create_analyst(db, llm_id, context, prompt_template, name):
     analyst = {"label": "Analyst",
                "llm_id": llm_id,
                "context": context,
@@ -75,39 +74,40 @@ def create_analyst(db, llm_id, context, prompt_template, name, persist=False):
     analyst_id = db.add(analyst)
     return analyst_id
 
-def create_dataset(db, data, experiment_description, persist=False):
+def create_dataset(db, data, experiment_description):
     dataset = {"label": "Dataset",
                "data": data,
                "experiment_description": experiment_description}
     dataset_id = db.add(dataset)
     return dataset_id
 
-def create_test_plan(db, analysts, dataset_id, n_hypotheses, persist=False):
+def create_test_plan(db, analyst_ids, dataset_id, n_hypotheses_per_analyst):
     test_plan = {"label": "TestPlan",
-                 "analysts": analysts,
+                 "analysts": analyst_ids,
                  "dataset_id": dataset_id,
-                 "n_hypotheses": n_hypotheses}
+                 "n_hypotheses": n_hypotheses_per_analyst}
     test_plan_id = db.add(test_plan)
     return test_plan_id
 
-def create_test(db, analysts, dataset_id, n_hypotheses, persist=False):
+def create_test(db, test_plan_id):
+    test_plan = db.load(test_plan_id)
     test = {"label": "Test",
-            "analysts": analysts,
-            "dataset_id": dataset_id,
-            "n_hypotheses": n_hypotheses,
-            "hypotheses": []}
+            "test_plan_id": test_plan_id,
+            "hypotheses_ids": []}
+    for _ in range(test_plan.get("n_hypotheses_per_analyst")):
+        for analyst_id in test_plan.get("analyst_ids"):
+            hypothesis_id = generate_hypothesis(db, analyst_id, test_plan.get("dataset_id"))
+            test["hypotheses_ids"].append(hypothesis_id)
     test_id = db.add(test)
-    for _ in range(n_hypotheses):
-        for analyst_id in analysts:
-            hypothesis_id = generate_hypothesis(db, analyst_id, dataset_id)
-            test["hypotheses"].append(hypothesis_id)
-    db.update(test_id, test)
     return test_id
+
+def load_tests(db):
+    return db.load_all("Test")
 
 def generate_hypothesis(db, analyst_id, dataset_id):
     dataset = load_dataset(dataset_id)   
     data = dataset.get('data')
-    analyst = load_analyst(analyst_id)
+    analyst = db.load(analyst_id)
     prompt = analyst.get('prompt_template').format(data=data, experiment_description=dataset.get('experiment_description'))
     llm_id = analyst.get('llm_id')
     llm = db.load(llm_id)  
@@ -119,7 +119,15 @@ def generate_hypothesis(db, analyst_id, dataset_id):
     hypothesis_id = db.add(hypothesis) # add the hypothesis to the database, return the id
     return hypothesis_id
 
-def create_reviewer(db, llm_id, context, prompt_template, name, persist=False):
+def load_hypotheses(db, test_id):
+    test = db.load(test_id)
+    hypotheses = []
+    for hypothesis_id in test.get('hypotheses'):
+        hypothesis = db.load(hypothesis_id)
+        hypotheses.append(hypothesis)
+    return hypotheses
+
+def create_reviewer(db, llm_id, context, prompt_template, name):
     reviewer = {"label": "Reviewer",
                 "llm_id": llm_id,
                 "context": context,
@@ -128,16 +136,16 @@ def create_reviewer(db, llm_id, context, prompt_template, name, persist=False):
     reviewer_id = db.add(reviewer)
     return reviewer_id
 
-def create_review_plan(db, reviewers, test_id, persist=False):
+def create_review_plan(db, reviewer_ids, test_id):
     review_plan = {"label": "ReviewPlan",
-                   "reviewers": reviewers,
+                   "reviewer_ids": reviewer_ids,
                    "test_id": test_id}
     review_plan_id = db.add(review_plan)
     return review_plan_id
 
 # The reviewer composes an LLM prompt from the hypotheses in the test,
-# The LLM generates a result that ranks the hypotheses and provides a rationale for the ranking
-def execute_review(db, reviewer_id, test_id):
+# The LLM generates a review that ranks the hypotheses and provides a rationale for the ranking
+def create_review(db, reviewer_id, test_id):
     test = db.load(db, test_id)
     reviewer = db.load(reviewer_id)
     hypotheses = []  
@@ -160,7 +168,7 @@ def execute_review_plan(db, review_plan_id):
               "review_plan_id": review_plan_id,
               "reviews": [],}
     for reviewer_id in review_plan.get('reviewers'):
-        review = execute_review(db, reviewer_id, review_plan.get("test_id"))
+        review = create_review(db, reviewer_id, review_plan.get("test_id"))
         review_set.get('reviews').append(review)
     review_set_id = db.add(review_set)
     return review_set_id

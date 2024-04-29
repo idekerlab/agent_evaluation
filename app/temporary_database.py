@@ -38,6 +38,17 @@ class TemporaryDatabase:
         :returns: The requested object if found, otherwise `None`.
         """
         return self.database.get(id)
+    
+    def load_all(self, label):
+        """
+        Retrieves all objects with a given label from the database.
+
+        :param label: The label to filter by.
+        :type label: str
+        :returns: A list of objects with the specified label.
+        """
+        return [obj for obj in self.database.values() if obj.get('label') == label] 
+    
 
     def remove(self, id):
         """
@@ -47,3 +58,8 @@ class TemporaryDatabase:
         :type id: str
         """
         self.database.pop(id, None)
+
+    def insert_test_data(self):
+        # Insert test data into the temporary database
+        db.add
+
