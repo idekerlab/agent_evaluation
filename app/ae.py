@@ -1,175 +1,247 @@
 from openai import OpenAI, APIError
+from groq import Groq
 import os
 import requests
 
+
+def get_property(obj, property_name, default=None):
+
+    if 'properties' in obj:
+        obj = obj['properties']  # get the properties dictionary
+    if property_name in obj:
+        return obj[property_name]
+    if default is not None:
+        return default
+    raise ValueError(f"Property '{property_name}' not found in object.")
+
+
 def load_dataset(db, dataset_id):
-    dataset = db.get(dataset_id)
+    dataset = db.load(dataset_id)
     return dataset
 
-def create_llm(db, type, model_name, max_tokens=None, seed=None, temperature=None):
-    llm = {"label": "LLM",
-           "type": type,
+
+def create_llm(db, type="OpenAI", model_name="gpt-3.5-turbo-1106", max_tokens=2048, seed=None, temperature=0.5):
+    llm = {"type": type,
            "model_name": model_name,
            "max_tokens": max_tokens,
            "seed": seed,
            "temperature": temperature}
-    llm_id = db.add(llm)
+    llm_id = db.add(llm, label="LLM")
     return llm_id
+
 
 def query_llm(db, llm_id, context, prompt):
     llm = db.load(llm_id)
-    type = llm.get('type')
+    type = get_property(llm, 'type')
     if type == 'OpenAI':
-        result_text = query_openai(db, llm, context, prompt)
-    elif type == 'Ollama':
-        pass
-    return result_text
+        text, _ = query_openai(llm, context, prompt)
+        return text
+    elif type == 'Groq':
+        text, _ = query_groq(llm, context, prompt)
+        return text
+    else:
+        raise ValueError(f"Unsupported LLM type: {type}")
+
 
 def query_openai(llm, context, prompt):
-    
-        """
-        Queries the OpenAI model with the given context and prompt.
+    """
+    Queries the OpenAI model with the given context and prompt.
 
-        :param context: The context to use when querying the model.
-        :param prompt: The prompt to use when querying the model.
-        :return: A tuple containing the model's response, system fingerprint, and tokens used.
-        """
-        key = os.environ.get('OPENAI_API_KEY')
-        if not key:
-            raise EnvironmentError("OPENAI_API_KEY environment variable not set.")
-        client = OpenAI()
-        client.api_key = key
-        model_name = llm.get('model_name')
-        max_tokens = llm.get('max_tokens') or 2048
-        seed = llm.get('seed') or None
-        temperature = llm.get('temperature') or 0.5
+    :param context: The context to use when querying the model.
+    :param prompt: The prompt to use when querying the model.
+    :return: A tuple containing the model's response, system fingerprint, and tokens used.
+    """
+    key = os.environ.get('OPENAI_API_KEY')
+    if not key:
+        raise EnvironmentError("OPENAI_API_KEY environment variable not set.")
+    client = OpenAI()
+    client.api_key = key
+    model_name = get_property(llm, 'model_name')
+    max_tokens = get_property(llm, 'max_tokens')
+    seed = get_property(llm, 'seed')
+    temperature = get_property(llm, 'temperature')
 
-        try:
-            response = client.chat.completions.create(
-                    model=model_name,
-                    messages=[
-                        {"role": "system", "content": context},
-                        {"role": "user", "content": prompt}],
-                    max_tokens=max_tokens,
-                    n=1,
-                    stop=None,
-                    seed=seed,
-                    temperature=temperature,
-                )
-            response_content = response.choices[0].message.content.strip()
-            tokens_used = response.usage.total_tokens
-            return response_content, tokens_used
-        except APIError as e:
-            raise Exception(f"API error occurred: {e}")
-        except requests.exceptions.RequestException as e:
-            raise Exception(f"Request failed with an exception: {e}")
+    try:
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": context},
+                {"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            n=1,
+            stop=None,
+            seed=seed,
+            temperature=temperature,
+        )
+        response_content = response.choices[0].message.content.strip()
+        tokens_used = response.usage.total_tokens
+        return response_content, tokens_used
+    except APIError as e:
+        raise Exception(f"API error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Request failed with an exception: {e}")
+
+
+def query_groq(llm, context, prompt):
+    """
+    Queries a model hosted on groq with the given context and prompt.
+
+    :param context: The context to use when querying the model.
+    :param prompt: The prompt to use when querying the model.
+    :return: A tuple containing the model's response, system fingerprint, and tokens used.
+    """
+    key = os.environ.get('GROQ_API_KEY')
+    if not key:
+        raise EnvironmentError("GROQ_API_KEY environment variable not set.")
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    model_name = get_property(llm, 'model_name')
+    max_tokens = get_property(llm, 'max_tokens')
+    temperature = get_property(llm, 'temperature')
+
+    try:
+        response = client.chat.completions.create(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": context},
+                {"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            stop=None,
+            temperature=temperature,
+        )
+        response_content = response.choices[0].message.content.strip()
+        tokens_used = response.usage.total_tokens
+        return response_content, tokens_used
+    except Exception as e:
+        raise Exception(f"groq transaction error occurred: {e}")
 
 
 def create_analyst(db, llm_id, context, prompt_template, name):
-    analyst = {"label": "Analyst",
-               "llm_id": llm_id,
+    analyst = {"llm_id": llm_id,
                "context": context,
                "prompt_template": prompt_template,
                "name": name}
-    analyst_id = db.add(analyst)
+    analyst_id = db.add(analyst, label="Analyst")
     return analyst_id
 
+
 def create_dataset(db, data, experiment_description):
-    dataset = {"label": "Dataset",
-               "data": data,
+    dataset = {"data": data,
                "experiment_description": experiment_description}
-    dataset_id = db.add(dataset)
+    dataset_id = db.add(dataset, label="Dataset")
     return dataset_id
 
-def create_test_plan(db, analyst_ids, dataset_id, n_hypotheses_per_analyst):
-    test_plan = {"label": "TestPlan",
-                 "analysts": analyst_ids,
+
+def create_test_plan(db, analyst_ids=None, dataset_id=None, n_hypotheses_per_analyst=1):
+    test_plan = {"analyst_ids": analyst_ids,
                  "dataset_id": dataset_id,
-                 "n_hypotheses": n_hypotheses_per_analyst}
-    test_plan_id = db.add(test_plan)
+                 "n_hypotheses_per_analyst": n_hypotheses_per_analyst}
+    test_plan_id = db.add(test_plan, label="TestPlan")
     return test_plan_id
 
-def create_test(db, test_plan_id):
+
+def create_test(db, test_plan_id=None):
     test_plan = db.load(test_plan_id)
-    test = {"label": "Test",
-            "test_plan_id": test_plan_id,
-            "hypotheses_ids": []}
-    for _ in range(test_plan.get("n_hypotheses_per_analyst")):
-        for analyst_id in test_plan.get("analyst_ids"):
-            hypothesis_id = generate_hypothesis(db, analyst_id, test_plan.get("dataset_id"))
-            test["hypotheses_ids"].append(hypothesis_id)
-    test_id = db.add(test)
+    test = {"test_plan_id": test_plan_id,
+            "hypothesis_ids": []}
+    for _ in range(get_property(test_plan, "n_hypotheses_per_analyst")):
+        for analyst_id in get_property(test_plan, "analyst_ids"):
+            hypothesis_id = generate_hypothesis(
+                db, analyst_id, get_property(test_plan, "dataset_id"))
+            test["hypothesis_ids"].append(hypothesis_id)
+    test_id = db.add(test, label="Test")
     return test_id
+
 
 def load_tests(db):
     return db.load_all("Test")
 
+
 def generate_hypothesis(db, analyst_id, dataset_id):
-    dataset = load_dataset(dataset_id)   
-    data = dataset.get('data')
+    dataset = load_dataset(db, dataset_id)
+    data = get_property(dataset, 'data')
     analyst = db.load(analyst_id)
-    prompt = analyst.get('prompt_template').format(data=data, experiment_description=dataset.get('experiment_description'))
-    llm_id = analyst.get('llm_id')
-    llm = db.load(llm_id)  
-    hypothesis_text = query_llm(llm, analyst.get("context"), prompt)  
-    hypothesis = {"label": "Hypothesis",
-                    "data": hypothesis_text,
-                    "analyst_id": analyst_id,
-                    "dataset_id": dataset_id}
-    hypothesis_id = db.add(hypothesis) # add the hypothesis to the database, return the id
+    prompt = get_property(analyst,'prompt_template').format(data=data,
+                                                             experiment_description=get_property(dataset, 'experiment_description'))
+    llm_id = get_property(analyst,'llm_id')
+    hypothesis_text = query_llm(db, 
+                                llm_id, 
+                                get_property(analyst, "context"), 
+                                prompt)
+    hypothesis = {"hypothesis_text": hypothesis_text,
+                  "analyst_id": analyst_id,
+                  "dataset_id": dataset_id}
+    # add the hypothesis to the database, return the id
+    hypothesis_id = db.add(hypothesis, label="Hypothesis")
     return hypothesis_id
+
 
 def load_hypotheses(db, test_id):
     test = db.load(test_id)
     hypotheses = []
-    for hypothesis_id in test.get('hypotheses'):
+    for hypothesis_id in test["properties"]['hypothesis_ids']:
         hypothesis = db.load(hypothesis_id)
         hypotheses.append(hypothesis)
     return hypotheses
 
+
 def create_reviewer(db, llm_id, context, prompt_template, name):
-    reviewer = {"label": "Reviewer",
-                "llm_id": llm_id,
+    reviewer = {"llm_id": llm_id,
                 "context": context,
                 "prompt_template": prompt_template,
                 "name": name}
-    reviewer_id = db.add(reviewer)
+    reviewer_id = db.add(reviewer, label="Reviewer")
     return reviewer_id
 
+
 def create_review_plan(db, reviewer_ids, test_id):
-    review_plan = {"label": "ReviewPlan",
-                   "reviewer_ids": reviewer_ids,
+    review_plan = {"reviewer_ids": reviewer_ids,
                    "test_id": test_id}
-    review_plan_id = db.add(review_plan)
+    review_plan_id = db.add(review_plan, label="ReviewPlan")
     return review_plan_id
 
 # The reviewer composes an LLM prompt from the hypotheses in the test,
 # The LLM generates a review that ranks the hypotheses and provides a rationale for the ranking
+
+
 def create_review(db, reviewer_id, test_id):
-    test = db.load(db, test_id)
-    reviewer = db.load(reviewer_id)
-    hypotheses = []  
-    for hypothesis_id in test.get('hypotheses'):
+    test = db.load(test_id)
+    reviewer = db.load(reviewer_id) 
+    test_plan_id = get_property(test, "test_plan_id")
+    test_plan = db.load(test_plan_id)
+    dataset_id = get_property(test_plan, "dataset_id")
+    dataset = db.load(dataset_id)
+    data = get_property(dataset, "data")
+    n = 0
+    hypotheses_section = ""
+    section_identifiers = ["MAPLE", "ASPEN", "WILLOW", "SPRUCE", "OAK", "PINE", "BIRCH", "ELM", "CEDAR", "POPLAR"]
+    for hypothesis_id in get_property(test, 'hypothesis_ids'):
         hypothesis = db.load(hypothesis_id)
-        hypotheses.append(hypothesis.get('hypothesis_text'))
-    data = test.get("dataset").get("data")
-    prompt = reviewer.get('prompt_template').format(hypotheses=hypotheses, data=data) # TODO: implement the prompt template
-    result = query_llm(reviewer.get('llm_id'), reviewer.get("context"), prompt)
-    review = {"label": "Review",
-              "result": result,
+        id = section_identifiers[n % len(section_identifiers)]
+        hypotheses_section = "===========================================\n\n".join([hypotheses_section,
+                                          f'hypothesis {id}: {get_property(hypothesis, "hypothesis_text")}'])
+        n += 1
+    prompt = get_property(reviewer, 'prompt_template').format(hypotheses_section=hypotheses_section,
+                                                              data=data)  
+    result = query_llm(db,
+                       get_property(reviewer, 'llm_id'),
+                       get_property(reviewer, "context"), 
+                       prompt)
+    review = {"result": result,
               "reviewer_id": reviewer.get('id'),
-              "test_id": test_id}
-    db.add(review)
-    return review
+              "test_id": test_id,
+              "hypotheses_section": hypotheses_section}
+    review_id = db.add(review, label="Review")
+    return review_id
 
-def execute_review_plan(db, review_plan_id):
+
+def create_review_set(db, review_plan_id):
     review_plan = db.load(review_plan_id)
-    review_set = {"label": "ReviewSet",
-              "review_plan_id": review_plan_id,
-              "reviews": [],}
-    for reviewer_id in review_plan.get('reviewers'):
-        review = create_review(db, reviewer_id, review_plan.get("test_id"))
-        review_set.get('reviews').append(review)
-    review_set_id = db.add(review_set)
+    review_set = {"review_plan_id": review_plan_id,
+                  "review_ids": [], }
+    for reviewer_id in get_property(review_plan, 'reviewer_ids'):
+        review_id = create_review(db, 
+                               reviewer_id, 
+                               get_property(review_plan, "test_id"))
+        review_set['review_ids'].append(review_id)
+    review_set_id = db.add(review_set, label="ReviewSet")
     return review_set_id
-

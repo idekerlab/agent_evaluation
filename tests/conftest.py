@@ -10,6 +10,8 @@ from app.test_loaders import load_test_data
 def test_db():
     # Create a temporary in-memory database for testing
     db = TemporaryDatabase()
+    # Load test data into the temporary database
+    load_test_data(db)
     yield db
     # Clean up the database after all tests are finished
     db.close()

@@ -56,7 +56,9 @@ class Hierarchy():
             members = attributes.get("CD_MemberList").split(" ")
             if member_data_only:
                 filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
-                datasets.append(Dataset(members, filtered_interactome_data, self.get_experiment_description()))
+                datasets.append({"data": filtered_interactome_data, 
+                                 "experiment_description":self.get_experiment_description()})
             else:
-                datasets.append(Dataset(members, interactome_data, self.get_experiment_description()))
+                datasets.append({"data": interactome_data, 
+                                 "experiment_description":self.get_experiment_description()})
         return datasets

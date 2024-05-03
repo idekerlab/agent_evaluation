@@ -1,5 +1,8 @@
-from neo4j.exceptions import Neo4jError, ServiceUnavailable 
+from neo4j.exceptions import Neo4jError, ServiceUnavailable
 from neo4j import GraphDatabase
+import datetime
+import uuid
+
 
 class Database:
     """
@@ -14,7 +17,7 @@ class Database:
     :param password: Password for database authentication.
     :type password: str
     """
-    
+
     def __init__(self, uri, user, password):
         """
         Initializes the database connection using provided credentials.
@@ -24,7 +27,8 @@ class Database:
         try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
         except ServiceUnavailable as e:
-            raise ServiceUnavailable("Database_Object: Database connection could not be established.") from e
+            raise ServiceUnavailable(
+                "Database_Object: Database connection could not be established.") from e
 
     def close(self):
         """
@@ -32,7 +36,7 @@ class Database:
         """
         self.driver.close()
 
-    def add(self, obj, label="Node"):
+    def add(self, properties, label="Node", db_unique_id=None):
         """
         Adds an object to the database as a new node.
 
@@ -40,15 +44,18 @@ class Database:
         :type obj: dict
         :raises Neo4jError: If the node cannot be created.
         """
-        if 'id' not in obj:
-            raise ValueError("Object must include an 'id' key.")
-        if 'properties' not in obj:
-            raise ValueError("Object must include a 'properties' key.")
+        obj = {"properties": properties}
+        if db_unique_id is None:
+            properties["created"] = datetime.datetime.now().strftime("%m.%d.%Y %H:%M:%S")
+            obj["id"] = f"{label}_{str(uuid.uuid4())}"
+            obj["label"] = label
         try:
             with self.driver.session() as session:
                 session.write_transaction(self._create_node, obj, label)
+            return obj["id"]
         except Neo4jError as e:
-            raise Neo4jError(f"Database_Object: Failed to add object to the database. {e}") from e
+            raise Neo4jError(
+                f"Database_Object: Failed to add object to the database. {e}") from e
 
     def load(self, id):
         """
@@ -62,9 +69,11 @@ class Database:
         """
         try:
             with self.driver.session() as session:
-                return session.read_transaction(self._get_node, id)
+                node = session.read_transaction(self._get_node, id)
+                return node
         except Neo4jError as e:
-            raise Neo4jError(f"Database_Object: Failed to retrieve object from the database. {e}") from e
+            raise Neo4jError(
+                f"Database_Object: Failed to retrieve object from the database. {e}") from e
 
     def remove(self, id):
         """
@@ -78,7 +87,8 @@ class Database:
             with self.driver.session() as session:
                 session.write_transaction(self._delete_node, id)
         except Neo4jError as e:
-            raise Neo4jError("Database_Object: Failed to remove object from the database.") from e
+            raise Neo4jError(
+                "Database_Object: Failed to remove object from the database.") from e
 
     def query(self, query):
         """
@@ -106,12 +116,15 @@ class Database:
     # Retrieve a node from the database by its ID, does not require a label.
     @staticmethod
     def _get_node(tx, id):
-        query = "MATCH (n {id: $id}) RETURN n"
+        # query = "MATCH (n {id: $id}) RETURN n"
+        query = "MATCH (n {id: $id}) RETURN n._id AS _id, properties(n) AS properties"
+
         result = tx.run(query, id=id)
-        node = result.single()
-        if node is not None:
-            return node[0]
-        return None 
+        record = result.single()
+        if record is not None:
+            key_value_pairs = record[1]
+            return key_value_pairs
+        return None
 
     # Delete a node from the database by its ID.
     @staticmethod
@@ -122,4 +135,5 @@ class Database:
     @staticmethod
     def _execute_query(tx, query):
         result = tx.run(query)
-        return [record[0] for record in result] # Extracting the first column from the result as a list
+        # Extracting the first column from the result as a list
+        return [record[0] for record in result]

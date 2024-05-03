@@ -1,37 +1,39 @@
 from app.ae import load_tests, load_hypotheses
 
-def test_retrieve_tests():
-    db = test_db()
+def test_retrieve_tests(test_db):
     # Retrieve all tests from the standard test data 
-    tests = load_tests(db)
-    # tests should be a list
+    tests = load_tests(test_db)
+    # tests should be a list with at least one element
     assert isinstance(tests, list)
+    assert len(tests) > 0
     # each element in tests should be a dictionary
     for test in tests:
         assert isinstance(test, dict)
         # the label of each test should start with "Test"
         assert test["label"].startswith("Test")
         # the test should have test_plan_id that is a string
-        assert isinstance(test["test_plan_id"], str)
-        # the test should have hypotheses_ids that is a list of strings
-        assert isinstance(test["hypotheses_ids"], list)
-        for hypothesis_id in test["hypotheses_ids"]:
+        assert test["properties"] is not None
+        assert isinstance(test["properties"], dict)
+        assert isinstance(test["properties"]["test_plan_id"], str)
+        # the test should have hypothesis_ids that is a list of strings
+        assert isinstance(test["properties"]["hypothesis_ids"], list)
+        for hypothesis_id in test["properties"]["hypothesis_ids"]:
             assert isinstance(hypothesis_id, str)
 
 
-def test_retrieve_hypotheses():
-    # Select a test ID from the test data
-    test_id = test_data["tests"][0]["id"]
-    
+def test_retrieve_hypotheses(test_db):
+    tests = load_tests(test_db)
+    test = tests[0]
+    test_id = test["id"]
     # Retrieve hypotheses for the selected test
-    hypotheses = load_hypotheses(test_id)
+    hypotheses = load_hypotheses(test_db, test_id)
     
-    # Assert that the retrieved hypotheses match the expected test data
-    expected_hypotheses = [
-        hypothesis
-        for hypothesis in test_data["hypotheses"]
-        if hypothesis["test_id"] == test_id
-    ]
-    assert len(hypotheses) == len(expected_hypotheses)
+    # Assert that the retrieved hypotheses are well formed
     for hypothesis in hypotheses:
-        assert hypothesis in expected_hypotheses
+        assert isinstance(hypothesis, dict)
+        assert hypothesis["label"] == "Hypothesis"
+        assert hypothesis["properties"] is not None
+        assert isinstance(hypothesis["properties"], dict)
+        assert isinstance(hypothesis["properties"]["analyst_id"], str)
+        assert isinstance(hypothesis["properties"]["dataset_id"], str)
+        assert isinstance(hypothesis["properties"]["hypothesis_text"], str)

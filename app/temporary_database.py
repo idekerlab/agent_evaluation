@@ -1,8 +1,11 @@
+import datetime
+import uuid
+
 class TemporaryDatabase:
     """
     Provides methods to interact with a temporary in-memory dictionary database.
     """
-    
+
     def __init__(self):
         """
         Initializes the database as an empty dictionary.
@@ -15,7 +18,7 @@ class TemporaryDatabase:
         """
         self.database = {}
 
-    def add(self, obj, label="Node"):
+    def add(self, properties, label="Node", db_unique_id=None):
         """
         Adds an object to the database
 
@@ -23,11 +26,15 @@ class TemporaryDatabase:
         :type obj: dict
 
         """
-        if 'id' not in obj:
-            raise ValueError("Object must include an 'id' key.")
+        obj = {"properties": properties}
+        if db_unique_id is None:
+            properties["created"] = datetime.datetime.now().strftime("%m.%d.%Y %H:%M:%S")
+            obj["id"] = f"{label}_{str(uuid.uuid4())}"
+            obj["label"] = label
         if 'properties' not in obj:
             raise ValueError("Object must include a 'properties' key.")
         self.database[obj['id']] = obj
+        return obj['id']
 
     def load(self, id):
         """
@@ -37,8 +44,11 @@ class TemporaryDatabase:
         :type id: str
         :returns: The requested object if found, otherwise `None`.
         """
-        return self.database.get(id)
-    
+        if id in self.database:
+            return self.database[id]
+        else:
+            return None
+
     def load_all(self, label):
         """
         Retrieves all objects with a given label from the database.
@@ -47,8 +57,7 @@ class TemporaryDatabase:
         :type label: str
         :returns: A list of objects with the specified label.
         """
-        return [obj for obj in self.database.values() if obj.get('label') == label] 
-    
+        return [obj for obj in self.database.values() if obj.get('label') == label]
 
     def remove(self, id):
         """
@@ -58,8 +67,3 @@ class TemporaryDatabase:
         :type id: str
         """
         self.database.pop(id, None)
-
-    def insert_test_data(self):
-        # Insert test data into the temporary database
-        db.add
-
