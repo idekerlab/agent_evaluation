@@ -37,7 +37,7 @@ def load_test_data(db):
                       "analyst_id": analyst_id,
                       "dataset_id": dataset_id}
         # add the hypothesis to the database, return the id
-        hypothesis_id = db.add(hypothesis, label="Hypothesis")
+        hypothesis_id = db.add(hypothesis, label="hypothesis")
         return hypothesis_id
 
     hypothesis_id_1 = create_fake_hypothesis(analyst_id_1,
@@ -57,7 +57,7 @@ def load_test_data(db):
     def create_fake_test(test_plan_id, hypothesis_ids):
         test = {"hypothesis_ids": hypothesis_ids,
                 "test_plan_id": test_plan_id, }
-        test_id = db.add(test, label="Test")
+        test_id = db.add(test, label="test")
         return test_id
 
     test_id = create_fake_test(
@@ -78,7 +78,7 @@ def load_test_data(db):
     def create_fake_review_plan(reviewer_id, test_id):
         review_plan = {"reviewer_ids": [reviewer_id],
                        "test_id": test_id}
-        review_plan_id = db.add(review_plan, label="ReviewPlan")
+        review_plan_id = db.add(review_plan, label="reviewplan")
         return review_plan_id
 
     review_plan_id = create_fake_review_plan([reviewer_id], test_id)

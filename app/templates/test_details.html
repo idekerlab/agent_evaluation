@@ -10,9 +10,9 @@
     <ol>
         {% for hypothesis in hypotheses %}
         <li>
-            <h3>{{ hypothesis.name }}</h3>
+            <h3>{{ hypothesis.get("id") }}</h3>
             <p>Ranking: {{ hypothesis.ranking }}</p>
-            <p>{{ hypothesis.text }}</p>
+            <p>{{ hypothesis.get("hypothesis_text") }}</p>
         </li>
         {% endfor %}
     </ol>

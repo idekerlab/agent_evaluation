@@ -8,7 +8,9 @@
     <h1>Available Tests</h1>
     <ul>
         {% for test in tests %}
-        <li><a href="/test/{{ test.id }}">{{ test.name }}</a></li>
+        <li>{{test}}</li>
+        <li><a href="/test/{{test}}">link for {{ test }}</a></li>
+
         {% endfor %}
     </ul>
 </body>

@@ -31,10 +31,9 @@ password = "fredfred"
 db = Database(uri, user, password)
 # db = TemporaryDatabase()
 
-llm_id = ae.create_llm(db, type="OpenAI", model_name="gpt-3.5-turbo-1106")
-
-# llm_id = ae.create_llm(db, type="Groq", model_name="llama3-8b-8192")
-
+# llm_id = ae.create_llm(db, type="OpenAI", model_name="gpt-3.5-turbo-1106")
+llm_id = ae.create_llm(db, type="Groq", model_name="llama3-8b-8192")
+print(db.load(llm_id))
 
 analyst_context = "Cancer research"
 analyst_prompt_template = """
