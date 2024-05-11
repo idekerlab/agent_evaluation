@@ -52,7 +52,7 @@ class Database:
         try:
             with self.driver.session() as session:
                 session.write_transaction(self._create_node, obj, label)
-            return obj["id"]
+            return obj["id"], obj["properties"]
         except Neo4jError as e:
             raise Neo4jError(
                 f"Database_Object: Failed to add object to the database. {e}") from e
@@ -137,3 +137,24 @@ class Database:
         result = tx.run(query)
         # Extracting the first column from the result as a list
         return [record[0] for record in result]
+
+    def update(self, id, properties):
+        """
+        Updates an object in the database by its ID with new properties.
+
+        :param id: The ID of the object to update.
+        :type id: str
+        :param properties: A dictionary of properties to update.
+        :type properties: dict
+        :raises Neo4jError: If the update operation fails.
+        """
+        try:
+            with self.driver.session() as session:
+                session.write_transaction(self._update_node, id, properties)
+        except Neo4jError as e:
+            raise Neo4jError(f"Database_Object: Failed to update object in the database. {e}") from e
+
+    @staticmethod
+    def _update_node(tx, id, properties):
+        query = "MATCH (n {id: $id}) SET n += $properties RETURN n"
+        return tx.run(query, id=id, properties=properties)
