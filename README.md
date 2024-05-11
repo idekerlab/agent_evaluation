@@ -4,42 +4,43 @@ Supports a paper on the development and evaluation of reviewer agents that, in t
 # Repo Structure
 
 ```
-agent_evaluation/
+/your_project
 │
-├── app/
+├── app/                    # Main application code
 │   ├── __init__.py
-│   ├── main.py
-│   ├── dependencies.py
-│   ├── routers/
-│   │   ├── __init__.py
-│   │   ├── tests.py
-│   │   └── hypotheses.py
-│   ├── ae.py
-│   ├── database.py
-│   ├── temporary_database.py
-│   └── templates/
-│       ├── home.html
-│       └── test_details.html
+│   ├── main.py             # Core Flask/FastAPI application
+│   └── dependencies.py     # Database connections, etc.
 │
-├── tests/
+├── models/                 # Data models
 │   ├── __init__.py
-│   ├── conftest.py
-│   ├── test_main.py
-│   ├── test_ae.py
-│   └── test_database.py
+│   ├── llm.py
+│   ├── dataset.py
+│   ├── test_plan.py
+│   └── review.py
 │
-├── static/
-│   ├── css/
-│   │   └── styles.css
-│   ├── js/
-│   │   └── scripts.js
-│   └── images/
-│       └── logo.png
+├── services/               # Business logic
+│   ├── __init__.py
+│   ├── hypothesis_generation.py
+│   └── review_generation.py
 │
-├── .gitignore
-├── README.md
-├── requirements.txt
-└── pytest.ini
+├── tasks/                  # Asynchronous tasks
+│   ├── __init__.py
+│   ├── celery_config.py
+│   ├── test_plan_tasks.py
+│   ├── hypothesis_tasks.py
+│   └── review_tasks.py
+│
+├── templates/              # HTML templates for the web interface
+│   └── ...
+│
+├── static/                 # CSS, JavaScript files
+│   └── ...
+│
+└── tests/                  # Unit and integration tests
+    ├── __init__.py
+    ├── test_services.py
+    └── test_tasks.py
+
 
 ```
 

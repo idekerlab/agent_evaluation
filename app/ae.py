@@ -124,7 +124,7 @@ def create_analyst(db, llm_id, context, prompt_template, name):
 def create_dataset(db, data, experiment_description):
     dataset = {"data": data,
                "experiment_description": experiment_description}
-    dataset_id = db.add(dataset, label="Dataset")
+    dataset_id = db.add(dataset, label="dataset")
     return dataset_id
 
 
@@ -139,7 +139,11 @@ def create_test_plan(db, analyst_ids=None, dataset_id=None, n_hypotheses_per_ana
 def create_test(db, test_plan_id=None):
     test_plan = db.load(test_plan_id)
     test = {"test_plan_id": test_plan_id,
-            "hypothesis_ids": []}
+            "hypothesis_ids": [],
+            "dataset_id": get_property(test_plan, "dataset_id"),
+            "n_hypotheses_per_analyst": get_property(test_plan, "n_hypotheses_per_analyst"),
+            "analyst_ids": get_property(test_plan, "analyst_ids"),
+            "description": ""}
     for _ in range(get_property(test_plan, "n_hypotheses_per_analyst")):
         for analyst_id in get_property(test_plan, "analyst_ids"):
             hypothesis_id = generate_hypothesis(
@@ -166,7 +170,9 @@ def generate_hypothesis(db, analyst_id, dataset_id):
                                 prompt)
     hypothesis = {"hypothesis_text": hypothesis_text,
                   "analyst_id": analyst_id,
-                  "dataset_id": dataset_id}
+                  "dataset_id": dataset_id,
+                  "description": "",
+                  "data": data}
     # add the hypothesis to the database, return the id
     hypothesis_id = db.add(hypothesis, label="hypothesis")
     return hypothesis_id
@@ -214,8 +220,9 @@ def create_review(db, reviewer_id, test_id):
     for hypothesis_id in get_property(test, 'hypothesis_ids'):
         hypothesis = db.load(hypothesis_id)
         id = section_identifiers[n % len(section_identifiers)]
-        hypotheses_section = "===========================================\n\n".join([hypotheses_section,
-                                          f'hypothesis {id}: {get_property(hypothesis, "hypothesis_text")}'])
+        hypotheses_section = "\n\n===========================================\n\n".join(
+            [hypotheses_section,
+             f'hypothesis {id}: {get_property(hypothesis, "hypothesis_text")}'])
         n += 1
     prompt = get_property(reviewer, 'prompt_template').format(hypotheses_section=hypotheses_section,
                                                               data=data)  
@@ -223,7 +230,7 @@ def create_review(db, reviewer_id, test_id):
                        get_property(reviewer, 'llm_id'),
                        get_property(reviewer, "context"), 
                        prompt)
-    review = {"result": result,
+    review = {"review_text": result,
               "reviewer_id": reviewer.get('id'),
               "test_id": test_id,
               "hypotheses_section": hypotheses_section}
