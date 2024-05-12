@@ -1,6 +1,13 @@
+import os
+from openai import OpenAI, APIError
+from groq import Groq
+import requests
+from app.config import load_api_key
+
+
 class LLM:
-    def __init__(self, db, type=None, model_name=None, 
-                 max_tokens=None, seed=None, temperature=None, 
+    def __init__(self, db, type=None, model_name=None,
+                 max_tokens=None, seed=None, temperature=None,
                  id=None, created=None):
         self.db = db
         self.type = type
@@ -37,7 +44,7 @@ class LLM:
         # Update attributes of the LLM instance
         for key, value in kwargs.items():
             setattr(self, key, value)
-        # Assume db.update is a method to update the record in the database
+        # update the record in the database
         self.db.update(self.id, kwargs)
 
     def query(self, context, prompt):
@@ -49,41 +56,70 @@ class LLM:
             raise ValueError(f"Unsupported llm type: {self.type}")
 
     def query_openai(self, context, prompt):
-        key = os.getenv('OPENAI_API_KEY')
+        """
+        Queries the OpenAI model with the given context and prompt.
+
+        :param context: The context to use when querying the model.
+        :param prompt: The prompt to use when querying the model.
+        :return: The model's response
+        (maybe later: also return tokens used.)
+        """
+        # Load the API keys
+        key = load_api_key("OPENAI_API_KEY")
         if not key:
             raise EnvironmentError("OPENAI_API_KEY environment variable not set.")
-        import openai  # Assuming the OpenAI library is used
+        client = OpenAI()
+        client.api_key = key
+
         try:
-            response = openai.Completion.create(
-                engine=self.model_name,
-                prompt=f"{context}\n{prompt}",
+            response = client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": context},
+                    {"role": "user", "content": prompt}],
                 max_tokens=self.max_tokens,
                 n=1,
                 stop=None,
+                seed=self.seed,
                 temperature=self.temperature,
-                presence_penalty=0.5  # Example additional parameter
             )
-            return response.choices[0].text.strip(), response.usage.total_tokens
-        except openai.error.OpenAIError as e:
+            response_content = response.choices[0].message.content.strip()
+            # tokens_used = response.usage.total_tokens
+            return response_content
+        except APIError as e:
             raise Exception(f"API error occurred: {e}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Request failed with an exception: {e}")
 
     def query_groq(self, context, prompt):
-        key = os.getenv('GROQ_API_KEY')
+        """
+        Queries a model hosted on groq with the given context and prompt.
+
+        :param context: The context to use when querying the model.
+        :param prompt: The prompt to use when querying the model.
+        :return: the model's response.
+        (maybe later: also return tokens used.)
+        """
+        key = load_api_key("GROQ_API_KEY")
         if not key:
             raise EnvironmentError("GROQ_API_KEY environment variable not set.")
-        # Assuming the use of a hypothetical 'GroqClient' library
-        import groqclient  # This is hypothetical and needs to be replaced with actual library usage
-        client = groqclient.Client(api_key=key)
+        client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
         try:
-            response = client.create_completion(
-                model_name=self.model_name,
-                prompt=f"{context}\n{prompt}",
+            response = client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": context},
+                    {"role": "user", "content": prompt}],
                 max_tokens=self.max_tokens,
-                temperature=self.temperature
+                stop=None,
+                temperature=self.temperature,
             )
-            return response.text.strip(), response.tokens_used  # Assuming these attributes exist
+            response_content = response.choices[0].message.content.strip()
+            # tokens_used = response.usage.total_tokens
+            return response_content
         except Exception as e:
-            raise Exception(f"Groq transaction error occurred: {e}")
-        
+            raise Exception(f"groq transaction error occurred: {e}")
+    
     def __repr__(self):
         return f"<LLM {self.type} {self.model_name} (ID: {self.id})>"

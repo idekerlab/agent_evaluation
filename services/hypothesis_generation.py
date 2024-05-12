@@ -8,7 +8,7 @@ class HypothesisGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_hypothesis(self, analyst_id, dataset_id, test_id=None):
+    def generate_hypothesis(self, analyst_id, dataset_id, test_id=None, description=""):
         # Load the dataset and analyst using the newly created classes
         dataset = Dataset.load(self.db, dataset_id)
         analyst = Analyst.load(self.db, analyst_id)
@@ -19,7 +19,7 @@ class HypothesisGenerator:
             # Load the test using the newly created class
             test = Test.load(self.db, test_id)
             if not test:
-                raise ValueError("Test not found generate_hypothesis")
+                raise ValueError("Test to which to add the hypothesis was provided but not found in generate_hypothesis")
 
         # Use properties directly from the loaded objects
         data = dataset.data
@@ -32,7 +32,7 @@ class HypothesisGenerator:
             raise ValueError("LLM not found")
 
         # Generate hypothesis text using the LLM
-        hypothesis_text = llm.query_llm(analyst.context, prompt)
+        hypothesis_text = llm.query(analyst.context, prompt)
 
         # Create and save the hypothesis
         hypothesis = Hypothesis.create(
@@ -41,7 +41,7 @@ class HypothesisGenerator:
             hypothesis_text=hypothesis_text,
             analyst_id=analyst_id,
             dataset_id=dataset_id,
-            description="",  # Assume description is either generated or provided elsewhere
+            description=description, 
             test_id=None     
         )
 
