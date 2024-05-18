@@ -1,4 +1,5 @@
 from models.test import Test
+from models.dataset import Dataset
 from services.hypothesis_generation import HypothesisGenerator
 from models.hypothesis import Hypothesis
 
@@ -7,6 +8,7 @@ class AnalysisRunner:
     def __init__(self, db, test_id):
         self.db = db
         self.test = Test.load(db, test_id)
+        #self.dataset = Dataset.load(db, self.test.dataset_id)
         if not self.test:
             raise ValueError("Test not found with the given ID.")
 
@@ -17,8 +19,9 @@ class AnalysisRunner:
         for analyst_id in self.test.analyst_ids:
             if len(self.test.attempts.get(analyst_id, [])) < self.test.n_hypotheses_per_analyst:
                 try:
-                    hypothesis_text = HypothesisGenerator.generate_hypothesis(self.db, analyst_id, self.test.dataset_id)
-                    hypothesis_id = Hypothesis.create(self.db, data='', hypothesis_text=hypothesis_text, analyst_id=analyst_id, dataset_id=self.test.dataset_id)
+                    generator = HypothesisGenerator(self.db)
+                    hypothesis_id = generator.generate_hypothesis(analyst_id, 
+                                                                    self.test.dataset_id)
                     self.test.hypothesis_ids.append(hypothesis_id)
                     self.test.attempts[analyst_id].append('success')
                     self.test.update()

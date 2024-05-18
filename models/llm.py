@@ -103,7 +103,7 @@ class LLM:
         key = load_api_key("GROQ_API_KEY")
         if not key:
             raise EnvironmentError("GROQ_API_KEY environment variable not set.")
-        client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        client = Groq(api_key=key)
 
         try:
             response = client.chat.completions.create(
