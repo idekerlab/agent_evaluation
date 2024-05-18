@@ -9,7 +9,7 @@ class Dataset:
         self.created = created
 
     @classmethod
-    def create(cls, db, name, data, experiment_description, description):
+    def create(cls, db, name, data, experiment_description, description=""):
         properties = {
             "name": name,
             "data": data,

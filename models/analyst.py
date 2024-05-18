@@ -12,7 +12,7 @@ class Analyst:
         self.created = created
 
     @classmethod
-    def create(cls, db, llm_id, context, prompt_template, name, description):
+    def create(cls, db, llm_id, context, prompt_template, name=None, description=""):
         properties = {
             "llm_id": llm_id,
             "context": context,

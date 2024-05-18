@@ -1,3 +1,5 @@
+from models.test import Test
+
 class TestPlan:
     def __init__(self, db, analyst_ids=None, dataset_id=None, 
                  n_hypotheses_per_analyst=0, description=None, id=None, created=None):
@@ -10,7 +12,7 @@ class TestPlan:
         self.created = created
 
     @classmethod
-    def create(cls, db, analyst_ids, dataset_id, n_hypotheses_per_analyst, description):
+    def create(cls, db, analyst_ids, dataset_id, n_hypotheses_per_analyst, description=''):
         properties = {
             "analyst_ids": analyst_ids,
             "dataset_id": dataset_id,
@@ -34,3 +36,16 @@ class TestPlan:
 
     def delete(self):
         self.db.remove(self.id)
+
+    def generate_test(self):
+            """ Generate a new Test instance based on this test plan. """
+            if not self.analyst_ids or not self.dataset_id:
+                raise ValueError("TestPlan is not properly configured.")
+            return Test.create(
+                db=self.db,
+                testplan_id=self.id,
+                analyst_ids=self.analyst_ids,
+                dataset_id=self.dataset_id,
+                n_hypotheses_per_analyst=self.n_hypotheses_per_analyst,
+                description=self.description
+            )

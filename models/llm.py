@@ -19,7 +19,7 @@ class LLM:
         self.created = created
 
     @classmethod
-    def create(cls, db, type, model_name, max_tokens, seed, temperature):
+    def create(cls, db, type, model_name, max_tokens=2048, seed=None, temperature=0.5):
         # Create the LLM instance in the database
         properties = {
             "type": type,
