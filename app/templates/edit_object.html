@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit {{ object_type }}</title>
+    <style>
+        /* CSS styles for the page */
+        .top-bar {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .header {
+            background-color: skyblue;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .header img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .button {
+            background-color: orange;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        pre {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        input[type="text"], input[type="number"], input[type="file"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        UC San Diego - Ideker Lab
+    </div>
+    <div class="header">
+        <img src="{{ url_for('static', path='images/' + object_type + '.png') }}" alt="{{ object_type }} Logo">
+        <div>
+            <h1>Edit {{ object_type }}</h1>
+            {% if object.id %}
+                <p>ID: {{ object.id }}</p>
+                <p>Created: {{ object.created }}</p>
+            {% else %}
+                <p>No object data available.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="main-content">
+        <form method="post">
+            {% for field in form_fields %}
+                <div>
+                    <label for="{{ field.name }}">{{ field.label }}</label>
+                    {% if field.editable %}
+                        {% if field.type == 'text' %}
+                            <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                        {% elif field.type == 'number' %}
+                            <input type="number" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                        {% elif field.type == 'textarea' %}
+                            <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                        {% elif field.type == 'select' %}
+                            <select id="{{ field.name }}" name="{{ field.name }}">
+                                {% for option in field.options %}
+                                    <option value="{{ option }}" {% if option == field.value %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    {% else %}
+                        {% if field.view == 'text' %}
+                            <p>{{ field.value }}</p>
+                        {% elif field.view == 'object_link' %}
+                            <a href="/objects/{{ field.value.object_type }}/{{ field.value.id }}">{{ field.value.id }}</a>
+                        {% elif field.view == 'list_of_object_links' %}
+                            {% for item in field.value %}
+                                <a href="/objects/{{ item.object_type }}/{{ item.id }}">{{ item.id }}</a><br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="button">Save</button>
+        </form>
+    </div>
+</body>
+</html>

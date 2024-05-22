@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ object_type }} List</title>
+</head>
+<body>
+    <h1>{{ object_type }} List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Created</th>
+                <th>Properties</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in objects %}
+            <tr>
+                <td><a href="/objects/{{ object_type }}/{{ obj.id }}">{{ obj.id }}</a></td>
+                <td>{{ obj.created }}</td>
+                <td>
+                    {% for key, value in obj.properties.items() %}
+                        {{ key }}: {{ value | string | truncate(15) }}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/objects/{{ object_type }}/new">New {{ object_type }}</a>
+</body>
+</html>

@@ -59,6 +59,38 @@ class Database:
         except Neo4jError as e:
             raise Neo4jError(f"Database_Object: Failed to update object in the database. {e}")
 
+
+    def find(self, object_type, filters):
+        try:
+            with self.driver.session() as session:
+                return session.read_transaction(self._find_nodes, object_type, filters)
+        except Neo4jError as e:
+            raise Neo4jError(f"Database_Object: Failed to find objects in the database. {e}")
+
+    @staticmethod
+    def _find_nodes(tx, object_type, filters):
+        query = f"MATCH (n:{object_type}) WHERE "
+        query_filters = []
+        query_params = {}
+        
+        for key, value in filters.items():
+            query_filters.append(f"n.{key} = ${key}")
+            query_params[key] = value
+        
+        if query_filters:
+            query += " AND ".join(query_filters)
+        else:
+            query = query.rstrip(" WHERE ")
+        
+        query += " RETURN n.id as id, n.created as created, n as properties"
+        
+        result = tx.run(query, **query_params)
+        return [
+            {"id": record["id"], "created": record["created"], "properties": record["properties"]}
+            for record in result
+        ]
+
+
     @staticmethod
     def _create_node(tx, obj, label):
         query = f"CREATE (n:{label} {{id: $id}}) SET n += $properties RETURN n"
