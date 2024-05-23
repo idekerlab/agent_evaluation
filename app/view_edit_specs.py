@@ -5,7 +5,7 @@ object_specifications = {
     "llm": {
         "properties": {
             "type": {
-                "type": "str",
+                "type": "string",
                 "input_type": "dropdown",
                 "options": ["OpenAI", "Groq"],
                 "view": "text",
@@ -13,7 +13,7 @@ object_specifications = {
                 "default": "Groq"
             },
             "model_name": {
-                "type": "str",
+                "type": "string",
                 "input_type": "dropdown",
                 "conditional_on": "type",
                 "options": {"OpenAI": ["gpt-3.5-turbo-1106", "gpt-4.0-turbo-1106"],
@@ -44,7 +44,7 @@ object_specifications = {
                 "editable": True
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -62,25 +62,25 @@ object_specifications = {
                 "editable": True
             },
             "context": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },
             "prompt_template": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },
             "name": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "text",
                 "view": "text"
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -91,7 +91,7 @@ object_specifications = {
     "dataset": {
         "properties": {
             "name": {
-                "type": "str",
+                "type": "string",
                 "input_type": "text",
                 "view": "text",
                 "editable": True
@@ -103,13 +103,13 @@ object_specifications = {
                 "editable": True
             },
             "experiment_description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -135,14 +135,14 @@ object_specifications = {
                 "editable": True
             },
             "n_hypotheses_per_analyst": {
-                "type": "int",
+                "type": "integer",
                 "input_type": "number",
                 "view": "text",
                 "editable": True,
                 "default": 2
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -165,7 +165,7 @@ object_specifications = {
                 "editable": False
             },
             "n_hypotheses_per_analyst": {
-                "type": "int",
+                "type": "integer",
                 "editable": False,
                 "view": "text"
             },
@@ -176,7 +176,7 @@ object_specifications = {
                 "editable": False
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -193,7 +193,7 @@ object_specifications = {
                 "object_type": "dataset"
             },
             "hypothesis_text": {
-                "type": "str",
+                "type": "string",
                 "editable": False,
                 "input_type": "textarea",
                 "view": "text"
@@ -211,7 +211,7 @@ object_specifications = {
                 "editable": False
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -235,25 +235,25 @@ object_specifications = {
                 "view": "object_link"
             },
             "context": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },
             "prompt_template": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },
             "name": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "text",
                 "view": "text"
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -279,7 +279,7 @@ object_specifications = {
                 "view": "object_link"
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -290,11 +290,11 @@ object_specifications = {
     "review": {
         "properties": {
             "hypotheses_section": {
-                "type": "str",
+                "type": "string",
                 "editable": False,
                 "view": "text"},
             "review_text": {
-                "type": "str",
+                "type": "string",
                 "editable": False,
                 "view": "text"},
             "reviewer_id": {
@@ -303,7 +303,7 @@ object_specifications = {
                 "view": "object_link",
                 "object_type": "reviewer"},
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"},
@@ -330,7 +330,7 @@ object_specifications = {
                 "object_type": "review"
             },
             "description": {
-                "type": "str",
+                "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"

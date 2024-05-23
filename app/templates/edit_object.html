@@ -53,11 +53,21 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-        input[type="text"], input[type="number"], input[type="file"], select, textarea {
-            width: 100%;
+        .collapsible {
+            cursor: pointer;
             padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+        .active, .collapsible:hover {
+            background-color: #555;
+            color: white;
+        }
+        .content {
+            display: none;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -79,38 +89,73 @@
     </div>
     <div class="main-content">
         <form method="post">
-            {% for field in form_fields %}
-                <div>
-                    <label for="{{ field.name }}">{{ field.label }}</label>
-                    {% if field.editable %}
-                        {% if field.type == 'text' %}
-                            <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
-                        {% elif field.type == 'number' %}
-                            <input type="number" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
-                        {% elif field.type == 'textarea' %}
-                            <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
-                        {% elif field.type == 'select' %}
-                            <select id="{{ field.name }}" name="{{ field.name }}">
-                                {% for option in field.options %}
-                                    <option value="{{ option }}" {% if option == field.value %}selected{% endif %}>{{ option }}</option>
-                                {% endfor %}
-                            </select>
-                        {% endif %}
-                    {% else %}
-                        {% if field.view == 'text' %}
-                            <p>{{ field.value }}</p>
-                        {% elif field.view == 'object_link' %}
-                            <a href="/objects/{{ field.value.object_type }}/{{ field.value.id }}">{{ field.value.id }}</a>
-                        {% elif field.view == 'list_of_object_links' %}
-                            {% for item in field.value %}
-                                <a href="/objects/{{ item.object_type }}/{{ item.id }}">{{ item.id }}</a><br>
-                            {% endfor %}
-                        {% endif %}
-                    {% endif %}
-                </div>
-            {% endfor %}
+            <input type="hidden" name="object_id" value="{{ object.id }}">
+            <h2>Properties</h2>
+            <table>
+                <tbody>
+                    {% for field in form_fields %}
+                        <tr>
+                            <td>{{ field.label }}</td>
+                            <td>
+                                {% if field.editable %}
+                                    {% if field.input_type == 'text' %}
+                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                    {% elif field.input_type == 'number' %}
+                                        <input type="number" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                    {% elif field.input_type == 'textarea' %}
+                                        <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                    {% elif field.input_type == 'select_single_object' %}
+                                        <p>placeholder for select_single_object</p>
+                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                    {% elif field.input_type == 'select_multiple_objects' %}
+                                        <p>placeholder for select_multiple_objects</p>
+                                        <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                    {% elif field.input_type == 'upload_table' %}
+                                        <p>placeholder for upload_table</p>
+                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                    {% endif %}
+                                {% else %}
+                                    {% if field.view == 'text' %}
+                                        <button type="button" class="collapsible">{{ field.value | truncate(15) }}</button>
+                                        <div class="content">
+                                            <pre>{{ field.value }}</pre>
+                                        </div>
+                                    {% elif field.view == 'object_link' %}
+                                        <a href="/objects/{{ field.value.object_type }}/{{ field.value.id }}">{{ field.value.id }}</a>
+                                    {% elif field.view == 'list_of_object_links' %}
+                                        {% for item in field.value %}
+                                            <a href="/objects/{{ item.object_type }}/{{ item.id }}">{{ item.id }}</a><br>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>placeholder for viewer of {{ item.object_type }}</p>
+                                        <div class="content">
+                                            <pre>{{ field.value }}</pre>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             <button type="submit" class="button">Save</button>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var coll = document.getElementsByClassName("collapsible");
+            for (var i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                    } else {
+                        content.style.display = "block";
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

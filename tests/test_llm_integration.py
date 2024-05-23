@@ -1,12 +1,16 @@
 import unittest
 from models.llm import LLM
 from app.database import Database
+from app.config import load_database_config
 
 class TestLLMIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Establish a connection to the Neo4j database
-        cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
+        # Establish a connection to the database
+        db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
+        cls.db = Database(uri, db_type=db_type, user=user, password=password)
+
+        # cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
 
     @classmethod
     def tearDownClass(cls):
