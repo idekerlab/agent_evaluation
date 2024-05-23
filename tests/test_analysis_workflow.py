@@ -7,14 +7,17 @@ from models.dataset import Dataset
 from models.testplan import TestPlan
 from models.test import Test
 from services.analysisrunner import AnalysisRunner
-from app.database import Database
+from app.sqlite_database import SqliteDatabase
 from app.config import load_database_config
 
 class TestAnalysisWorkflow(unittest.TestCase):
     def setUp(self):
         # Load the db connection details
-        db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
-        self.db = Database(uri, db_type, user, password)
+        # db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
+        # self.db = Database(uri, db_type, user, password)
+
+        _, database_uri, _, _ = load_database_config()
+        self.db = SqliteDatabase(database_uri)
 
         # Load data
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

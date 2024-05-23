@@ -21,7 +21,7 @@ class Analyst:
             "description": description,
             #"created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        id, created = db.add(properties, label="Analyst")
+        id, created = db.add(properties, object_type="Analyst")
         return cls(db, llm_id, context, prompt_template, name, description, id=id, created=created)
 
     @classmethod

@@ -6,7 +6,6 @@ import uuid
 class SqliteDatabase:
     def __init__(self, uri):
         self.engine = create_engine(f"sqlite:///{uri}")
-
         self._create_tables()
 
     def close(self):
@@ -29,14 +28,14 @@ class SqliteDatabase:
                 )
             """))
 
-    def add(self, properties, label="Node", db_unique_id=None):
+    def add(self, properties, object_type="Node", db_unique_id=None):
         properties_json = self.serialize_properties(properties)
         obj = {"properties": properties_json}
         
         if db_unique_id is None:
             properties["created"] = datetime.datetime.now().strftime("%m.%d.%Y %H:%M:%S")
-            obj["id"] = f"{label}_{str(uuid.uuid4())}"
-            obj["label"] = label
+            obj["id"] = f"{object_type}_{str(uuid.uuid4())}"
+            obj["object_type"] = object_type
             obj["properties"] = self.serialize_properties(properties)  # Ensure created field is included
 
         try:
@@ -50,7 +49,11 @@ class SqliteDatabase:
         try:
             with self.engine.connect() as conn:
                 node = self._get_node_sql(conn, id)
-                return self.deserialize_properties(node) if node else None
+                properties = self.deserialize_properties(node) if node else None
+                if properties is None:
+                    return None
+                properties["id"] = id   
+                return properties
         except Exception as e:
             raise Exception(f"Database_Object: Failed to retrieve object from the SQL database. {e}")
 
@@ -62,7 +65,14 @@ class SqliteDatabase:
             raise Exception(f"Database_Object: Failed to remove object from the SQL database. {e}")
 
     def update(self, id, properties):
-        properties_json = self.serialize_properties(properties)
+        # Fetch the existing properties
+        existing_properties = self.load(id)
+        if not existing_properties:
+            raise ValueError(f"Object with id {id} not found.")
+
+        # Merge existing properties with new properties
+        updated_properties = {**existing_properties, **properties}
+        properties_json = self.serialize_properties(updated_properties)
         try:
             with self.engine.begin() as conn:
                 self._update_node_sql(conn, id, properties_json)
@@ -102,9 +112,9 @@ class SqliteDatabase:
         valid_results = []
         for row in result:
             try:
-                properties = self.deserialize_properties(row["properties"])
-                valid_results.append({"id": row["id"], "properties": properties})
+                properties = self.deserialize_properties(row[1])
+                valid_results.append({"id": row[0], "properties": properties})
             except json.JSONDecodeError:
-                print(f"Skipping malformed JSON for id: {row['id']}")
+                print(f"Skipping malformed JSON for id: {row[0]}")
 
         return valid_results

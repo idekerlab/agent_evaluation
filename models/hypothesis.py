@@ -22,7 +22,7 @@ class Hypothesis:
             "description": description,
             "test_id": test_id
         }
-        id, created = db.add(properties, label="Hypothesis")
+        id, created = db.add(properties, object_type="Hypothesis")
         return cls(db, data, hypothesis_text, analyst_id, dataset_id, description, test_id, id=id, created=created)
 
     @classmethod

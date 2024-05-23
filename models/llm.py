@@ -28,7 +28,7 @@ class LLM:
             "seed": seed,
             "temperature": temperature
         }
-        id, created = db.add(properties, label="LLM")
+        id, created = db.add(properties, object_type="LLM")
         return cls(db, type, model_name, max_tokens, seed, temperature, id, created)
 
     @classmethod

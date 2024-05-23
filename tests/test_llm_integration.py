@@ -1,6 +1,7 @@
 import unittest
 from models.llm import LLM
 from app.database import Database
+from app.sqlite_database import SqliteDatabase
 from app.config import load_database_config
 
 class TestLLMIntegration(unittest.TestCase):
@@ -8,7 +9,10 @@ class TestLLMIntegration(unittest.TestCase):
     def setUpClass(cls):
         # Establish a connection to the database
         db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
-        cls.db = Database(uri, db_type=db_type, user=user, password=password)
+        if db_type == "sqlite":
+            cls.db = SqliteDatabase(uri)
+        else:
+            cls.db = Database(uri, db_type=db_type, user=user, password=password)
 
         # cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
 

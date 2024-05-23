@@ -16,7 +16,7 @@ class Dataset:
             "experiment_description": experiment_description,
             "description": description
         }
-        id, created = db.add(properties, label="Dataset")
+        id, created = db.add(properties, object_type="Dataset")
         return cls(db, name, data, experiment_description, description, id=id, created=created)
 
     @classmethod

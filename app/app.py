@@ -178,6 +178,6 @@ def handle_form_submission(form_data, object_type, db):
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)
         else:
-            db.add(form_data, label=object_type)
+            db.add(form_data, object_type=object_type)
     except ValidationError as e:
         print("Form data validation failed:", e.message)

@@ -25,7 +25,7 @@ class Test:
             "attempts": {analyst: [] for analyst in analyst_ids},
             "status": "pending"
         }
-        id, created = db.add(properties, label="Test")
+        id, created = db.add(properties, object_type="Test")
         return cls(db, testplan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [], description, properties['attempts'], 'pending', id, created)
 
     @classmethod

@@ -19,7 +19,7 @@ class TestPlan:
             "n_hypotheses_per_analyst": n_hypotheses_per_analyst,
             "description": description
         }
-        id, created = db.add(properties, label="TestPlan")
+        id, created = db.add(properties, object_type="TestPlan")
         return cls(db, analyst_ids, dataset_id, n_hypotheses_per_analyst, description, id=id, created=created)
 
     @classmethod
