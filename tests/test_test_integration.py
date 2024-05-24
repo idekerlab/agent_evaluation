@@ -1,5 +1,5 @@
 import unittest
-from models.test import Test
+from models.analysis_run import Test
 from app.database import Database
 
 class TestTestIntegration(unittest.TestCase):

@@ -2,24 +2,24 @@ from models.dataset import Dataset
 from models.analyst import Analyst
 from models.llm import LLM
 from models.hypothesis import Hypothesis
-from models.test import Test
+from models.analysis_run import AnalysisRun
 
 class HypothesisGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_hypothesis(self, analyst_id, dataset_id, test_id=None, description=""):
+    def generate_hypothesis(self, analyst_id, dataset_id, analysis_run_id=None, description=""):
         # Load the dataset and analyst using the newly created classes
         dataset = Dataset.load(self.db, dataset_id)
         analyst = Analyst.load(self.db, analyst_id)
         if not dataset or not analyst:
             raise ValueError("Dataset or Analyst not found in generate_hypothesis")
         
-        if test_id:
-            # Load the test using the newly created class
-            test = Test.load(self.db, test_id)
-            if not test:
-                raise ValueError("Test to which to add the hypothesis was provided but not found in generate_hypothesis")
+        if analysis_run_id:
+            # Load the AnalysisRun using the newly created class
+            analysis_run = AnalysisRun.load(self.db, analysis_run_id)
+            if not analysis_run:
+                raise ValueError("AnalysisRun to which to add the hypothesis was provided but not found in generate_hypothesis")
 
         # Use properties directly from the loaded objects
         data = dataset.data
@@ -42,10 +42,10 @@ class HypothesisGenerator:
             analyst_id=analyst_id,
             dataset_id=dataset_id,
             description=description, 
-            test_id=None     
+            analysis_run_id=None     
         )
 
-        return hypothesis.id
+        return hypothesis.object_id
 
 # Example usage:
 # generator = HypothesisGenerator(db)

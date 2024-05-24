@@ -117,8 +117,8 @@ object_specifications = {
         }
     },
     # MARK:testplan
-    "testplan": {
-        "actions": ["create_test"],
+    "analysis_plan": {
+        "actions": ["create_analysis_run"],
         "properties": {
             "analyst_ids": {
                 "type": "list_of_object_ids",
@@ -149,8 +149,8 @@ object_specifications = {
             }
         }
     },
-    # MARK: test
-    "test": {
+    # MARK: analysis_run
+    "analysis_run": {
         "properties": {
             "analyst_ids": {
                 "type": "list_of_object_ids",
@@ -218,7 +218,7 @@ object_specifications = {
             },
             "test_id": {
                 "type": "object_id",
-                "object_type": "test",
+                "object_type": "analysis_run",
                 "view": "object_link",
                 "editable": False
             }
@@ -231,7 +231,7 @@ object_specifications = {
                 "type": "object_id",
                 "editable": True,
                 "input_type": "select_single_object",
-                "object_type": "test",
+                "object_type": "analysis_run",
                 "view": "object_link"
             },
             "context": {
@@ -275,7 +275,7 @@ object_specifications = {
                 "type": "object_id",
                 "editable": True,
                 "input_type": "select_single_object",
-                "object_type": "test",
+                "object_type": "analysis_run",
                 "view": "object_link"
             },
             "description": {
@@ -309,7 +309,7 @@ object_specifications = {
                 "view": "text"},
             "test_id": {
                 "type": "object_id",
-                "object_type": "test",
+                "object_type": "analysis_run",
                 "view": "object_link",
                 "editable": False}
             }

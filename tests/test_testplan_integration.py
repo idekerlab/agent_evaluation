@@ -1,5 +1,5 @@
 import unittest
-from models.testplan import TestPlan
+from models.analysis_plan import TestPlan
 from app.database import Database
 
 class TestTestPlan(unittest.TestCase):

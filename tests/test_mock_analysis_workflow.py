@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from models.testplan import TestPlan
+from models.analysis_plan import TestPlan
 from services.analysisrunner import AnalysisRunner
 
 class TestAnalysisWorkflow(unittest.TestCase):

@@ -4,8 +4,7 @@ import os
 from models.llm import LLM
 from models.analyst import Analyst
 from models.dataset import Dataset
-from models.testplan import TestPlan
-from models.test import Test
+from models.analysis_plan import AnalysisPlan
 from services.analysisrunner import AnalysisRunner
 from app.sqlite_database import SqliteDatabase
 from app.config import load_database_config
@@ -44,7 +43,7 @@ Choose a name for the hypothesis and put it before the main hypothesis text.
         self.llm = LLM.create(self.db, type="Groq", model_name="llama3-70b-8192") 
         
         # Create analyst
-        self.analyst = Analyst.create(self.db, self.llm.id, context , prompt_template)
+        self.analyst = Analyst.create(self.db, self.llm.object_id, context , prompt_template)
 
         experiment_description = "Dengue virus infection in human cells"
 
@@ -54,18 +53,18 @@ Choose a name for the hypothesis and put it before the main hypothesis text.
                                       data, 
                                       experiment_description)
 
-        # Create a TestPlan
-        self.test_plan = TestPlan.create(self.db, 
-                                         [self.analyst.id], 
-                                         self.dataset.id, 1, 
-                                         "Test Plan for Dengue Research")
+        # Create a AnalysisPlan
+        self.analysis_plan = AnalysisPlan.create(self.db, 
+                                         [self.analyst.object_id], 
+                                         self.dataset.object_id, 1, 
+                                         "Analysis Plan for Dengue Research")
 
     def test_full_analysis_workflow(self):
-        # Generate a Test from the TestPlan
-        test = self.test_plan.generate_test()
+        # Generate an AnalysisRun from the AnalysisPlan
+        analysis_run = self.analysis_plan.generate_analysis_run()
 
         # Run analysis using AnalysisRunner
-        runner = AnalysisRunner(self.db, test.id)
+        runner = AnalysisRunner(self.db, analysis_run.object_id)
         result = runner.run()
         self.assertIn("All hypotheses generated or attempts exhausted.", result)
 

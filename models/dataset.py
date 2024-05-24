@@ -1,11 +1,14 @@
 class Dataset:
-    def __init__(self, db, name=None, data=None, experiment_description=None, description=None, id=None, created=None):
+    def __init__(self, db, 
+                 name=None, data=None, 
+                 experiment_description=None, 
+                 description=None, object_id=None, created=None):
         self.db = db
         self.name = name
         self.data = data
         self.experiment_description = experiment_description
         self.description = description
-        self.id = id
+        self.object_id = object_id
         self.created = created
 
     @classmethod
@@ -16,21 +19,22 @@ class Dataset:
             "experiment_description": experiment_description,
             "description": description
         }
-        id, created = db.add(properties, object_type="Dataset")
-        return cls(db, name, data, experiment_description, description, id=id, created=created)
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="dataset")
+        return cls(db, name, data, experiment_description, description, 
+                   object_id=object_id, created=created)
 
     @classmethod
-    def load(cls, db, id):
-        data = db.load(id)
-        if data:
-            return cls(db, **data)
+    def load(cls, db, object_id):
+        properties, _ = db.load(object_id)
+        if properties:
+            return cls(db, **properties)
         return None
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-        self.db.update(self.id, kwargs)
+        self.db.update(self.object_id, kwargs)
 
     def delete(self):
-        self.db.remove(self.id)
+        self.db.remove(self.object_id)
 

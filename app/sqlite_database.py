@@ -1,15 +1,15 @@
 import json
-from sqlalchemy import create_engine, text
+import sqlite3
 import datetime
 import uuid
 
 class SqliteDatabase:
     def __init__(self, uri):
-        self.engine = create_engine(f"sqlite:///{uri}")
+        self.conn = sqlite3.connect(uri)
         self._create_tables()
 
     def close(self):
-        self.engine.dispose()
+        self.conn.close()
 
     def serialize_properties(self, properties):
         """ Serialize the entire properties dictionary to a JSON string before storing in the database. """
@@ -20,101 +20,114 @@ class SqliteDatabase:
         return json.loads(properties)
 
     def _create_tables(self):
-        with self.engine.begin() as conn:
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS nodes (
-                    id TEXT PRIMARY KEY,
-                    properties TEXT
-                )
-            """))
+        """ Create the nodes table if it doesn't exist """
+        query = """
+            CREATE TABLE IF NOT EXISTS nodes (
+                object_id TEXT PRIMARY KEY,
+                properties TEXT,
+                object_type TEXT
+            )
+        """  # Remove the closing parenthesis at the end of the query
+        with self.conn:
+            self.conn.execute(query)
 
-    def add(self, properties, object_type="Node", db_unique_id=None):
+    def add(self, object_id=None, properties=None, object_type="node"):
+        """ Add a new node to the database """
+        if properties is None:
+            properties = {}
+        properties["created"] = datetime.datetime.now().strftime("%m.%d.%Y %H:%M:%S")
+        if object_id is None:   
+            object_id = f"{object_type}_{str(uuid.uuid4())}"
+        else:
+            object_id = object_id
+
         properties_json = self.serialize_properties(properties)
-        obj = {"properties": properties_json}
-        
-        if db_unique_id is None:
-            properties["created"] = datetime.datetime.now().strftime("%m.%d.%Y %H:%M:%S")
-            obj["id"] = f"{object_type}_{str(uuid.uuid4())}"
-            obj["object_type"] = object_type
-            obj["properties"] = self.serialize_properties(properties)  # Ensure created field is included
-
         try:
-            with self.engine.begin() as conn:
-                self._create_node_sql(conn, obj)
-            return obj["id"], self.deserialize_properties(obj["properties"])
+            with self.conn:
+                self._create_node_sql(object_id, properties_json, object_type)
+            return object_id, self.deserialize_properties(properties_json), object_type
         except Exception as e:
             raise Exception(f"Database_Object: Failed to add object to the SQL database. {e}")
 
-    def load(self, id):
+    def load(self, object_id):
+        """ Load a node from the database by its ID """
         try:
-            with self.engine.connect() as conn:
-                node = self._get_node_sql(conn, id)
-                properties = self.deserialize_properties(node) if node else None
+            with self.conn:
+                properties_string, object_type = self._get_node_sql(object_id)
+                properties = self.deserialize_properties(properties_string) if properties_string else None
                 if properties is None:
                     return None
-                properties["id"] = id   
-                return properties
+                properties["object_id"] = object_id   
+                return properties, object_type
         except Exception as e:
             raise Exception(f"Database_Object: Failed to retrieve object from the SQL database. {e}")
 
-    def remove(self, id):
+    def remove(self, object_id):
+        """ Remove a node from the database by its object_id """
         try:
-            with self.engine.begin() as conn:
-                self._delete_node_sql(conn, id)
+            with self.conn:
+                self._delete_node_sql(object_id)
         except Exception as e:
             raise Exception(f"Database_Object: Failed to remove object from the SQL database. {e}")
 
-    def update(self, id, properties):
+    def update(self, object_id, properties):
+        """ Update a node's properties in the database """
         # Fetch the existing properties
-        existing_properties = self.load(id)
+        existing_properties, _ = self.load(object_id)
         if not existing_properties:
-            raise ValueError(f"Object with id {id} not found.")
+            raise ValueError(f"Object with object_id {object_id} not found.")
 
+        # remove the object_id from existing properties
+        existing_properties.pop("object_id")
         # Merge existing properties with new properties
         updated_properties = {**existing_properties, **properties}
         properties_json = self.serialize_properties(updated_properties)
         try:
-            with self.engine.begin() as conn:
-                self._update_node_sql(conn, id, properties_json)
+            with self.conn:
+                self._update_node_sql(object_id, properties_json)
         except Exception as e:
             raise Exception(f"Database_Object: Failed to update object in the SQL database. {e}")
 
     def find(self, object_type):
+        """ Find all nodes of a given object type """
         try:
-            with self.engine.connect() as conn:
-                return self._find_nodes_sql(conn, object_type)
+            with self.conn:
+                return self._find_nodes_sql(object_type)
         except Exception as e:
             raise Exception(f"Database_Object: Failed to find objects in the SQL database. {e}")
 
-    def _create_node_sql(self, conn, obj):
-        query = "INSERT INTO nodes (id, properties) VALUES (:id, :properties)"
-        conn.execute(text(query), {"id": obj["id"], "properties": obj["properties"]})
+    def _create_node_sql(self, object_id, properties_json, object_type="node"):
+        """ Insert a new node into the nodes table """
+        query = "INSERT INTO nodes (object_id, properties, object_type) VALUES (?, ?, ?)"
+        self.conn.execute(query, (object_id, properties_json, object_type))
 
-    def _get_node_sql(self, conn, id):
-        query = "SELECT properties FROM nodes WHERE id = :id"
-        result = conn.execute(text(query), {"id": id}).fetchone()
-        return result[0] if result else None
+    def _get_node_sql(self, object_id):
+        """ Retrieve a node's properties from the nodes table by its object_id """
+        query = "SELECT properties, object_type FROM nodes WHERE object_id = ?"
+        result = self.conn.execute(query, (object_id,)).fetchone()
+        return result[0], result[1] if result else None
 
-    def _delete_node_sql(self, conn, id):
-        query = "DELETE FROM nodes WHERE id = :id"
-        conn.execute(text(query), {"id": id})
+    def _delete_node_sql(self, object_id):
+        """ Delete a node from the nodes table by its object_id """
+        query = "DELETE FROM nodes WHERE object_id = ?"
+        self.conn.execute(query, (object_id,))
 
-    def _update_node_sql(self, conn, id, properties):
-        query = "UPDATE nodes SET properties = :properties WHERE id = :id"
-        conn.execute(text(query), {"id": id, "properties": properties})
+    def _update_node_sql(self, object_id, properties):
+        """ Update a node's properties in the nodes table """
+        query = "UPDATE nodes SET properties = ? WHERE object_id = ?"
+        self.conn.execute(query, (properties, object_id))
 
-    def _find_nodes_sql(self, conn, object_type):
-        query = "SELECT id, properties FROM nodes WHERE json_extract(properties, '$.object_type') = :object_type"
-        query_params = {"object_type": object_type}
-
-        result = conn.execute(text(query), query_params)
+    def _find_nodes_sql(self, object_type):
+        """ Find all nodes of a given object type """
+        query = "SELECT object_id, properties FROM nodes WHERE object_type = ?"
+        result = self.conn.execute(query, (object_type,))
         
         valid_results = []
         for row in result:
             try:
                 properties = self.deserialize_properties(row[1])
-                valid_results.append({"id": row[0], "properties": properties})
+                valid_results.append({"object_id": row[0], "properties": properties})
             except json.JSONDecodeError:
-                print(f"Skipping malformed JSON for id: {row[0]}")
+                print(f"Skipping malformed JSON for object_id: {row[0]}")
 
         return valid_results

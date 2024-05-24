@@ -75,23 +75,23 @@ async def create_object(request: Request, object_type: str):
 @app.get("/objects/{object_type}/{object_id}", response_class=HTMLResponse)
 async def view_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
-    obj = db.load(object_id)
-    if not obj:
+    properties, object_type = db.load(object_id)
+    if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
     return templates.TemplateResponse("view_object.html", {"request": request, 
                                                            "object_type": object_type, 
-                                                           "object": obj})
+                                                           "object": properties})
 
 @app.get("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def edit_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
-    obj = db.load(object_id)
-    if not obj:
+    properties, _ = db.load(object_id)
+    if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
-    form_fields = generate_form(object_type, object_specifications, obj)
+    form_fields = generate_form(object_type, object_specifications, properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
-                                                           "object": obj, 
+                                                           "object": properties, 
                                                            "form_fields": form_fields})
 
 @app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
@@ -178,6 +178,6 @@ def handle_form_submission(form_data, object_type, db):
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)
         else:
-            db.add(form_data, object_type=object_type)
+            db.add(object_id=None, properties=form_data, object_type=object_type)
     except ValidationError as e:
         print("Form data validation failed:", e.message)

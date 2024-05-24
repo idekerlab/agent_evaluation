@@ -8,14 +8,14 @@ from app.config import load_api_key
 class LLM:
     def __init__(self, db, type=None, model_name=None,
                  max_tokens=None, seed=None, temperature=None,
-                 id=None, created=None):
+                 object_id=None, created=None):
         self.db = db
         self.type = type
         self.model_name = model_name
         self.max_tokens = max_tokens
         self.seed = seed
         self.temperature = temperature
-        self.id = id
+        self.object_id = object_id
         self.created = created
 
     @classmethod
@@ -28,15 +28,15 @@ class LLM:
             "seed": seed,
             "temperature": temperature
         }
-        id, created = db.add(properties, object_type="LLM")
-        return cls(db, type, model_name, max_tokens, seed, temperature, id, created)
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="llm")
+        return cls(db, type, model_name, max_tokens, seed, temperature, object_id, created)
 
     @classmethod
-    def load(cls, db, id):
+    def load(cls, db, object_id):
         # Load the LLM instance from the database
-        data = db.load(id)
-        if data:
-            return cls(db, **data)
+        properties, _ = db.load(object_id)
+        if properties:
+            return cls(db, **properties)
         else:
             return None
 
@@ -45,7 +45,7 @@ class LLM:
         for key, value in kwargs.items():
             setattr(self, key, value)
         # update the record in the database
-        self.db.update(self.id, kwargs)
+        self.db.update(self.object_id, kwargs)
 
     def query(self, context, prompt):
         if self.type == 'OpenAI':
@@ -122,4 +122,4 @@ class LLM:
             raise Exception(f"groq transaction error occurred: {e}")
     
     def __repr__(self):
-        return f"<LLM {self.type} {self.model_name} (ID: {self.id})>"
+        return f"<llm {self.type} {self.model_name} (object_id: {self.object_id})>"

@@ -26,21 +26,21 @@ class TestLLMIntegration(unittest.TestCase):
 
         # Create an LLM
         llm = LLM.create(self.db, type="OpenAI", model_name="gpt-3.5-turbo", max_tokens=2048, seed=42, temperature=0.5)
-        self.assertIsNotNone(llm.id)
+        self.assertIsNotNone(llm.object_id)
 
         # Load the LLM
-        loaded_llm = LLM.load(self.db, llm.id)
+        loaded_llm = LLM.load(self.db, llm.object_id)
         self.assertEqual(loaded_llm.model_name, "gpt-3.5-turbo")
 
         # Update the LLM
         new_temperature = 0.7
         loaded_llm.update(temperature=new_temperature)
-        updated_llm = LLM.load(self.db, llm.id)
+        updated_llm = LLM.load(self.db, llm.object_id)
         self.assertEqual(updated_llm.temperature, new_temperature)
 
         # Delete the LLM
-        self.db.remove(loaded_llm.id)
-        self.assertIsNone(LLM.load(self.db, loaded_llm.id))
+        self.db.remove(loaded_llm.object_id)
+        self.assertIsNone(LLM.load(self.db, loaded_llm.object_id))
 
 if __name__ == '__main__':
     unittest.main()
