@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ object_type }} Details</title>
+    <title>{{ object_type }}</title>
     <style>
         /* CSS styles for the page */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
         .top-bar {
             background-color: black;
             color: white;
@@ -23,7 +28,7 @@
             margin-right: 20px;
         }
         .main-content {
-            padding: 20px;
+            padding: 10px;
         }
         .button {
             background-color: orange;
@@ -37,11 +42,20 @@
             border: none;
             width: 100%;
             margin-bottom: 20px;
+            vertical-align: top;
+        }
+        .table-style-1 {
+            border-collapse: collapse;
+            border: 1px solid black;
+            width: 100%;
+            margin-bottom: 20px;
+            vertical-align: top;
         }
         th, td {
-            border: 1px solid black;
+            border: 0px solid black;
             padding: 5px;
             text-align: left;
+            vertical-align: top;
         }
         pre {
             font-family: Arial, Helvetica, sans-serif;
@@ -54,6 +68,18 @@
             white-space: pre-wrap;
             word-wrap: break-word;
         }
+        .pre-style-1 {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: right
+        }
     </style>
 </head>
 <body>
@@ -63,39 +89,48 @@
     <div class="header">
         <img src="{{ url_for('static', path='images/' + object_type + '.png') }}" alt="{{ object_type }} Logo">
         <div>
-            <h1>{{ object_type }}</h1>
-            {% if object.id %}
-                <p>ID: {{ object.id }}</p>
+            <h1>{{ object_type }} : {{ object.name or "unnamed"}}</h1>
+            {% if object.object_id %}
+                <p>ID: {{ object.object_id }}</p>
                 <p>Created: {{ object.created }}</p>
             {% else %}
                 <p>No object data available.</p>
             {% endif %}
         </div>
         <div style="margin-left: auto;">
-            <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.id }}/edit'">Edit</button>
+            <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.object_id }}/edit'">Edit</button>
         </div>
     </div>
     <div class="main-content">
-        <h2>Properties</h2>
-        {% if object %}
-            <table>
-                <!-- <thead>
+        {% if object and object_spec.get("properties"): %}
+        <table>
+            <tbody>
+            {% for prop_name, prop_spec in object_spec['properties'].items() %}
+                {% if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' %}
                     <tr>
-                        <th>Key</th>
-                        <th>Value</th>
+                        <td><pre class="pre-style-1">{{ prop_spec.get("label") or prop_name }}</pre></td>
+                        <td>                    
+                            {% if prop_spec['view'] == 'scrolling_table' %}
+                                <div style="max-height: 300px; overflow-y: scroll; border: 1px solid black;">
+                                    <table>
+                                        {% for row in object[prop_name] %}
+                                            <tr>
+                                                {% for cell in row %}
+                                                    <td>{{ cell }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            {% else %}
+                                <pre>{{ object[prop_name] }}</pre>
+                            {% endif %}
+                        </td>
                     </tr>
-                </thead> -->
-                <tbody>
-                    {% for key, value in object.items() %}
-                        <tr>
-                            <td>{{ key }}</td>
-                            <td>
-                                <pre>{{ value }}</pre>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    {% endif %}
+            {% endfor %}    
+            </tbody>
+        </table>
         {% else %}
             <p>No properties available.</p>
         {% endif %}

@@ -54,12 +54,11 @@ object_specifications = {
     # MARK:analyst
     "analyst": {
         "properties": {
-            "llm_id": {
-                "type": "object_id",
-                "input_type": "select_single_object",
-                "object_type": "llm",
-                "view": "object_link",
-                "editable": True
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
             },
             "context": {
                 "type": "string",
@@ -73,17 +72,18 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text"
             },
-            "name": {
-                "type": "string",
-                "editable": True,
-                "input_type": "text",
-                "view": "text"
-            },
             "description": {
                 "type": "string",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
+            },
+            "llm_id": {
+                "type": "object_id",
+                "input_type": "select_single_object",
+                "object_type": "llm",
+                "view": "object_link",
+                "editable": True
             }
         }
     },
@@ -96,17 +96,18 @@ object_specifications = {
                 "view": "text",
                 "editable": True
             },
+            "experiment_description": {
+                "label": "experiment",
+                "type": "string",
+                "editable": True,
+                "input_type": "textarea",
+                "view": "text"
+            },
             "data": {
                 "type": "csv",
                 "input_type": "upload_table",
                 "view": "scrolling_table",
                 "editable": True
-            },
-            "experiment_description": {
-                "type": "string",
-                "editable": True,
-                "input_type": "textarea",
-                "view": "text"
             },
             "description": {
                 "type": "string",

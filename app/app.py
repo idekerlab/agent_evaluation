@@ -9,6 +9,8 @@ from app.sqlite_database import SqliteDatabase
 from jsonschema import validate, ValidationError
 from app.view_edit_specs import object_specifications
 from app.config import load_database_config
+import csv
+from io import StringIO
 import os
 
 
@@ -78,9 +80,17 @@ async def view_object(request: Request, object_type: str, object_id: str):
     properties, object_type = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
+    # Preprocess CSV data
+    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+        if prop_spec.get('type') == 'csv' and properties.get(prop_name):
+            csv_data = StringIO(properties[prop_name])
+            reader = csv.reader(csv_data)
+            rows = list(reader)
+            properties[prop_name] = rows
     return templates.TemplateResponse("view_object.html", {"request": request, 
                                                            "object_type": object_type, 
-                                                           "object": properties})
+                                                           "object": properties,
+                                                           "object_spec": object_specifications[object_type]})
 
 @app.get("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def edit_object(request: Request, object_type: str, object_id: str):
