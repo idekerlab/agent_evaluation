@@ -117,7 +117,7 @@ object_specifications = {
             }
         }
     },
-    # MARK:testplan
+    # MARK:analysis_plan
     "analysis_plan": {
         "actions": ["create_analysis_run"],
         "properties": {
@@ -137,6 +137,7 @@ object_specifications = {
             },
             "n_hypotheses_per_analyst": {
                 "type": "integer",
+                "label": "hypotheses\nper analyst",
                 "input_type": "number",
                 "view": "text",
                 "editable": True,
@@ -168,7 +169,8 @@ object_specifications = {
             "n_hypotheses_per_analyst": {
                 "type": "integer",
                 "editable": False,
-                "view": "text"
+                "view": "text",
+                "label": "hypotheses per analyst",
             },
             "hypothesis_ids": {
                 "type": "list_of_object_ids",

@@ -14,6 +14,10 @@
             color: white;
             padding: 10px;
             text-align: left;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 18px;
         }
         .header {
             background-color: skyblue;
@@ -43,6 +47,7 @@
             width: 100%;
             margin-bottom: 20px;
             vertical-align: top;
+            table-layout: auto;
         }
         .table-style-1 {
             border-collapse: collapse;
@@ -78,13 +83,16 @@
             border-radius: 4px;
             white-space: pre-wrap;
             word-wrap: break-word;
-            text-align: right
+            text-align: right;
         }
     </style>
 </head>
 <body>
     <div class="top-bar">
-        UC San Diego - Ideker Lab
+        <button onclick="window.location.href='/'">
+            <img src="{{ url_for('static', path='images/home-icon.png') }}" alt="Home">
+        </button>
+        <div>UC San Diego - Ideker Lab</div>
     </div>
     <div class="header">
         <img src="{{ url_for('static', path='images/' + object_type + '.png') }}" alt="{{ object_type }} Logo">
@@ -108,7 +116,10 @@
             {% for prop_name, prop_spec in object_spec['properties'].items() %}
                 {% if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' %}
                     <tr>
-                        <td><pre class="pre-style-1">{{ prop_spec.get("label") or prop_name }}</pre></td>
+                        <td style="width: 100px; word-break: break-all; padding-top: 20px;">
+                            {{ prop_spec.get("label") or prop_name }}
+                            <!-- <pre class="pre-style-1">{{ prop_spec.get("label") or prop_name }}</pre> -->
+                        </td>
                         <td>                    
                             {% if prop_spec['view'] == 'scrolling_table' %}
                                 <div style="max-height: 300px; overflow-y: scroll; border: 1px solid black;">

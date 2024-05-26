@@ -9,6 +9,8 @@
             color: white;
             padding: 10px;
             text-align: left;
+            display: flex;
+            justify-content: space-between;
         }
         .header {
             background-color: skyblue;
@@ -85,7 +87,7 @@
 </head>
 <body>
     <div class="top-bar">
-        <button class="home-icon" onclick="window.location.href='/'">
+        <button onclick="window.location.href='/'">
             <img src="{{ url_for('static', path='images/home-icon.png') }}" alt="Home">
         </button>
         <div>UC San Diego - Ideker Lab</div>

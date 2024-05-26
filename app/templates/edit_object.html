@@ -9,6 +9,7 @@
             color: white;
             padding: 10px;
             text-align: left;
+            font-family: 'Times New Roman', Georgia, serif;
         }
         .header {
             background-color: skyblue;
@@ -73,7 +74,10 @@
 </head>
 <body>
     <div class="top-bar">
-        UC San Diego - Ideker Lab
+        <button class="home-icon" onclick="window.location.href='/'">
+            <img src="{{ url_for('static', path='images/home-icon.png') }}" alt="Home">
+        </button>
+        <div>UC San Diego - Ideker Lab</div>
     </div>
     <div class="header">
         <img src="{{ url_for('static', path='images/' + object_type + '.png') }}" alt="{{ object_type }} Logo">

@@ -102,7 +102,8 @@ async def edit_object(request: Request, object_type: str, object_id: str):
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": properties, 
-                                                           "form_fields": form_fields})
+                                                           "form_fields": form_fields,
+                                                           "object_spec": object_specifications[object_type]})
 
 @app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def update_object(request: Request, object_type: str, object_id: str):
