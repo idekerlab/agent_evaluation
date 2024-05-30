@@ -89,7 +89,7 @@
 </head>
 <body>
     <div class="top-bar">
-        <button onclick="window.location.href='/'">
+        <button class="home-icon" onclick="window.location.href='/'">
             <img src="{{ url_for('static', path='images/home-icon.png') }}" alt="Home">
         </button>
         <div>UC San Diego - Ideker Lab</div>
@@ -116,14 +116,17 @@
             {% for prop_name, prop_spec in object_spec['properties'].items() %}
                 {% if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' %}
                     <tr>
-                        <td style="width: 100px; word-break: break-all; padding-top: 20px;">
+                        <td style="width: 100px; min-width: 100px; 
+                            word-break: break-all; padding-top: 20px; text-align: right">
                             {{ prop_spec.get("label") or prop_name }}
-                            <!-- <pre class="pre-style-1">{{ prop_spec.get("label") or prop_name }}</pre> -->
                         </td>
-                        <td>                    
+                        <td style="overflow-x: scroll;">                    
                             {% if prop_spec['view'] == 'scrolling_table' %}
-                                <div style="max-height: 300px; overflow-y: scroll; border: 1px solid black;">
-                                    <table>
+                                <div style="height: 300px; 
+                                    overflow-y: scroll; 
+                                    border: 1px solid black;
+                                     width: 100%; max-width: 600px;">
+                                    <table style="min-width: 1200px;">
                                         {% for row in object[prop_name] %}
                                             <tr>
                                                 {% for cell in row %}
@@ -134,7 +137,7 @@
                                     </table>
                                 </div>
                             {% else %}
-                                <pre>{{ object[prop_name] }}</pre>
+                                <pre style="max-width: 600px;">{{ object[prop_name] }}</pre>
                             {% endif %}
                         </td>
                     </tr>

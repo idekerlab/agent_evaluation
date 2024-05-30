@@ -4,12 +4,20 @@
     <title>Edit {{ object_type }}</title>
     <style>
         /* CSS styles for the page */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
         .top-bar {
             background-color: black;
             color: white;
             padding: 10px;
             text-align: left;
+            display: flex;
+            justify-content: space-between;
             font-family: 'Times New Roman', Georgia, serif;
+            font-size: 18px;
         }
         .header {
             background-color: skyblue;
@@ -25,6 +33,8 @@
         }
         .main-content {
             padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
         }
         .button {
             background-color: orange;
@@ -35,13 +45,17 @@
         }
         table {
             border-collapse: collapse;
+            border: none;
             width: 100%;
             margin-bottom: 20px;
+            vertical-align: top;
+            table-layout: auto;
         }
         th, td {
-            border: 1px solid black;
+            border: none;
             padding: 5px;
             text-align: left;
+            vertical-align: top;
         }
         pre {
             font-family: Arial, Helvetica, sans-serif;
@@ -82,9 +96,9 @@
     <div class="header">
         <img src="{{ url_for('static', path='images/' + object_type + '.png') }}" alt="{{ object_type }} Logo">
         <div>
-            <h1>Edit {{ object_type }}</h1>
-            {% if object.id %}
-                <p>ID: {{ object.id }}</p>
+            <h1>Edit {{ object_type }} : {{ object.name or "unnamed"}}</h1>
+            {% if object.object_id %}
+                <p>ID: {{ object.object_id }}</p>
                 <p>Created: {{ object.created }}</p>
             {% else %}
                 <p>No object data available.</p>
@@ -93,30 +107,40 @@
     </div>
     <div class="main-content">
         <form method="post">
-            <input type="hidden" name="object_id" value="{{ object.id }}">
-            <h2>Properties</h2>
+            <input type="hidden" name="object_id" value="{{ object.object_id }}">
             <table>
                 <tbody>
                     {% for field in form_fields %}
                         <tr>
-                            <td>{{ field.label }}</td>
+                            <td style="width: 100px; 
+                                min-width: 100px; word-break: break-all; 
+                                padding-top: 5px; text-align: right";>{{ field.label }}</td>
                             <td>
                                 {% if field.editable %}
                                     {% if field.input_type == 'text' %}
-                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        <input type="text" id="{{ field.name }}" 
+                                        style="width: 100%; max-width: 600px; padding: 5px;" 
+                                        name="{{ field.name }}" value="{{ field.value }}">
                                     {% elif field.input_type == 'number' %}
-                                        <input type="number" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        <input type="number" id="{{ field.name }}" 
+                                        name="{{ field.name }}" value="{{ field.value }}">
                                     {% elif field.input_type == 'textarea' %}
-                                        <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                        <textarea id="{{ field.name }}" 
+                                        style="width: 100%; max-width: 600px; padding: 5px;"
+                                        name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'select_single_object' %}
                                         <p>placeholder for select_single_object</p>
-                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        <input type="text" id="{{ field.name }}" 
+                                        name="{{ field.name }}" value="{{ field.value }}">
                                     {% elif field.input_type == 'select_multiple_objects' %}
                                         <p>placeholder for select_multiple_objects</p>
-                                        <textarea id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                        <textarea style="white-space: pre;"
+                                        id="{{ field.name }}" 
+                                        name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'upload_table' %}
-                                        <p>placeholder for upload_table</p>
-                                        <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        <p>testing upload_table</p>
+                                        <input type="hidden" id="{{ field.name }}"  value="{{ object_value }}">
+                                        <pre>{{ field.value }}</pre> 
                                     {% endif %}
                                 {% else %}
                                     {% if field.view == 'text' %}

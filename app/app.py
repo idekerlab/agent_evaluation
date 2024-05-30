@@ -74,6 +74,15 @@ async def create_object(request: Request, object_type: str):
     handle_form_submission(form_data, object_type, db)
     return RedirectResponse(url=f"/objects/{object_type}", status_code=303)
 
+def preprocess_properties(properties, object_type):
+    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+        if prop_spec.get('type') == 'csv' and properties.get(prop_name):
+            csv_data = StringIO(properties[prop_name])
+            reader = csv.reader(csv_data)
+            rows = list(reader)
+            properties[prop_name] = rows
+    return properties
+
 @app.get("/objects/{object_type}/{object_id}", response_class=HTMLResponse)
 async def view_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
@@ -81,15 +90,16 @@ async def view_object(request: Request, object_type: str, object_id: str):
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
     # Preprocess CSV data
-    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
-        if prop_spec.get('type') == 'csv' and properties.get(prop_name):
-            csv_data = StringIO(properties[prop_name])
-            reader = csv.reader(csv_data)
-            rows = list(reader)
-            properties[prop_name] = rows
+    processed_properties = preprocess_properties(properties, object_type)
+    # for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+    #     if prop_spec.get('type') == 'csv' and properties.get(prop_name):
+    #         csv_data = StringIO(properties[prop_name])
+    #         reader = csv.reader(csv_data)
+    #         rows = list(reader)
+    #         properties[prop_name] = rows
     return templates.TemplateResponse("view_object.html", {"request": request, 
                                                            "object_type": object_type, 
-                                                           "object": properties,
+                                                           "object": processed_properties,
                                                            "object_spec": object_specifications[object_type]})
 
 @app.get("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
@@ -98,6 +108,7 @@ async def edit_object(request: Request, object_type: str, object_id: str):
     properties, _ = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
+    # processed_properties = preprocess_properties(properties, object_type)
     form_fields = generate_form(object_type, object_specifications, properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
@@ -128,7 +139,7 @@ def generate_form(object_type, specifications, obj_properties):
         try:
             field = {
                 "name": field_name,
-                "label": field_name.replace('_', ' ').capitalize(),
+                "label": field_spec.get("label") or field_name.replace('_', ' '),
                 "input_type": field_spec.get("input_type", "text"),
                 "value": obj_properties.get(field_name, field_spec.get("default", "")),
                 "options": field_spec.get("options", []),
@@ -143,36 +154,6 @@ def generate_form(object_type, specifications, obj_properties):
             print(f"Unexpected error in field specification for '{field_name}': {e}")
 
     return fields
-
-# def generate_form(object_type, specifications, obj_properties):
-#     fields = []
-    
-#     # Ensure the object_type exists in the specifications
-#     if object_type not in specifications:
-#         print(f"Error: '{object_type}' is not a valid object type in specifications.")
-#         return fields
-    
-#     # Get the specific specifications for the given object_type
-#     object_spec = specifications[object_type]
-    
-#     for field_name, field_spec in object_spec["properties"].items():
-#         try:
-#             field = {
-#                 "name": field_name,
-#                 "label": field_name.replace('_', ' ').capitalize(),
-#                 "input_type": field_spec.get("input_type", "text"),
-#                 "value": obj_properties.get(field_name, ""),
-#                 "options": field_spec.get("options", []),
-#                 "editable": field_spec["editable"],
-#                 "view": field_spec.get("view", "text")
-#             }
-#             fields.append(field)
-#         except KeyError as e:
-#             print(f"Error in field specification for '{field_name}': missing key {e}")
-#         except Exception as e:
-#             print(f"Unexpected error in field specification for '{field_name}': {e}")
-    
-#     return fields
 
 def validate_form_data(data, specifications):
     # The schema should be wrapped in a proper JSON schema format
