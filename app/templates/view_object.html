@@ -85,6 +85,18 @@
             word-wrap: break-word;
             text-align: right;
         }
+        .property-container {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            word-wrap: break-word;
+            text-align: left;
+            vertical-align: top;
+        }
     </style>
 </head>
 <body>
@@ -117,7 +129,7 @@
                 {% if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' %}
                     <tr>
                         <td style="width: 100px; min-width: 100px; 
-                            word-break: break-all; padding-top: 20px; text-align: right">
+                            word-wrap: break-word; padding-top: 20px; text-align: right">
                             {{ prop_spec.get("label") or prop_name }}
                         </td>
                         <td style="overflow-x: scroll;">                    
@@ -136,6 +148,16 @@
                                         {% endfor %}
                                     </table>
                                 </div>
+                            {% elif prop_spec['view'] == 'list_of_object_links' and object[prop_name] %}
+                            <p style="max-width: 600px;" class="property-container">
+                                    {% for object_id in object[prop_name] %}
+                                        <a href="/objects/{{ prop_spec['object_type'] }}/{{ object_id }}">{{ object_id }}</a><br>
+                                    {% endfor %}
+                            </p>
+                            {% elif prop_spec['view'] == 'object_link' and object[prop_name] %}
+                            <p style="max-width: 600px;" class="property-container">
+                                <a href="/objects/{{ prop_spec['object_type'] }}/{{ object[prop_name] }}">{{ object[prop_name] }}</a>
+                            </p>
                             {% else %}
                                 <pre style="max-width: 600px;">{{ object[prop_name] }}</pre>
                             {% endif %}

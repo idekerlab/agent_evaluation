@@ -85,6 +85,34 @@
             overflow: hidden;
         }
     </style>
+        <script>
+            function updateConditionalDropdowns() {
+                {% for field in form_fields %}
+                    {% if field.conditional_on %}
+                        var conditionalField = document.getElementById('{{ field.conditional_on }}');
+                        var targetField = document.getElementById('{{ field.name }}');
+                        var options = JSON.parse(targetField.dataset.options);
+                        conditionalField.addEventListener('change', function() {
+                            var selectedValue = conditionalField.value;
+                            var targetOptions = options[selectedValue] || [];
+                            targetField.innerHTML = '';
+                            targetOptions.forEach(function(option) {
+                                var opt = document.createElement('option');
+                                opt.value = option;
+                                opt.innerHTML = option;
+                                targetField.appendChild(opt);
+                            });
+                        });
+                        // Trigger change to initialize the options
+                        conditionalField.dispatchEvent(new Event('change'));
+                    {% endif %}
+                {% endfor %}
+            }
+    
+            document.addEventListener("DOMContentLoaded", function() {
+                updateConditionalDropdowns();
+            });
+        </script>
 </head>
 <body>
     <div class="top-bar">
@@ -106,7 +134,7 @@
         </div>
     </div>
     <div class="main-content">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="object_id" value="{{ object.object_id }}">
             <table>
                 <tbody>
@@ -138,9 +166,20 @@
                                         id="{{ field.name }}" 
                                         name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'upload_table' %}
-                                        <p>testing upload_table</p>
-                                        <input type="hidden" id="{{ field.name }}"  value="{{ object_value }}">
-                                        <pre>{{ field.value }}</pre> 
+                                        <label for="{{ field.name }}">Upload CSV:</label>
+                                        <input type="file" id="{{ field.name }}" name="{{ field.name }}" accept=".csv">
+                                        <pre>{{ field.value }}</pre>
+                                    {% elif field.input_type == 'dropdown' %}
+                                        {% if field.conditional_on %}
+                                            <select id="{{ field.name }}" name="{{ field.name }}" data-options='{{ field.options | tojson }}'>
+                                            </select>
+                                        {% else %}
+                                            <select id="{{ field.name }}" name="{{ field.name }}">
+                                                {% for option in field.options %}
+                                                    <option value="{{ option }}" {% if option == field.value %}selected{% endif %}>{{ option }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
                                     {% if field.view == 'text' %}

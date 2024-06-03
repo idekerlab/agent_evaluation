@@ -116,13 +116,13 @@ async def edit_object(request: Request, object_type: str, object_id: str):
                                                            "form_fields": form_fields,
                                                            "object_spec": object_specifications[object_type]})
 
-@app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
-async def update_object(request: Request, object_type: str, object_id: str):
-    form_data = await request.form()
-    form_data = dict(form_data)
-    db = request.app.state.db
-    handle_form_submission(form_data, object_type, db)
-    return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+# @app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
+# async def update_object(request: Request, object_type: str, object_id: str):
+#     form_data = await request.form()
+#     form_data = dict(form_data)
+#     db = request.app.state.db
+#     handle_form_submission(form_data, object_type, db)
+#     return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
 
 def generate_form(object_type, specifications, obj_properties):
     fields = []
@@ -155,6 +155,25 @@ def generate_form(object_type, specifications, obj_properties):
 
     return fields
 
+from fastapi import HTTPException
+
+@app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
+async def update_object(request: Request, object_type: str, object_id: str):
+    form_data = await request.form()
+    form_data = dict(form_data)
+    db = request.app.state.db
+    try:
+        #handle_form_submission(form_data, object_type, db)
+        await handle_form_submission(form_data, object_type, db)
+        return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+    except FormSubmissionError as e:
+        # Return an error response to the web app
+        return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
+    except Exception as e:
+        # Return a generic error response
+        return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
+
+
 def validate_form_data(data, specifications):
     # The schema should be wrapped in a proper JSON schema format
     schema = {
@@ -164,12 +183,38 @@ def validate_form_data(data, specifications):
     }
     validate(instance=data, schema=schema)
 
-def handle_form_submission(form_data, object_type, db):
+# def handle_form_submission(form_data, object_type, db):
+#     try:
+#         # validate_form_data(form_data, object_specifications[object_type])
+#         if form_data.get("object_id"):
+#             db.update(form_data["object_id"], form_data)
+#         else:
+#             db.add(object_id=None, properties=form_data, object_type=object_type)
+#     except ValidationError as e:
+#         print("Form data validation failed:", e.message)
+
+class FormSubmissionError(Exception):
+    """Custom exception for form submission errors."""
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+async def handle_form_submission(form_data, object_type, db):
     try:
-        # validate_form_data(form_data, object_specifications[object_type])
+        # Extract CSV file from form data
+        csv_file = form_data.pop('data', None)
+        if csv_file:
+            # Read the contents of the CSV file as text
+            #csv_content = csv_file.read().decode('utf-8')
+            csv_content = (await csv_file.read()).decode('utf-8')
+            # Include the CSV text data in form_data
+            form_data['data'] = csv_content
+        
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)
         else:
             db.add(object_id=None, properties=form_data, object_type=object_type)
     except ValidationError as e:
-        print("Form data validation failed:", e.message)
+        raise FormSubmissionError(f"Form data validation failed: {e.message}")
+    except Exception as e:
+        raise FormSubmissionError(f"An error occurred while processing the form: {e}")

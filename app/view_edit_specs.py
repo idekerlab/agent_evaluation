@@ -4,6 +4,12 @@ object_specifications = {
     # MARK:llm
     "llm": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "type": {
                 "type": "string",
                 "input_type": "dropdown",
@@ -69,6 +75,7 @@ object_specifications = {
             "prompt_template": {
                 "type": "string",
                 "editable": True,
+                "label": "prompt\ntemplate",
                 "input_type": "textarea",
                 "view": "text"
             },
@@ -80,6 +87,7 @@ object_specifications = {
             },
             "llm_id": {
                 "type": "object_id",
+                "label": "LLM",
                 "input_type": "select_single_object",
                 "object_type": "llm",
                 "view": "object_link",
@@ -121,8 +129,15 @@ object_specifications = {
     "analysis_plan": {
         "actions": ["create_analysis_run"],
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "analyst_ids": {
                 "type": "list_of_object_ids",
+                "label": "analysts",
                 "input_type": "select_multiple_objects",
                 "object_type": "analyst",
                 "view": "list_of_object_links",
@@ -130,6 +145,7 @@ object_specifications = {
             },
             "dataset_id": {
                 "type": "object_id",
+                "label": "dataset",
                 "input_type": "select_single_object",
                 "object_type": "dataset",
                 "view": "object_link",
@@ -154,8 +170,15 @@ object_specifications = {
     # MARK: analysis_run
     "analysis_run": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "analyst_ids": {
                 "type": "list_of_object_ids",
+                "label": "analysts",
                 "object_type": "analyst",
                 "view": "list_of_object_links",
                 "editable": False,
@@ -163,6 +186,7 @@ object_specifications = {
             "dataset_id": {
                 "type": "object_id",
                 "object_type": "dataset",
+                "label": "dataset",
                 "view": "object_link",
                 "editable": False
             },
@@ -170,12 +194,13 @@ object_specifications = {
                 "type": "integer",
                 "editable": False,
                 "view": "text",
-                "label": "hypotheses per analyst",
+                "label": "hypotheses\nper analyst",
             },
             "hypothesis_ids": {
                 "type": "list_of_object_ids",
                 "object_type": "hypothesis",
                 "view": "list_of_object_links",
+                "label": "hypotheses",
                 "editable": False
             },
             "description": {
@@ -189,6 +214,12 @@ object_specifications = {
     # MARK:hypothesis
     "hypothesis": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "data": {
                 "type": "csv",
                 "view": "scrolling_table",
@@ -204,12 +235,14 @@ object_specifications = {
             "analyst_id": {
                 "type": "object_id",
                 "object_type": "analyst",
+                "label": "analyst",
                 "view": "object_link",
                 "editable": False
             },
             "dataset_id": {
                 "type": "object_id",
                 "object_type": "dataset",
+                "label": "dataset",
                 "view": "object_link",
                 "editable": False
             },
@@ -219,10 +252,11 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text"
             },
-            "test_id": {
+            "analysis_run_id": {
                 "type": "object_id",
                 "object_type": "analysis_run",
                 "view": "object_link",
+                "label": "analysis run",
                 "editable": False
             }
         }
@@ -230,8 +264,15 @@ object_specifications = {
     # MARK:reviewer
     "reviewer": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "llm_id": {
                 "type": "object_id",
+                "label": "LLM",
                 "editable": True,
                 "input_type": "select_single_object",
                 "object_type": "analysis_run",
@@ -246,6 +287,7 @@ object_specifications = {
             "prompt_template": {
                 "type": "string",
                 "editable": True,
+                "label": "prompt\ntemplate",
                 "input_type": "textarea",
                 "view": "text"
             },
@@ -264,18 +306,26 @@ object_specifications = {
         }
     },
     # MARK:reviewplan
-    "reviewplan": {
+    "review_plan": {
         "actions": ["create_review"],
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "reviewer_ids": {
                 "type": "list_of_object_ids",
+                "label": "reviewers",
                 "editable": True,
                 "input_type": "select_multiple_objects",
                 "object_type": "reviewer",
                 "view": "list_of_object_links"
             },
-            "test_id": {
+            "analysis_run_id": {
                 "type": "object_id",
+                "label": "analysis run",
                 "editable": True,
                 "input_type": "select_single_object",
                 "object_type": "analysis_run",
@@ -292,26 +342,38 @@ object_specifications = {
     # MARK:review
     "review": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "hypotheses_section": {
                 "type": "string",
                 "editable": False,
-                "view": "text"},
+                "view": "text"
+            },
             "review_text": {
                 "type": "string",
                 "editable": False,
-                "view": "text"},
+                "view": "text"
+            },
             "reviewer_id": {
                 "type": "object_id",
+                "label": "reviewer",
                 "editable": False,
                 "view": "object_link",
-                "object_type": "reviewer"},
+                "object_type": "reviewer"
+            },
             "description": {
                 "type": "string",
                 "editable": True,
                 "input_type": "textarea",
-                "view": "text"},
-            "test_id": {
+                "view": "text"
+            },
+            "analysis_run_id": {
                 "type": "object_id",
+                "label": "analysis run",
                 "object_type": "analysis_run",
                 "view": "object_link",
                 "editable": False}
@@ -319,15 +381,24 @@ object_specifications = {
         },
     
     # MARK:reviewset
-    "reviewset": {
+    "review_set": {
         "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
             "review_plan_id": {
                 "type": "object_id",
+                "label": "review plan",
                 "editable": False,
                 "view": "object_link",
-                "object_type": "reviewplan"},
+                "object_type": "review_plan"
+            },
             "review_ids": {
                 "type": "list_of_object_ids",
+                "label": "reviews",
                 "editable": False,
                 "view": "list_of_object_links",
                 "object_type": "review"
@@ -342,87 +413,87 @@ object_specifications = {
     }
 }
 
-from jsonschema import validate, ValidationError
+# from jsonschema import validate, ValidationError
 
-# Define the JSON schema for validating your object specifications
-schema = {
-    "type": "object",
-    "patternProperties": {
-        "^.+$": {  # Applies to all properties at this level
-            "type": "object",
-            "properties": {
-                "properties": {
-                    "type": "object",
-                    "patternProperties": {
-                        "^.+$": {
-                            "type": "object",
-                            "required": ["type", "editable", "view"],
-                            "properties": {
-                                "type": {"type": "string"},
-                                "input_type": {"type": "string"},
-                                "options": {
-                                    "oneOf": [
-                                        {"type": "array"},
-                                        {"type": "object"}
-                                    ]
-                                },
-                                "object_type": {"type": "string"},
-                                "view": {"type": "string"},
-                                "editable": {"type": "boolean"},
-                                "conditional_on": {"type": "string"},
-                                "description": {"type": "string"},
-                                "default": {}
-                            },
-                            "dependencies": {
-                                "editable": {
-                                    "oneOf": [
-                                        {
-                                            "properties": {
-                                                "editable": {"enum": [True]},
-                                                "input_type": {"type": "string"}
-                                            }
-                                        },
-                                        {
-                                            "properties": {
-                                                "editable": {"enum": [False]}
-                                            }
-                                        }
-                                    ]
-                                },
-                                "type": {
-                                    "oneOf": [
-                                        {
-                                            "properties": {
-                                                "type": {"enum": ["object_id", "list_of_object_ids"]},
-                                                "object_type": {"type": "string"},
-                                                "view": {"type": "string", "pattern": ".*object_link.*|.*list_of_object_links.*"}
-                                            }
-                                        },
-                                        {
-                                            "properties": {
-                                                "type": {"not": {"enum": ["object_id", "list_of_object_ids"]}}
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            "additionalProperties": False
-                        }
-                    },
-                    "additionalProperties": False
-                }
-            },
-            "required": ["properties"]
-        }
-    },
-    "additionalProperties": False
-}
+# # Define the JSON schema for validating your object specifications
+# schema = {
+#     "type": "object",
+#     "patternProperties": {
+#         "^.+$": {  # Applies to all properties at this level
+#             "type": "object",
+#             "properties": {
+#                 "properties": {
+#                     "type": "object",
+#                     "patternProperties": {
+#                         "^.+$": {
+#                             "type": "object",
+#                             "required": ["type", "editable", "view"],
+#                             "properties": {
+#                                 "type": {"type": "string"},
+#                                 "input_type": {"type": "string"},
+#                                 "options": {
+#                                     "oneOf": [
+#                                         {"type": "array"},
+#                                         {"type": "object"}
+#                                     ]
+#                                 },
+#                                 "object_type": {"type": "string"},
+#                                 "view": {"type": "string"},
+#                                 "editable": {"type": "boolean"},
+#                                 "conditional_on": {"type": "string"},
+#                                 "description": {"type": "string"},
+#                                 "default": {}
+#                             },
+#                             "dependencies": {
+#                                 "editable": {
+#                                     "oneOf": [
+#                                         {
+#                                             "properties": {
+#                                                 "editable": {"enum": [True]},
+#                                                 "input_type": {"type": "string"}
+#                                             }
+#                                         },
+#                                         {
+#                                             "properties": {
+#                                                 "editable": {"enum": [False]}
+#                                             }
+#                                         }
+#                                     ]
+#                                 },
+#                                 "type": {
+#                                     "oneOf": [
+#                                         {
+#                                             "properties": {
+#                                                 "type": {"enum": ["object_id", "list_of_object_ids"]},
+#                                                 "object_type": {"type": "string"},
+#                                                 "view": {"type": "string", "pattern": ".*object_link.*|.*list_of_object_links.*"}
+#                                             }
+#                                         },
+#                                         {
+#                                             "properties": {
+#                                                 "type": {"not": {"enum": ["object_id", "list_of_object_ids"]}}
+#                                             }
+#                                         }
+#                                     ]
+#                                 }
+#                             },
+#                             "additionalProperties": False
+#                         }
+#                     },
+#                     "additionalProperties": False
+#                 }
+#             },
+#             "required": ["properties"]
+#         }
+#     },
+#     "additionalProperties": False
+# }
 
-def validate_object_specifications(specs):
-    try:
-        validate(instance=specs, schema=schema)
-        print("Validation passed.")
-    except ValidationError as e:
-        print("Validation failed:", e.message)
+# def validate_object_specifications(specs):
+#     try:
+#         validate(instance=specs, schema=schema)
+#         print("Validation passed.")
+#     except ValidationError as e:
+#         print("Validation failed:", e.message)
 
 
