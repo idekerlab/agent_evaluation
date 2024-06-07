@@ -1,0 +1,12 @@
+agent_evaluation==0.2.0
+fastapi==0.111.0
+google-generativeai==0.6.0
+groq==0.8.0
+jsonschema==4.22.0
+ndex2==3.8.0
+neo4j==5.20.0
+openai==1.32.0
+pandas==2.2.2
+protobuf==5.27.1
+Requests==2.32.3
+uvicorn==0.30.1
