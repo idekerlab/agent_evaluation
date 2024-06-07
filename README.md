@@ -3,11 +3,11 @@ Supports a paper on the development and evaluation of reviewer agents that, in t
 
 # Install requirements 
 
-'''
+```
 conda create -n agent_eval python==3.11
 conda activate agent_eval
 pip install -r requirements.txt
-'''
+```
 
 # Repo Structure
 
