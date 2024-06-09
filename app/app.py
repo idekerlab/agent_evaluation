@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
-#from app.database import Database  # Import your existing Database class
 from app.sqlite_database import SqliteDatabase
 from jsonschema import validate, ValidationError
 from app.view_edit_specs import object_specifications
@@ -57,23 +56,6 @@ async def list_objects(request: Request, object_type: str):
                                                            "object_type": object_type, 
                                                            "objects": objects})
 
-@app.get("/objects/new/{object_type}", response_class=HTMLResponse)
-async def new_object(request: Request, object_type: str):
-    form_fields = generate_form(object_type, object_specifications, {})
-    return templates.TemplateResponse("new_object.html", {
-        "request": request,
-        "object_type": object_type,
-        "form_fields": form_fields
-    })
-
-@app.post("/objects/new/{object_type}", response_class=HTMLResponse)
-async def create_object(request: Request, object_type: str):
-    form_data = await request.form()
-    form_data = dict(form_data)
-    db = request.app.state.db
-    handle_form_submission(form_data, object_type, db)
-    return RedirectResponse(url=f"/objects/{object_type}", status_code=303)
-
 def preprocess_properties(properties, object_type):
     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
         if prop_spec.get('type') == 'csv' and properties.get(prop_name):
@@ -83,6 +65,7 @@ def preprocess_properties(properties, object_type):
             properties[prop_name] = rows
     return properties
 
+# get the view page with the object and its properties
 @app.get("/objects/{object_type}/{object_id}", response_class=HTMLResponse)
 async def view_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
@@ -91,24 +74,39 @@ async def view_object(request: Request, object_type: str, object_id: str):
         raise HTTPException(status_code=404, detail="Object not found")
     # Preprocess CSV data
     processed_properties = preprocess_properties(properties, object_type)
-    # for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
-    #     if prop_spec.get('type') == 'csv' and properties.get(prop_name):
-    #         csv_data = StringIO(properties[prop_name])
-    #         reader = csv.reader(csv_data)
-    #         rows = list(reader)
-    #         properties[prop_name] = rows
     return templates.TemplateResponse("view_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": processed_properties,
                                                            "object_spec": object_specifications[object_type]})
 
+# get the edit page with a new object of the same type and default properties
+@app.get("/objects/{object_type}/blank/new", response_class=HTMLResponse)
+async def new_object(request: Request, object_type: str):
+    db = request.app.state.db
+    default_properties = get_default_properties(object_type, object_specifications)
+    new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
+    new_properties["object_id"] = new_object_id
+    new_properties["name"] = f"{object_type} {new_properties['created']}"
+    form_fields = generate_form(object_type, object_specifications, new_properties)
+    return templates.TemplateResponse("edit_object.html", {"request": request, 
+                                                           "object_type": object_type, 
+                                                           "object": new_properties, 
+                                                           "form_fields": form_fields,
+                                                           "object_spec": object_specifications[object_type]})
+
+def get_default_properties(object_type, specifications):
+    default_properties = {}
+    for field_name, field_spec in specifications[object_type]["properties"].items():
+        default_properties[field_name] = field_spec.get("default", "")
+    return default_properties
+
+# get the edit page with an existing object and its properties
 @app.get("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def edit_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
     properties, _ = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
-    # processed_properties = preprocess_properties(properties, object_type)
     form_fields = generate_form(object_type, object_specifications, properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
@@ -116,14 +114,26 @@ async def edit_object(request: Request, object_type: str, object_id: str):
                                                            "form_fields": form_fields,
                                                            "object_spec": object_specifications[object_type]})
 
-# @app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
-# async def update_object(request: Request, object_type: str, object_id: str):
-#     form_data = await request.form()
-#     form_data = dict(form_data)
-#     db = request.app.state.db
-#     handle_form_submission(form_data, object_type, db)
-#     return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+# get the edit page with a new object of the same type and same properties
+@app.get("/objects/{object_type}/{object_id}/clone", response_class=HTMLResponse)
+async def clone_object(request: Request, object_type: str, object_id: str):
+    db = request.app.state.db
+    properties, _ = db.load(object_id)
+    if not properties:
+        raise HTTPException(status_code=404, detail="Object not found")
+    properties.pop('object_id', None)
+    cloned_object_id, cloned_properties, _ = db.add(object_id=None, properties=properties, object_type=object_type)
+    cloned_properties["object_id"] = cloned_object_id
+    cloned_properties["name"] = f"{object_type} {cloned_properties['created']}"
+    form_fields = generate_form(object_type, object_specifications, cloned_properties)
+    return templates.TemplateResponse("edit_object.html", {"request": request, 
+                                                           "object_type": object_type, 
+                                                           "object": cloned_properties, 
+                                                           "form_fields": form_fields,
+                                                           "object_spec": object_specifications[object_type]})
 
+
+# make the form fields based on the object type and its properties
 def generate_form(object_type, specifications, obj_properties):
     fields = []
 
@@ -157,13 +167,13 @@ def generate_form(object_type, specifications, obj_properties):
 
 from fastapi import HTTPException
 
+# receive the form data and update the object, redirect to the view page
 @app.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def update_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
     db = request.app.state.db
     try:
-        #handle_form_submission(form_data, object_type, db)
         await handle_form_submission(form_data, object_type, db)
         return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
     except FormSubmissionError as e:
@@ -173,7 +183,47 @@ async def update_object(request: Request, object_type: str, object_id: str):
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
 
+# receive the form data and update the object, redirect to the view page
+@app.post("/objects/{object_type}/{object_id}/new", response_class=HTMLResponse)
+async def update_object(request: Request, object_type: str, object_id: str):
+    form_data = await request.form()
+    form_data = dict(form_data)
+    db = request.app.state.db
+    try:
+        await handle_form_submission(form_data, object_type, db)
+        object_id_from_form = form_data.get("object_id")
+        return RedirectResponse(url=f"/objects/{object_type}/{object_id_from_form}", status_code=303)
+    except FormSubmissionError as e:
+        # Return an error response to the web app
+        return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
+    except Exception as e:
+        # Return a generic error response
+        return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
+    
 
+# receive the form data and update the object, redirect to the view page
+@app.post("/objects/{object_type}/{object_id}/clone", response_class=HTMLResponse)
+async def update_object(request: Request, object_type: str, object_id: str):
+    form_data = await request.form()
+    form_data = dict(form_data)
+    db = request.app.state.db
+    try:
+        await handle_form_submission(form_data, object_type, db)
+        object_id_from_form = form_data.get("object_id")
+        return RedirectResponse(url=f"/objects/{object_type}/{object_id_from_form}", status_code=303)
+    except FormSubmissionError as e:
+        # Return an error response to the web app
+        return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
+    except Exception as e:
+        # Return a generic error response
+        return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
+    
+@app.post("/objects/{object_type}/{object_id}/delete", response_class=HTMLResponse)
+async def delete_object(request: Request, object_type: str, object_id: str):
+    db = request.app.state.db
+    db.remove(object_id)
+    return RedirectResponse(url=f"/objects/{object_type}", status_code=303)
+    
 def validate_form_data(data, specifications):
     # The schema should be wrapped in a proper JSON schema format
     schema = {
@@ -183,15 +233,6 @@ def validate_form_data(data, specifications):
     }
     validate(instance=data, schema=schema)
 
-# def handle_form_submission(form_data, object_type, db):
-#     try:
-#         # validate_form_data(form_data, object_specifications[object_type])
-#         if form_data.get("object_id"):
-#             db.update(form_data["object_id"], form_data)
-#         else:
-#             db.add(object_id=None, properties=form_data, object_type=object_type)
-#     except ValidationError as e:
-#         print("Form data validation failed:", e.message)
 
 class FormSubmissionError(Exception):
     """Custom exception for form submission errors."""
@@ -213,7 +254,8 @@ async def handle_form_submission(form_data, object_type, db):
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)
         else:
-            db.add(object_id=None, properties=form_data, object_type=object_type)
+            # db.add(object_id=None, properties=form_data, object_type=object_type)
+            raise Exception("No object_id provided in form data")
     except ValidationError as e:
         raise FormSubmissionError(f"Form data validation failed: {e.message}")
     except Exception as e:

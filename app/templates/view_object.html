@@ -119,7 +119,31 @@
         </div>
         <div style="margin-left: auto;">
             <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.object_id }}/edit'">Edit</button>
+            <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.object_id }}/clone'">Clone</button>
+            <button class="button" style="background-color: crimson;" onclick="deleteObject()">Delete</button>
+
+            <script>
+                function deleteObject() {
+                    if (confirm('Are you sure you want to delete this object?')) {
+                        // Perform delete operation here
+                        fetch('/objects/{{ object_type }}/{{ object.object_id }}/delete', {
+                            method: 'POST'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = '/';
+                            } else {
+                                console.error('Error deleting object');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting object:', error);
+                        });
+                    }
+                }
+            </script>
         </div>
+
     </div>
     <div class="main-content">
         {% if object and object_spec.get("properties"): %}

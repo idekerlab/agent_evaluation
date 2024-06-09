@@ -131,3 +131,14 @@ class SqliteDatabase:
                 print(f"Skipping malformed JSON for object_id: {row[0]}")
 
         return valid_results
+    
+    def name_is_unique(self, name):
+        """ Check if the name is unique in the database """
+        query = "SELECT object_id, properties FROM nodes"
+        result = self.conn.execute(query).fetchall()
+        for row in result:
+            properties = json.loads(row[1])
+            if properties.get('name') == name:
+                return False
+        return True
+

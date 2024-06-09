@@ -141,7 +141,7 @@
                     {% for field in form_fields %}
                         <tr>
                             <td style="width: 100px; 
-                                min-width: 100px; word-break: break-all; 
+                                min-width: 100px; word-wrap: break-word;
                                 padding-top: 5px; text-align: right";>{{ field.label }}</td>
                             <td>
                                 {% if field.editable %}
@@ -159,7 +159,7 @@
                                     {% elif field.input_type == 'select_single_object' %}
                                         <p>placeholder for select_single_object</p>
                                         <input type="text" id="{{ field.name }}" 
-                                        name="{{ field.name }}" value="{{ field.value }}">
+                                        name="{{ field.name }}" value="{{ field.value }}" style="width: 600px;">
                                     {% elif field.input_type == 'select_multiple_objects' %}
                                         <p>placeholder for select_multiple_objects</p>
                                         <textarea style="white-space: pre;"

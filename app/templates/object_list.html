@@ -21,10 +21,18 @@
             text-align: left;
             vertical-align: top;
         }
+        .button {
+            background-color: orange;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>{{ object_type }}s</h1>
+    <button class="button" onclick="window.location.href='/objects/{{ object_type }}/blank/new'">New {{ object_type }}</button>
     <table>
         <thead>
             <tr>
@@ -47,6 +55,5 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="/objects/new/{{ object_type }}">New {{ object_type }}</a>
 </body>
 </html>
