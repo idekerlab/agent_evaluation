@@ -1,6 +1,6 @@
 from models.dataset import Dataset
 from models.analyst import Analyst
-from models.llm import LLM
+from models.llm_modified import LLM
 from models.hypothesis import Hypothesis
 from models.analysis_run import AnalysisRun
 
