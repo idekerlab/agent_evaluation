@@ -1,0 +1,70 @@
+
+class AnalysisRun:
+    def __init__(self, db, analysis_plan_id, analyst_ids=None, dataset_id=None, 
+                 n_hypotheses_per_analyst=0, hypothesis_ids=None, 
+                 description=None, attempts=None, status='pending', 
+                 object_id=None, created=None):
+        self.db = db
+        self.analysis_plan_id = analysis_plan_id
+        self.analyst_ids = analyst_ids if analyst_ids else []
+        self.dataset_id = dataset_id
+        self.n_hypotheses_per_analyst = n_hypotheses_per_analyst
+        self.hypothesis_ids = hypothesis_ids if hypothesis_ids else []
+        self.description = description
+        self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
+        self.status = status
+        self.object_id = object_id
+        self.created = created
+
+    @classmethod
+    def create(cls, db, analysis_plan_id, analyst_ids, dataset_id, 
+               n_hypotheses_per_analyst, description):
+        properties = {
+            "analysis_plan_id": analysis_plan_id,
+            "analyst_ids": analyst_ids,
+            "dataset_id": dataset_id,
+            "n_hypotheses_per_analyst": n_hypotheses_per_analyst,
+            "hypothesis_ids": [],
+            "description": description,
+            "attempts": {analyst: [] for analyst in analyst_ids},
+            "status": "pending"
+        }
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_run")
+        return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [], 
+                   description, properties['attempts'], 'pending', object_id, created)
+
+    @classmethod
+    def load(cls, db, object_id):
+        properties, _ = db.load(object_id)
+        if properties:
+            return cls(db, **properties)
+        return None
+
+    def update(self):
+        properties = {
+            "hypothesis_ids": self.hypothesis_ids,
+            "attempts": self.attempts,
+            "status": self.status
+        }
+        self.db.update(self.object_id, properties)
+
+    def delete(self):
+        self.db.remove(self.object_id)
+
+    def add_hypothesis(self, hypothesis_id, analyst_id):
+        if self.status == 'done':
+            return "AnalysisRunis already completed."
+        
+        self.hypothesis_ids.append(hypothesis_id)
+        self.attempts[analyst_id].append('success')  # Assuming hypothesis generation was successful
+        self.update_status()
+        self.update()
+        return "Hypothesis added successfully."
+
+    def update_status(self):
+        total_attempts = sum(len(attempts) for attempts in self.attempts.values())
+        required_attempts = len(self.analyst_ids) * self.n_hypotheses_per_analyst
+        if total_attempts >= required_attempts:
+            self.status = 'done'
+        else:
+            self.status = 'in_progress'

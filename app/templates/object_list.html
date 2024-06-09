@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ object_type }}s</title>
+    <style>
+        /* CSS styles for the page */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        table {
+            border-collapse: collapse;
+            border: none;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .button {
+            background-color: orange;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ object_type }}s</h1>
+    <button class="button" onclick="window.location.href='/objects/{{ object_type }}/blank/new'">New {{ object_type }}</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Properties</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in objects %}
+            <tr>
+                <td><a href="/objects/{{ object_type }}/{{ obj.object_id }}">{{ obj.properties.name or "none" | string }}</a></td>
+                <td>{{ obj.properties.created }}</td>
+                <td>
+                    {% for key, value in obj.properties.items() %}
+                        {{ key }}: {{ value | string | truncate(30) }}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
