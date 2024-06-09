@@ -74,10 +74,24 @@ def load_api_keys():
     # Access the API keys
     openai_api_key = config.get('API_KEYS', 'OPENAI_API_KEY', fallback=None)
     groq_api_key = config.get('API_KEYS', 'GROQ_API_KEY', fallback=None)
-    anthropic_api_key = config.get('API_KEYS', 'ANTHROPIC_API_KEY', fallback=None)  
+    anthropic_api_key = config.get('API_KEYS', 'ANTHROPIC_API_KEY', fallback=None) 
+    google_api_key = config.get('API_KEYS', 'GOOGLEAI_KEY', fallback=None) 
     
-    return openai_api_key, groq_api_key, anthropic_api_key
+    return openai_api_key, groq_api_key, anthropic_api_key, google_api_key
 
+def load_local_server_url():
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
+    
+    # Define the path to the configuration file
+    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    
+    # Read the configuration file
+    config.read(config_file_path)
+    
+    # Access the local server URL
+    local_server_url = config.get('API_KEYS', 'LOCAL_MODEL_HOST', fallback=None)
+    return local_server_url
 
 # Example usage
 # openai_key, groq_key = load_api_keys()
