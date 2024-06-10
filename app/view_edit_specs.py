@@ -46,7 +46,10 @@ object_specifications = {
                 "type": "float",
                 "input_type": "number",
                 "view": "text",
-                "default": 0.5,
+                "default": 0.0,
+                "min": 0.0,
+                "max": 1.0,
+                "step": 0.1,
                 "editable": True
             },
             "description": {
