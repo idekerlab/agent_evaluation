@@ -23,7 +23,9 @@ object_specifications = {
                 "input_type": "dropdown",
                 "conditional_on": "type",
                 "options": {"OpenAI": ["gpt-3.5-turbo-1106", "gpt-4.0-turbo-1106"],
-                            "Groq": ["llama3-8b-8192", "llama4-8b-8192"]},
+                            "Groq": ["llama3-8b-8192", "llama4-8b-8192"],
+                            "GoogleAI": ["gemini-1.5-pro-latest", "gemini-1.5-pro-001"  "gemini-1.5-flash-latest", "gemini-1.5-flash-001", "gemini-1.0-pro-latest", "gemini-1.0-pro-001"], 
+                            "LocalModel": ['mistral:7b', 'mixtral:latest', 'mixtral:instruct', 'llama2:7b', 'llama2:latest']},
                 "view": "text",
                 "default": "llama3-8b-8192",
                 "editable": True
