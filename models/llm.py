@@ -174,15 +174,20 @@ class LLM:
             raise EnvironmentError("GOOGLEAI_KEY environment variable not set.")
         # configuration load key  
         genai.configure(api_key=key)
+
+        available_models = [m.name.split('/')[1] for m in genai.list_models()]
+        if self.model_name not in available_models:
+            raise ValueError(f"Unsupported model name: {self.model_name}, available models are: {available_models}")
+        
         #set up model 
         model = genai.GenerativeModel(self.model_name)
-        full_prompt = context + prompt
+        # full_prompt = context + prompt
         #define message 
         messages = [
-            # {'role':'system',
-            #  'parts': "You are an efficient and insightful assistant to a molecular biologist"},
+            {'role':'model',
+             'parts':context},
             {'role':'user',
-            'parts': full_prompt}
+            'parts': prompt}
             ]
         try: 
             response = model.generate_content(
