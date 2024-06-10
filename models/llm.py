@@ -163,7 +163,7 @@ class LLM:
     def query_google_model(self, context, prompt):
         '''
         Queries a model hosted on google with the given context and prompt.
-
+        #models: gemini-1.5-pro,  gemini-1.5-flash, gemini-1.0-pro
         :param context: The context to use when querying the model.
         :param prompt: The prompt to use when querying the model.
         :return: the model's response.

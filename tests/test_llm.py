@@ -1,10 +1,13 @@
 import unittest
 from unittest.mock import MagicMock, patch
+import sys
+import os
+sys.path.append(os.path.abspath('..'))
 from models.llm import LLM
-from app.database import Database
+from app.sqlite_database import SqliteDatabase
 
 class TestLLM(unittest.TestCase):
-    @patch('app.database.Database')
+    @patch('app.sqlite_database.SqliteDatabase')
     def setUp(self, mock_db):
         # Mock the database and initialize LLM with it
         self.db = mock_db()
@@ -25,8 +28,8 @@ class TestLLM(unittest.TestCase):
     def test_load_llm(self):
         # Test loading an LLM instance
         with patch.object(LLM, 'load', return_value=self.llm) as mock_load:
-            llm_instance = LLM.load(self.db, 'llm_id')
-            mock_load.assert_called_once_with(self.db, 'llm_id')
+            llm_instance = LLM.load(self.db, 'object_id')
+            mock_load.assert_called_once_with(self.db, 'object_id')
             self.assertIsInstance(llm_instance, LLM)
 
     def test_update_llm(self):
@@ -34,7 +37,7 @@ class TestLLM(unittest.TestCase):
         new_temperature = 0.7
         with patch.object(self.db, 'update') as mock_update:
             self.llm.update(temperature=new_temperature)
-            mock_update.assert_called_once_with(self.llm.llm_id, {'temperature': new_temperature})
+            mock_update.assert_called_once_with(self.llm.object_id, {'temperature': new_temperature})
 
 if __name__ == '__main__':
     unittest.main()
