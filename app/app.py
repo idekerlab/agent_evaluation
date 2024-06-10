@@ -155,7 +155,10 @@ def generate_form(object_type, specifications, obj_properties):
                 "options": field_spec.get("options", []),
                 "editable": field_spec["editable"],
                 "view": field_spec.get("view", "text"),
-                "conditional_on": field_spec.get("conditional_on", None)
+                "conditional_on": field_spec.get("conditional_on", None),
+                "min": field_spec.get("min", "number"),
+                "max": field_spec.get("max", "number"),
+                "step": field_spec.get("step", "number")
             }
             fields.append(field)
         except KeyError as e:

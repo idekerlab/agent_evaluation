@@ -33,6 +33,9 @@ object_specifications = {
                 "input_type": "number",
                 "view": "text",
                 "default": 2048,
+                "min": 0,
+                "max": "",
+                "step": 1024,
                 "editable": True
             },
             "seed": {
@@ -40,6 +43,9 @@ object_specifications = {
                 "input_type": "number",
                 "view": "text",
                 "default": 42,
+                "min": 0,
+                "max": "",
+                "step": 1,
                 "editable": True
             },
             "temperature": {

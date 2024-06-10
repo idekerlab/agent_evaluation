@@ -151,7 +151,8 @@
                                         name="{{ field.name }}" value="{{ field.value }}">
                                     {% elif field.input_type == 'number' %}
                                         <input type="number" id="{{ field.name }}" 
-                                        name="{{ field.name }}" value="{{ field.value }}">
+                                        name="{{ field.name }}" value="{{ field.value }}" 
+                                        min="{{ field.min }}" max="{{ field.max }}" step="{{ field.step }}">
                                     {% elif field.input_type == 'textarea' %}
                                         <textarea id="{{ field.name }}" 
                                         style="width: 100%; max-width: 600px; padding: 5px;"
