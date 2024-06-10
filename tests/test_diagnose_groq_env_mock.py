@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from models.llm import LLM
+import os
+import sys
+sys.path.append(os.path.abspath('..'))
+from models.llm_old import LLM
 
 class TestLLM(unittest.TestCase):
     @patch.dict('os.environ', {'OPENAI_API_KEY': 'fakekey', 'GROQ_API_KEY': 'fakekey'})

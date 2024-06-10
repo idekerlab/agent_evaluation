@@ -1,7 +1,9 @@
 import unittest
 import pandas as pd
 import os
-from models.llm import LLM
+import sys
+sys.path.append(os.path.abspath('..'))
+from models.llm_old import LLM
 from models.analyst import Analyst
 from models.dataset import Dataset
 from models.analysis_plan import AnalysisPlan

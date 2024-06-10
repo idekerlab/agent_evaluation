@@ -1,4 +1,7 @@
 import unittest
+import os
+import sys
+sys.path.append(os.path.abspath('..'))
 from models.analyst import Analyst
 from app.database import Database
 
