@@ -35,7 +35,7 @@ object_specifications = {
                 "default": 2048,
                 "min": 0,
                 "max": "",
-                "step": 1024,
+                "step": 1,
                 "editable": True
             },
             "seed": {
