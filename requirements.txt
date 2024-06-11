@@ -7,6 +7,6 @@ ndex2==3.8.0
 neo4j==5.20.0
 openai==1.32.0
 pandas==2.2.2
-protobuf==5.27.1 # Note commented this out during pip
+# protobuf==5.27.1 # Note commented this out during pip
 Requests==2.32.3
 uvicorn==0.30.1

@@ -1,12 +1,18 @@
 import unittest
 from services.hypothesis_generation import HypothesisGenerator
-from app.database import Database
+import os 
+import sys
+sys.path.append(os.path.abspath('..'))
+from app.sqlite_database import SqliteDatabase
+from app.config import load_database_config
 
 class TestHypothesisGenerator(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
-        cls.generator = HypothesisGenerator(cls.db)
+        # Establish a connection to the database
+        db_type, uri, user, password = load_database_config(path='~/ae_config/config.ini')
+    
+        cls.db = SqliteDatabase(uri)
 
     def test_generate_hypothesis_with_test(self):
         # Assuming IDs for an existing analyst, dataset, and test
