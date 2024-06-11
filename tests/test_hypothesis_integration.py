@@ -1,11 +1,18 @@
 import unittest
+
+import os 
+import sys
+sys.path.append(os.path.abspath('..'))
+from app.sqlite_database import SqliteDatabase
+from app.config import load_database_config
 from models.hypothesis import Hypothesis
-from app.database import Database
 
 class TestHypothesisIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
+        db_type, uri, user, password = load_database_config(path='~/ae_config/config.ini')
+    
+        cls.db = SqliteDatabase(uri)
 
     @classmethod
     def tearDownClass(cls):
