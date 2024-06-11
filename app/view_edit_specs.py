@@ -13,7 +13,7 @@ object_specifications = {
             "type": {
                 "type": "string",
                 "input_type": "dropdown",
-                "options": ["OpenAI", "Groq"],
+                "options": ["OpenAI", "Groq", "GoogleAI", "LocalModel"],
                 "view": "text",
                 "editable": True,
                 "default": "Groq"
