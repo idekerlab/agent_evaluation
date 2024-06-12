@@ -3,7 +3,7 @@ from models.analysis_run import AnalysisRun
 class AnalysisPlan:
     def __init__(self, db, name=None, analyst_ids=None, dataset_id=None, 
                  n_hypotheses_per_analyst=0, description=None, 
-                 object_id=None, created=None):
+                 object_id=None, created=None, name=None):
         self.db = db
         self.name = name
         self.analyst_ids = analyst_ids if analyst_ids is not None else []
