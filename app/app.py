@@ -149,6 +149,7 @@ def generate_form(object_type, specifications, obj_properties):
         try:
             field = {
                 "name": field_name,
+                "type": field_spec.get("type", "text"),  # Default to "text
                 "label": field_spec.get("label") or field_name.replace('_', ' '),
                 "input_type": field_spec.get("input_type", "text"),
                 "value": obj_properties.get(field_name, field_spec.get("default", "")),
@@ -182,6 +183,7 @@ async def update_object(request: Request, object_type: str, object_id: str):
 
     # Get the specific specifications for the given object_type
     object_spec = object_specifications[object_type]
+    # Process the form data to handle list_of_object_ids
     for field_name, field_spec in object_spec["properties"].items():
         if field_spec.get("type") == "list_of_object_ids":
             id_list = form_data.get(field_name).split(",")

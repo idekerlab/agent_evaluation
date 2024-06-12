@@ -142,7 +142,7 @@
                         <tr>
                             <td style="width: 100px; 
                                 min-width: 100px; word-wrap: break-word;
-                                padding-top: 5px; text-align: right";>{{ field.label }}</td>
+                                padding-top: 5px; text-align: right;">{{ field.label }}</td>
                             <td>
                                 {% if field.editable %}
                                     {% if field.input_type == 'text' %}
@@ -223,21 +223,28 @@
                                     {% endif %}
                                 {% else %}
                                     {% if field.view == 'text' %}
-                                        <button type="button" class="collapsible">{{ field.value | truncate(15) }}</button>
-                                        <div class="content">
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        {% if field.type == 'int' %}
+                                            <!-- catch this case because the default is to assume that the value is text that can be truncated -->
                                             <pre>{{ field.value }}</pre>
-                                        </div>
+                                            
+                                        {% else %}
+                                            <p>text</p>
+                                            <button type="button" class="collapsible">{{ field.value | truncate(15) }}</button>
+                                            <pre>{{ field.value }}</pre>  
+                                        {% endif %} 
                                     {% elif field.view == 'object_link' %}
-                                        <a href="/objects/{{ field.value.object_type }}/{{ field.value.id }}">{{ field.value.id }}</a>
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        <pre>{{ field.value }}</pre>
                                     {% elif field.view == 'list_of_object_links' %}
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
                                         {% for item in field.value %}
-                                            <a href="/objects/{{ item.object_type }}/{{ item.id }}">{{ item.id }}</a><br>
+                                            <pre>{{ item }}</pre>
                                         {% endfor %}
                                     {% else %}
-                                        <p>placeholder for viewer of {{ item.object_type }}</p>
-                                        <div class="content">
-                                            <pre>{{ field.value }}</pre>
-                                        </div>
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        <p>placeholder for viewer of {{ field.view }}</p>
+                                        <pre>{{ field.value }}</pre>
                                     {% endif %}
                                 {% endif %}
                             </td>
