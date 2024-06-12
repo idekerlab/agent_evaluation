@@ -13,7 +13,7 @@ class AnalysisRunner:
             return "Analysis is already completed."
 
         for analyst_id in self.analysis_run.analyst_ids:
-            if len(self.analysis_run.attempts.get(analyst_id, [])) < self.analysis_run.n_hypotheses_per_analyst:
+            if len(self.analysis_run.attempts.get(analyst_id, [])) < len(self.analysis_run.n_hypotheses_per_analyst):
                 try:
                     generator = HypothesisGenerator(self.db)
                     hypothesis_id = generator.generate_hypothesis(analyst_id, 
