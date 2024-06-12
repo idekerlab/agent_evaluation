@@ -88,12 +88,14 @@ object_specifications = {
                 "editable": True,
                 "label": "prompt\ntemplate",
                 "input_type": "textarea",
-                "view": "text"
+                "view": "text",
+                "regex": ".*\{experiment_description\}[^]*\{data\}.*|.*\{data\}[^]*\{experiment_description\}.*",
+                "regex_description": "The text must include \{data\} and \{experiment_description\} in any order."
             },
             "description": {
                 "type": "string",
                 "editable": True,
-                "input_type": "textarea",
+                "input_type": "text",
                 "view": "text"
             },
             "llm_id": {

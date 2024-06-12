@@ -112,6 +112,41 @@
             document.addEventListener("DOMContentLoaded", function() {
                 updateConditionalDropdowns();
             });
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // Display form errors for textarea custom regex rules
+                var form = document.getElementById('form');
+                
+                // Identify all textarea fields with regexes
+                {% for field in form_fields %}
+                    {% if field.input_type == 'textarea' %}
+                        {% if field.regex|length > 0  %}
+                            var textarea = document.getElementById('{{ field.name }}');
+                            if (textarea) {
+                                textarea.addEventListener('input', function() {
+                                    this.setCustomValidity('');
+                                });
+
+                                // Add event listener to the form submission and display error msg for custom regexes
+                                form.addEventListener('submit', function(event) {
+                                    var textarea = document.getElementById('{{ field.name }}');
+                                    var regexPattern = '{{ field.regex }}';
+                                    var regex = new RegExp(regexPattern);
+
+                                    if (!regex.test(textarea.value)) {
+                                        textarea.setCustomValidity('Invalid input format. {{field.regex_description}}');
+                                        textarea.reportValidity();
+                                        event.preventDefault(); // Prevent form submission
+                                    } else {
+                                        textarea.setCustomValidity(''); // Clear the custom error
+                                    }
+                                });
+                            }
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            });
         </script>
 </head>
 <body>
@@ -134,7 +169,7 @@
         </div>
     </div>
     <div class="main-content">
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="form">
             <input type="hidden" name="object_id" value="{{ object.object_id }}">
             <table>
                 <tbody>
