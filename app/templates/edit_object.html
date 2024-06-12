@@ -161,10 +161,49 @@
                                         <input type="text" id="{{ field.name }}" 
                                         name="{{ field.name }}" value="{{ field.value }}" style="width: 600px;">
                                     {% elif field.input_type == 'select_multiple_objects' %}
-                                        <p>placeholder for select_multiple_objects</p>
-                                        <textarea style="white-space: pre;"
-                                        id="{{ field.name }}" 
-                                        name="{{ field.name }}">{{ field.value }}</textarea>
+                                        <div id="{{ field.name }}-container">
+                                            <ul id="{{ field.name }}-list">
+                                                {% for id in field.value %}
+                                                    <li>
+                                                        <input type="text" name="{{ field.name }}" value="{{ id }}">
+                                                        <button type="button" onclick="removeId(this)">Remove</button>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            <input type="text" id="{{ field.name }}-new-id" placeholder="Add new ID">
+                                            <button type="button" onclick="addId('{{ field.name }}')">Add</button>
+                                        </div>
+                                        <textarea style="display:none;" id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                    
+                                        <script>
+                                            function addId(fieldName) {
+                                                var newId = document.getElementById(fieldName + '-new-id').value;
+                                                if (newId) {
+                                                    var ul = document.getElementById(fieldName + '-list');
+                                                    var li = document.createElement('li');
+                                                    li.innerHTML = '<input type="text" name="' + fieldName + '" value="' + newId + '"> <button type="button" onclick="removeId(this)">Remove</button>';
+                                                    ul.appendChild(li);
+                                                    document.getElementById(fieldName + '-new-id').value = '';
+                                                    updateHiddenInput(fieldName);
+                                                }
+                                            }
+                                    
+                                            function removeId(button) {
+                                                var li = button.parentNode;
+                                                li.parentNode.removeChild(li);
+                                                updateTextarea(li.querySelector('input').name);
+                                            }
+                                    
+                                            function updateHiddenInput(fieldName) {
+                                                var hiddenInput = document.getElementById(fieldName);
+                                                var inputs = document.querySelectorAll('#' + fieldName + '-list input[type="text"]');
+                                                var ids = [];
+                                                inputs.forEach(function(input) {
+                                                    ids.push(input.value);
+                                                });
+                                                hiddenInput.value = ids.join(',');
+                                            }
+                                        </script>
                                     {% elif field.input_type == 'upload_table' %}
                                         <label for="{{ field.name }}">Upload CSV:</label>
                                         <input type="file" id="{{ field.name }}" name="{{ field.name }}" accept=".csv">
