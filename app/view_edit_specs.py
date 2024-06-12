@@ -152,7 +152,7 @@ object_specifications = {
                 "editable": True
             },
             "n_hypotheses_per_analyst": {
-                "type": "integer",
+                "type": "int",
                 "label": "hypotheses\nper analyst",
                 "input_type": "number",
                 "view": "text",
@@ -191,8 +191,9 @@ object_specifications = {
                 "editable": False
             },
             "n_hypotheses_per_analyst": {
-                "type": "integer",
+                "type": "int",
                 "editable": False,
+                "input_type": "number",
                 "view": "text",
                 "label": "hypotheses\nper analyst",
             },
