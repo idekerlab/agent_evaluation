@@ -35,5 +35,4 @@ class AnalysisRunner:
         result = self.next_hypothesis()
         while result not in ["Analysis is already completed.", "No more hypotheses needed."]:
             result = self.next_hypothesis()
-            return result
         return "All hypotheses generated or attempts exhausted."

@@ -95,7 +95,7 @@ object_specifications = {
             "description": {
                 "type": "string",
                 "editable": True,
-                "input_type": "text",
+                "input_type": "textarea",
                 "view": "text"
             },
             "llm_id": {
