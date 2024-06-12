@@ -56,7 +56,7 @@ class SqliteDatabase:
                 properties_string, object_type = self._get_node_sql(object_id)
                 properties = self.deserialize_properties(properties_string) if properties_string else None
                 if properties is None:
-                    return None
+                    return None, None
                 properties["object_id"] = object_id   
                 return properties, object_type
         except Exception as e:
@@ -105,7 +105,10 @@ class SqliteDatabase:
         """ Retrieve a node's properties from the nodes table by its object_id """
         query = "SELECT properties, object_type FROM nodes WHERE object_id = ?"
         result = self.conn.execute(query, (object_id,)).fetchone()
-        return result[0], result[1] if result else None
+        if result:
+            return result[0], result[1]
+        return None, None
+        # return result[0], result[1] if result else None, None
 
     def _delete_node_sql(self, object_id):
         """ Delete a node from the nodes table by its object_id """
