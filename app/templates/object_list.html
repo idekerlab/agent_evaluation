@@ -48,7 +48,7 @@
                 <td>{{ obj.properties.created }}</td>
                 <td>
                     {% for key, value in obj.properties.items() %}
-                        {{ key }}: {{ value | string | truncate(30) }}<br>
+                        {{ key }}: {{ value | string | truncate(75) }}<br>
                     {% endfor %}
                 </td>
             </tr>
