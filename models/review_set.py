@@ -1,15 +1,13 @@
 
-class AnalysisRun:
-    def __init__(self, db, analysis_plan_id, analyst_ids=None, dataset_id=None, 
-                 n_hypotheses_per_analyst=0, hypothesis_ids=None, 
-                 description=None, attempts=None, status='pending', 
-                 object_id=None, created=None):
+class ReviewSet:
+    def __init__(self, db, review_plan_id, analyst_ids=None, analysis_run_id=None, 
+                 review_ids=None, description=None, attempts=None,
+                 status='pending', object_id=None, created=None):
         self.db = db
-        self.analysis_plan_id = analysis_plan_id
+        self.review_plan_id = review_plan_id
         self.analyst_ids = analyst_ids if analyst_ids else []
-        self.dataset_id = dataset_id
-        self.n_hypotheses_per_analyst = n_hypotheses_per_analyst
-        self.hypothesis_ids = hypothesis_ids if hypothesis_ids else []
+        self.analysis_run_id = analysis_run_id
+        self.review_ids = review_ids if review_ids else []
         self.description = description
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
@@ -17,20 +15,18 @@ class AnalysisRun:
         self.created = created
 
     @classmethod
-    def create(cls, db, analysis_plan_id, analyst_ids, dataset_id, 
-               n_hypotheses_per_analyst, description):
+    def create(cls, db, review_plan_id, analyst_ids, analysis_run_id, description):
         properties = {
-            "analysis_plan_id": analysis_plan_id,
+            "review_plan_id": review_plan_id,
             "analyst_ids": analyst_ids,
-            "dataset_id": dataset_id,
-            "n_hypotheses_per_analyst": n_hypotheses_per_analyst,
-            "hypothesis_ids": [],
+            "analysis_run_id": analysis_run_id,
+            "review_ids": [],
             "description": description,
             "attempts": {analyst: [] for analyst in analyst_ids},
             "status": "pending"
         }
-        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_run")
-        return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [], 
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_set")
+        return cls(db, review_plan_id, analyst_ids, analysis_run_id, [], 
                    description, properties['attempts'], 'pending', object_id, created)
 
     @classmethod
@@ -42,7 +38,7 @@ class AnalysisRun:
 
     def update(self):
         properties = {
-            "hypothesis_ids": self.hypothesis_ids,
+            "review_ids": self.review_ids,
             "attempts": self.attempts,
             "status": self.status
         }
@@ -51,19 +47,19 @@ class AnalysisRun:
     def delete(self):
         self.db.remove(self.object_id)
 
-    def add_hypothesis(self, hypothesis_id, analyst_id):
+    def add_review(self, review_id, analyst_id):
         if self.status == 'done':
-            return "AnalysisRun is already completed."
+            return "ReviewSet is already completed."
         
-        self.hypothesis_ids.append(hypothesis_id)
+        self.review_ids.append(review_id)
         self.attempts[analyst_id].append('success')  # Assuming hypothesis generation was successful
         self.update_status()
         self.update()
-        return "Hypothesis added successfully."
+        return "Review added successfully."
 
     def update_status(self):
         total_attempts = sum(len(attempts) for attempts in self.attempts.values())
-        required_attempts = len(self.analyst_ids) * self.n_hypotheses_per_analyst
+        required_attempts = len(self.analyst_ids)
         if total_attempts >= required_attempts:
             self.status = 'done'
         else:

@@ -275,50 +275,6 @@ object_specifications = {
             }
         }
     },
-    # MARK:reviewer
-    "reviewer": {
-        "properties": {
-            "name": {
-                "type": "string",
-                "editable": True,
-                "input_type": "text",
-                "view": "text"
-            },
-            "llm_id": {
-                "type": "object_id",
-                "label": "LLM",
-                "editable": True,
-                "input_type": "select_single_object",
-                "object_type": "analysis_run",
-                "view": "object_link"
-            },
-            "context": {
-                "type": "string",
-                "editable": True,
-                "input_type": "textarea",
-                "view": "text"
-            },
-            "prompt_template": {
-                "type": "string",
-                "editable": True,
-                "label": "prompt\ntemplate",
-                "input_type": "textarea",
-                "view": "text"
-            },
-            "name": {
-                "type": "string",
-                "editable": True,
-                "input_type": "text",
-                "view": "text"
-            },
-            "description": {
-                "type": "string",
-                "editable": True,
-                "input_type": "textarea",
-                "view": "text"
-            }
-        }
-    },
     # MARK:reviewplan
     "review_plan": {
         "actions": ["create_review"],
@@ -329,13 +285,13 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "reviewer_ids": {
+            "analyst_ids": {
                 "type": "list_of_object_ids",
-                "label": "reviewers",
-                "editable": True,
+                "label": "analysts",
                 "input_type": "select_multiple_objects",
-                "object_type": "reviewer",
-                "view": "list_of_object_links"
+                "object_type": "analyst",
+                "view": "list_of_object_links",
+                "editable": True
             },
             "analysis_run_id": {
                 "type": "object_id",
@@ -353,47 +309,6 @@ object_specifications = {
             }
         }
     },
-    # MARK:review
-    "review": {
-        "properties": {
-            "name": {
-                "type": "string",
-                "editable": True,
-                "input_type": "text",
-                "view": "text"
-            },
-            "hypotheses_section": {
-                "type": "string",
-                "editable": False,
-                "view": "text"
-            },
-            "review_text": {
-                "type": "string",
-                "editable": False,
-                "view": "text"
-            },
-            "reviewer_id": {
-                "type": "object_id",
-                "label": "reviewer",
-                "editable": False,
-                "view": "object_link",
-                "object_type": "reviewer"
-            },
-            "description": {
-                "type": "string",
-                "editable": True,
-                "input_type": "textarea",
-                "view": "text"
-            },
-            "analysis_run_id": {
-                "type": "object_id",
-                "label": "analysis run",
-                "object_type": "analysis_run",
-                "view": "object_link",
-                "editable": False}
-            }
-        },
-    
     # MARK:reviewset
     "review_set": {
         "properties": {
@@ -424,7 +339,47 @@ object_specifications = {
                 "view": "text"
             }
         }
-    }
+    },
+    # MARK:review
+    "review": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
+            "hypotheses_text": {
+                "type": "string",
+                "editable": False,
+                "view": "text"
+            },
+            "review_text": {
+                "type": "string",
+                "editable": False,
+                "view": "text"
+            },
+            "analyst_id": {
+                "type": "object_id",
+                "label": "analyst",
+                "editable": False,
+                "view": "object_link",
+                "object_type": "analyst"
+            },
+            "description": {
+                "type": "string",
+                "editable": True,
+                "input_type": "textarea",
+                "view": "text"
+            },
+            "analysis_run_id": {
+                "type": "object_id",
+                "label": "analysis run",
+                "object_type": "analysis_run",
+                "view": "object_link",
+                "editable": False}
+            }
+        }
 }
 
 # from jsonschema import validate, ValidationError

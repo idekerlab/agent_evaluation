@@ -1,0 +1,46 @@
+ 
+
+class Review:
+    def __init__(self, db, data=None, hypotheses_text=None, review_text=None, analyst_id=None,  ##### May have to add a hypotheses section
+                 analysis_run_id=None, description=None, review_set_id=None, 
+                 object_id=None, created=None):
+        self.db = db
+        self.data = data
+        self.hypotheses_text = hypotheses_text
+        self.review_text = review_text
+        self.analyst_id = analyst_id
+        self.analysis_run_id = analysis_run_id
+        self.description = description
+        self.review_set_id = review_set_id
+        self.object_id = object_id
+        self.created = created
+
+    @classmethod
+    def create(cls, db, data, hypotheses_text, review_text, analyst_id, analysis_run_id, description, review_set_id):
+        properties = {
+            "data": data,
+            "hypotheses_text": hypotheses_text,
+            "review_text": review_text,
+            "analyst_id": analyst_id,
+            "analysis_run_id": analysis_run_id,
+            "description": description,
+            "review_set_id": review_set_id
+        }
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review")
+        return cls(db, data, review_text, analyst_id, analysis_run_id, 
+                   description, review_set_id, object_id=object_id, created=created)
+
+    @classmethod
+    def load(cls, db, object_id):
+        properties, _ = db.load(object_id)
+        if properties:
+            return cls(db, **properties)
+        return None
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        self.db.update(self.object_id, kwargs)
+
+    def delete(self):
+        self.db.remove(self.object_id)
