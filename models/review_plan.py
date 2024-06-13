@@ -43,7 +43,7 @@ class ReviewPlan:
                 raise ValueError("ReviewPlan is not properly configured.")
             return ReviewSet.create(
                 db=self.db,
-                analysis_plan_id=self.object_id,
+                review_plan_id=self.object_id,
                 analyst_ids=self.analyst_ids,
                 analysis_run_id=self.analysis_run_id,
                 description=self.description
