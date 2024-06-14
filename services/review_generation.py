@@ -3,6 +3,7 @@ from models.analyst import Analyst
 from models.llm import LLM
 from models.review import Review
 from models.review_set import ReviewSet
+from helpers.safe_dict import SafeDict
 
 class ReviewGenerator:
     def __init__(self, db):
@@ -23,9 +24,13 @@ class ReviewGenerator:
 
         # Use properties directly from the loaded objects
         data = dataset.data
-        prompt = analyst.prompt_template.format(data=data, 
-                                                experiment_description=dataset.experiment_description,
-                                                hypotheses_text=hypotheses_text)
+        safe_dict = SafeDict({
+            'data': data,
+            'experiment_description': dataset.experiment_description,
+            'hypotheses_text': hypotheses_text
+        })
+        
+        prompt = analyst.prompt_template.format_map(safe_dict)
 
         # Load the LLM associated with the analyst
         llm = LLM.load(self.db, analyst.llm_id)

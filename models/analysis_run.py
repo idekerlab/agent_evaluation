@@ -1,7 +1,7 @@
 
 class AnalysisRun:
     def __init__(self, db, analysis_plan_id, analyst_ids=None, dataset_id=None, 
-                 n_hypotheses_per_analyst=0, hypothesis_ids=None, 
+                 n_hypotheses_per_analyst=0, hypothesis_ids=None, biological_context=None,
                  description=None, attempts=None, status='pending', 
                  object_id=None, created=None):
         self.db = db
@@ -10,6 +10,7 @@ class AnalysisRun:
         self.dataset_id = dataset_id
         self.n_hypotheses_per_analyst = n_hypotheses_per_analyst
         self.hypothesis_ids = hypothesis_ids if hypothesis_ids else []
+        self.biological_context = biological_context
         self.description = description
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
@@ -18,20 +19,21 @@ class AnalysisRun:
 
     @classmethod
     def create(cls, db, analysis_plan_id, analyst_ids, dataset_id, 
-               n_hypotheses_per_analyst, description):
+               n_hypotheses_per_analyst, biological_context, description):
         properties = {
             "analysis_plan_id": analysis_plan_id,
             "analyst_ids": analyst_ids,
             "dataset_id": dataset_id,
             "n_hypotheses_per_analyst": n_hypotheses_per_analyst,
             "hypothesis_ids": [],
+            "biological_context": biological_context,
             "description": description,
             "attempts": {analyst: [] for analyst in analyst_ids},
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_run")
-        return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [], 
-                   description, properties['attempts'], 'pending', object_id, created)
+        return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [],
+                   biological_context, description, properties['attempts'], 'pending', object_id, created)
 
     @classmethod
     def load(cls, db, object_id):

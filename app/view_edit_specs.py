@@ -90,7 +90,7 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text",
                 "regex": ".*\{experiment_description\}[^]*\{data\}.*|.*\{data\}[^]*\{experiment_description\}.*",
-                "regex_description": "The text must include \{data\} and \{experiment_description\} in any order."
+                "regex_description": "The text must include \{data\} and \{experiment_description\} in any order. Valid keywords are: \{data\}, \{experiment_description\}, \{biological_context\}, \{hypotheses_text\}. Do not add open curly braces."
             },
             "description": {
                 "type": "string",
@@ -172,6 +172,12 @@ object_specifications = {
                 "editable": True,
                 "default": 2
             },
+            "biological_context": {
+                "type": "string",
+                "editable": True,
+                "input_type": "textarea",
+                "view": "text"
+            },
             "description": {
                 "type": "string",
                 "editable": True,
@@ -209,6 +215,12 @@ object_specifications = {
                 "input_type": "number",
                 "view": "text",
                 "label": "hypotheses\nper analyst",
+            },
+            "biological_context": {
+                "type": "string",
+                "editable": False,
+                "input_type": "textarea",
+                "view": "text"
             },
             "hypothesis_ids": {
                 "type": "list_of_object_ids",
