@@ -10,7 +10,7 @@ from app.config import load_api_key, load_local_server_url
 class LLM:
     def __init__(self, db, type=None, model_name=None,
                  max_tokens=None, seed=None, temperature=None,
-                 object_id=None, created=None):
+                 object_id=None, created=None, name=None, description=None):
         self.db = db
         self.type = type
         self.model_name = model_name
@@ -50,6 +50,8 @@ class LLM:
         self.db.update(self.object_id, kwargs)
 
     def query(self, context, prompt):
+        self.max_tokens = int(self.max_tokens)
+        self.temperature = float(self.temperature)
         if self.type == 'OpenAI':
             return self.query_openai(context, prompt)
         elif self.type == 'Groq':
