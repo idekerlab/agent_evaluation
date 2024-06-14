@@ -52,6 +52,7 @@ class LLM:
     def query(self, context, prompt):
         self.max_tokens = int(self.max_tokens)
         self.temperature = float(self.temperature)
+        self.seed = int(self.seed)
         if self.type == 'OpenAI':
             return self.query_openai(context, prompt)
         elif self.type == 'Groq':
@@ -77,8 +78,7 @@ class LLM:
         key = load_api_key("OPENAI_API_KEY")
         if not key:
             raise EnvironmentError("OPENAI_API_KEY environment variable not set.")
-        client = OpenAI()
-        client.api_key = key
+        client = OpenAI(api_key=key)
         backoff_time = 10  # Start backoff time at 10 second
         retries = 0
         max_retries = 5
