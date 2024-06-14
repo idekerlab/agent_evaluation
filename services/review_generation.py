@@ -9,7 +9,7 @@ class ReviewGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_review(self, analyst_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id, description=""):
+    def generate_review(self, analyst_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id):
         # Load the dataset and analyst using the newly created classes
         dataset = Dataset.load(self.db, dataset_id)
         analyst = Analyst.load(self.db, analyst_id)
