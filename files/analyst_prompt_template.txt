@@ -1,0 +1,43 @@
+"""
+
+{experiment_description}
+
+# This is text that describes the experimental data and is dataset-specific.
+# For the dengue dataset, please refer to the file "experiment_description_dengue".
+
+Here is the dataset: {data}
+
+Your task is to use the provided data to generate a hypothesis describing mechanisms that may contribute to the disease state and could potentially be targeted by drug therapies. Each hypothesis should meet the following criteria:
+
+1. Incorporate Data Columns: use the specific columns <data column A>, <data column B> etc...
+
+2. Verify Data Points: ensure that each data point (<data column A>, <data column B>, etc) used in the hypothesis is directly extracted and cross-checked from the dataset.
+
+3. Include Molecular Mechanisms: each hypothesis should include one or more molecular mechanisms involving genes/proteins present in the dataset.
+
+4. Plausibility and Novelty: hypothesis must be plausible, grounded in known molecular functions and interactions, and propose mechanisms either not known or not known to be relevant to the experimental context.
+
+5. Actionability: hypothesis should be actionable and can be validated with relatively low-cost experimental techniques.
+
+6. Context focused: if a biological context is provided (such as a specific biological process or a list of genes/proteins of interest), use this information to focus your hypothesis.
+
+The biological context is: {biological_context}
+
+When presenting your results, adhere to the following guidelines:
+
+Avoid including any code.
+Do not describe the analytical steps you took.
+Your output should consist solely of the hypothesis you propose. Each hypothesis should:
+- Mention the relevant genes in the dataset with accurate measurement values.
+- Provide details about other prior knowledge that supports the hypothesis.
+- Follow the 6 criteria described above.
+
+To help you in yuour task, here is an example of what one of your hypotheses might look like:
+
+The differential abundance of SP110 (0.842989962), PARP9 (0.971403167), and SAMD9L (1.172951102) in human cells infected with Dengue virus suggests a coordinated response mechanism that may contribute to the disease state. SP110 is a nuclear body protein involved in innate immunity and has been implicated in viral defense mechanisms. Its increased abundance suggests an enhanced cellular attempt to counteract Dengue virus infection through the modulation of immune responses. PARP9 and its interaction partner, DTX3L (also upregulated both at 24 and 48 hours and closely associated with PARP9 in immune responses), are involved in the ADP-ribosylation process, a post-translational modification known to play a role in the regulation of viral infections and inflammation. The increased abundance of PARP9 could indicate an upregulation of ADP-ribosylation processes aimed at restricting viral replication or modulating inflammatory responses. SAMD9L, another protein showing increased abundance, is known for its antiviral activity against various viruses, although its specific role in Dengue virus infection is not well characterized.
+Given the roles of these proteins in immune responses and antiviral activities, we propose a novel molecular mechanism where SP110 enhances the cellular immune defense against Dengue virus, possibly through the upregulation of genes involved in innate immunity. Concurrently, PARP9, potentially in synergy with DTX3L, may be upregulated to modify key viral or host proteins through ADP-ribosylation, aiming to inhibit viral replication or assembly. SAMD9L's increased abundance suggests its potential role in directly targeting Dengue virus components or pathways critical for its life cycle, further contributing to the cellular antiviral state.
+Considering that none of the genes discussed above is known to interact with Dengue viral proteins and that the dataset doesn't include any siRNA screening information, this hypothesis could be validated through relatively low-cost experimental techniques such as siRNA knockdown of SP110, PARP9, and SAMD9L in Dengue virus-infected cell cultures, followed by qPCR and Western blot analyses to assess the effect on viral replication, fitness and gene expression. Additionally, co-immunoprecipitation experiments could elucidate the interaction between PARP9 and DTX3L in the context of Dengue virus infection, providing insights into the functional consequences of their increased abundance and possibly identify unknown interactions with viral proteins. This approach not only offers a plausible explanation for the observed changes in protein abundance but also identifies potential targets for antiviral drug development.
+
+Now generate your hypothesis.
+
+"""
