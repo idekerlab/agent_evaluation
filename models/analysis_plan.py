@@ -2,13 +2,14 @@ from models.analysis_run import AnalysisRun
 
 class AnalysisPlan:
     def __init__(self, db, name=None, analyst_ids=None, dataset_id=None, 
-                 n_hypotheses_per_analyst=0, description=None, 
-                 object_id=None, created=None):
+                 n_hypotheses_per_analyst=0, biological_context=None,
+                 description=None, object_id=None, created=None):
         self.db = db
         self.name = name
         self.analyst_ids = analyst_ids if analyst_ids is not None else []
         self.dataset_id = dataset_id
         self.n_hypotheses_per_analyst = n_hypotheses_per_analyst
+        self.biological_context = biological_context
         self.description = description
         self.object_id = object_id
         self.created = created
@@ -41,7 +42,7 @@ class AnalysisPlan:
     def delete(self):
         self.db.remove(self.object_id)
 
-    def generate_analysis_run(self):
+    def generate_analysis_run(self, biological_context=None):
             """ Generate a new AnalysisRun instance based on this AnalysisPlan. """
             if not self.analyst_ids or not self.dataset_id:
                 raise ValueError("AnalysisPlan is not properly configured.")
@@ -51,5 +52,6 @@ class AnalysisPlan:
                 analyst_ids=self.analyst_ids,
                 dataset_id=self.dataset_id,
                 n_hypotheses_per_analyst=self.n_hypotheses_per_analyst,
+                biological_context=self.biological_context if biological_context == None else biological_context,
                 description=self.description
             )

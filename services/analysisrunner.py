@@ -16,8 +16,7 @@ class AnalysisRunner:
             if len(self.analysis_run.attempts.get(analyst_id, [])) < int(self.analysis_run.n_hypotheses_per_analyst):
                 try:
                     generator = HypothesisGenerator(self.db)
-                    hypothesis_id = generator.generate_hypothesis(analyst_id, 
-                                                                    self.analysis_run.dataset_id)
+                    hypothesis_id = generator.generate_hypothesis(analyst_id, self.analysis_run.object_id)
                     self.analysis_run.hypothesis_ids.append(hypothesis_id)
                     self.analysis_run.attempts[analyst_id].append('success')
                     self.analysis_run.update()

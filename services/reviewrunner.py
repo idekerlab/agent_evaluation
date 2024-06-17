@@ -21,11 +21,11 @@ class ReviewRunner:
         
         self.hypotheses_text = ""
         
-        for hypothesis_id in self.analysis_run.hypothesis_ids:
+        for index, hypothesis_id in enumerate(self.analysis_run.hypothesis_ids):
             hypothesis = Hypothesis.load(db, hypothesis_id)
             if not hypothesis:
                 raise ValueError("Hypothesis not found with the given ID.")
-            self.hypotheses_text += "New Hypothesis:\n" + hypothesis.hypothesis_text + "\n"
+            self.hypotheses_text += f"Hypothesis #{index+1}:\n\n" + hypothesis.hypothesis_text + "\n\n\n"
 
     def next_review(self):
         if self.review_set.status == 'done':

@@ -3,12 +3,13 @@ from models.analyst import Analyst
 from models.llm import LLM
 from models.review import Review
 from models.review_set import ReviewSet
+from helpers.safe_dict import SafeDict
 
 class ReviewGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_review(self, analyst_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id, description=""):
+    def generate_review(self, analyst_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id):
         # Load the dataset and analyst using the newly created classes
         dataset = Dataset.load(self.db, dataset_id)
         analyst = Analyst.load(self.db, analyst_id)
@@ -23,9 +24,13 @@ class ReviewGenerator:
 
         # Use properties directly from the loaded objects
         data = dataset.data
-        prompt = analyst.prompt_template.format(data=data, 
-                                                experiment_description=dataset.experiment_description,
-                                                hypotheses_text=hypotheses_text)
+        safe_dict = SafeDict({
+            'data': data,
+            'experiment_description': dataset.experiment_description,
+            'hypotheses_text': hypotheses_text
+        })
+        
+        prompt = analyst.prompt_template.format_map(safe_dict)
 
         # Load the LLM associated with the analyst
         llm = LLM.load(self.db, analyst.llm_id)
