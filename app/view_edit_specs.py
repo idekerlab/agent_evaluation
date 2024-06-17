@@ -118,7 +118,7 @@ object_specifications = {
                 "editable": True
             },
             "experiment_description": {
-                "label": "experiment",
+                "label": "experiment description",
                 "type": "string",
                 "editable": True,
                 "input_type": "textarea",
