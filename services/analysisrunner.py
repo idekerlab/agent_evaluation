@@ -31,7 +31,10 @@ class AnalysisRunner:
         return "No more hypotheses needed."
 
     def run(self):
+        run_outputs = ""
         result = self.next_hypothesis()
+        run_outputs += result + "\n"
         while result not in ["Analysis is already completed.", "No more hypotheses needed."]:
             result = self.next_hypothesis()
-        return "All hypotheses generated or attempts exhausted."
+            run_outputs += result + "\n"
+        return run_outputs
