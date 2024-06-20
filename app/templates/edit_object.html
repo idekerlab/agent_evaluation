@@ -201,7 +201,7 @@
                                             <ul id="{{ field.name }}-list">
                                                 {% for id in field.value %}
                                                     <li>
-                                                        <input type="text" name="{{ field.name }}" value="{{ id }}">
+                                                        <input type="text" name="{{ field.name }}" value="{{ id }}" readonly>
                                                         <button type="button" onclick="removeId(this)">Remove</button>
                                                     </li>
                                                 {% endfor %}
@@ -217,7 +217,7 @@
                                                 if (newId) {
                                                     var ul = document.getElementById(fieldName + '-list');
                                                     var li = document.createElement('li');
-                                                    li.innerHTML = '<input type="text" name="' + fieldName + '" value="' + newId + '"> <button type="button" onclick="removeId(this)">Remove</button>';
+                                                    li.innerHTML = '<input type="text" name="' + fieldName + '" value="' + newId + '" readonly> <button type="button" onclick="removeId(this)">Remove</button>';
                                                     ul.appendChild(li);
                                                     document.getElementById(fieldName + '-new-id').value = '';
                                                     updateHiddenInput(fieldName);
@@ -226,8 +226,9 @@
                                     
                                             function removeId(button) {
                                                 var li = button.parentNode;
+                                                var fieldName = li.querySelector('input').name;
                                                 li.parentNode.removeChild(li);
-                                                updateTextarea(li.querySelector('input').name);
+                                                updateHiddenInput(fieldName);
                                             }
                                     
                                             function updateHiddenInput(fieldName) {
@@ -237,7 +238,7 @@
                                                 inputs.forEach(function(input) {
                                                     ids.push(input.value);
                                                 });
-                                                hiddenInput.value = ids.join(',');
+                                                hiddenInput.value = JSON.stringify(ids);
                                             }
                                         </script>
                                     {% elif field.input_type == 'upload_table' %}
