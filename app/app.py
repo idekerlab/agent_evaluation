@@ -11,6 +11,7 @@ from app.config import load_database_config
 import csv
 from io import StringIO
 import os
+import json
 
 
 app = FastAPI()
@@ -188,7 +189,9 @@ async def update_object(request: Request, object_type: str, object_id: str):
     # Process the form data to handle list_of_object_ids
     for field_name, field_spec in object_spec["properties"].items():
         if field_spec.get("type") == "list_of_object_ids":
-            id_list = form_data.get(field_name).split(",")
+            id_list = form_data.get(field_name).replace("'", '"')
+            print(id_list)
+            id_list = json.loads(id_list) 
             form_data[field_name] = id_list
     db = request.app.state.db
     try:
@@ -206,6 +209,16 @@ async def update_object(request: Request, object_type: str, object_id: str):
 async def update_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
+    
+    # Get the specific specifications for the given object_type
+    object_spec = object_specifications[object_type]
+    # Process the form data to handle list_of_object_ids
+    for field_name, field_spec in object_spec["properties"].items():
+        if field_spec.get("type") == "list_of_object_ids":
+            id_list = form_data.get(field_name).replace("'", '"')
+            id_list = json.loads(id_list) if id_list else []
+            form_data[field_name] = id_list
+            
     db = request.app.state.db
     try:
         await handle_form_submission(form_data, object_type, db)
@@ -224,6 +237,16 @@ async def update_object(request: Request, object_type: str, object_id: str):
 async def update_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
+    
+    # Get the specific specifications for the given object_type
+    object_spec = object_specifications[object_type]
+    # Process the form data to handle list_of_object_ids
+    for field_name, field_spec in object_spec["properties"].items():
+        if field_spec.get("type") == "list_of_object_ids":
+            id_list = form_data.get(field_name).replace("'", '"')
+            id_list = json.loads(id_list) if id_list else []
+            form_data[field_name] = id_list
+            
     db = request.app.state.db
     try:
         await handle_form_submission(form_data, object_type, db)
