@@ -5,6 +5,7 @@ from groq import Groq
 import google.generativeai as genai 
 import requests
 from app.config import load_api_key, load_local_server_url
+import anthropic
 
 
 class LLM:
@@ -55,6 +56,8 @@ class LLM:
         self.seed = int(self.seed)
         if self.type == 'OpenAI':
             return self.query_openai(context, prompt)
+        elif self.type == 'Anthropic':
+            return self.query_anthropic(context, prompt)
         elif self.type == 'Groq':
             return self.query_groq(context, prompt)
         elif self.type == 'GoogleAI':
@@ -116,6 +119,54 @@ class LLM:
             raise Exception(f"Error: Max retries exceeded. Last exception: {e}")
     
         
+    def query_anthropic(self, context, prompt):
+        """
+        Queries the Anthropic model with the given context and prompt.
+
+        :param context: The context to use when querying the model.
+        :param prompt: The prompt to use when querying the model.
+        :return: The model's response
+        (maybe later: also return tokens used.)
+        """
+        # Load the API keys
+        key = load_api_key("ANTHROPIC_API_KEY")
+        if not key:
+            raise EnvironmentError("ANTHROPIC_API_KEY environment variable not set.")
+        client = anthropic.Anthropic(api_key=key)
+        backoff_time = 10  # Start backoff time at 10 second
+        retries = 0
+        max_retries = 5
+        while retries < max_retries:
+            try:
+                response = client.messages.create(
+                    model=self.model_name,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
+                    system=context,
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ]
+                )
+                response_content = response.content[0].text
+            
+                return response_content
+        
+            except APIConnectionError as e:
+                print(f"AIP connection error, retrying in {backoff_time} seconds...")
+                time.sleep(backoff_time)
+                retries += 1
+                backoff_time *= 2 # Double the backoff time for the next retry
+            except InternalServerError as e:
+                print(f"Server issue detected, retrying in {backoff_time} seconds...")
+                time.sleep(backoff_time)
+                retries += 1
+                backoff_time *= 2 # Double the backoff time for the next retry
+            except APIError as e:
+                raise Exception(f"API error occurred: {e}")
+            except Exception as e:
+                raise Exception(f"An unexpected error occurred: {e}")
+        else:
+            raise Exception(f"Error: Max retries exceeded. Last exception: {e}")
 
 
     def query_groq(self, context, prompt):
