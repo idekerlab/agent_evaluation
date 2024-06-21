@@ -50,8 +50,12 @@ class ReviewRunner:
         return "No more reviews needed."
 
     def run(self):
+        run_outputs = ""
         result = self.next_review()
+        run_outputs += result + "\n"
         while result not in ["Review is already completed.", "No more reviews needed."]:
             result = self.next_review()
-        return "All reviews generated or attempts exhausted."
+            run_outputs += result + "\n"
+        self.review_set.update_run_log(run_outputs)
+        return run_outputs
     

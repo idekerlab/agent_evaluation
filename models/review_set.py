@@ -1,7 +1,7 @@
 
 class ReviewSet:
     def __init__(self, db, review_plan_id, analyst_ids=None, analysis_run_id=None, 
-                 review_ids=None, description=None, attempts=None,
+                 review_ids=None, description=None, run_log=None, attempts=None,
                  status='pending', object_id=None, created=None):
         self.db = db
         self.review_plan_id = review_plan_id
@@ -9,6 +9,7 @@ class ReviewSet:
         self.analysis_run_id = analysis_run_id
         self.review_ids = review_ids if review_ids else []
         self.description = description
+        self.run_log = run_log
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
         self.object_id = object_id
@@ -27,7 +28,7 @@ class ReviewSet:
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_set")
         return cls(db, review_plan_id, analyst_ids, analysis_run_id, [], 
-                   description, properties['attempts'], 'pending', object_id, created)
+                   description, "", properties['attempts'], 'pending', object_id, created)
 
     @classmethod
     def load(cls, db, object_id):
@@ -40,7 +41,8 @@ class ReviewSet:
         properties = {
             "review_ids": self.review_ids,
             "attempts": self.attempts,
-            "status": self.status
+            "status": self.status,
+            "run_log": self.run_log
         }
         self.db.update(self.object_id, properties)
 
@@ -64,3 +66,7 @@ class ReviewSet:
             self.status = 'done'
         else:
             self.status = 'in_progress'
+            
+    def update_run_log(self, run_log):
+        self.run_log = run_log
+        self.update()

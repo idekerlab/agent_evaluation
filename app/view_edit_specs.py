@@ -174,6 +174,7 @@ object_specifications = {
             },
             "biological_context": {
                 "type": "string",
+                "label": "biological context",
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
@@ -218,6 +219,7 @@ object_specifications = {
             },
             "biological_context": {
                 "type": "string",
+                "label": "biological context",
                 "editable": False,
                 "input_type": "textarea",
                 "view": "text"
@@ -232,6 +234,13 @@ object_specifications = {
             "description": {
                 "type": "string",
                 "editable": True,
+                "input_type": "textarea",
+                "view": "text"
+            },
+            "run_log": {
+                "type": "string",
+                "label": "run log",
+                "editable": False,
                 "input_type": "textarea",
                 "view": "text"
             }
@@ -349,6 +358,13 @@ object_specifications = {
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
+            },
+            "run_log": {
+                "type": "string",
+                "label": "run log",
+                "editable": False,
+                "input_type": "textarea",
+                "view": "text"
             }
         }
     },
@@ -361,12 +377,12 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "hypotheses_text": {
+            "review_text": {
                 "type": "string",
                 "editable": False,
                 "view": "text"
             },
-            "review_text": {
+            "hypotheses_text": {
                 "type": "string",
                 "editable": False,
                 "view": "text"
@@ -383,6 +399,13 @@ object_specifications = {
                 "editable": True,
                 "input_type": "textarea",
                 "view": "text"
+            },
+            "review_set_id": {
+                "type": "object_id",
+                "label": "review set",
+                "object_type": "review_set",
+                "view": "object_link",
+                "editable": False
             },
             "analysis_run_id": {
                 "type": "object_id",

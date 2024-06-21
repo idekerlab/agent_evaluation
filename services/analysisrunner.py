@@ -37,4 +37,5 @@ class AnalysisRunner:
         while result not in ["Analysis is already completed.", "No more hypotheses needed."]:
             result = self.next_hypothesis()
             run_outputs += result + "\n"
+        self.analysis_run.update_run_log(run_outputs)
         return run_outputs
