@@ -92,19 +92,27 @@
                         var conditionalField = document.getElementById('{{ field.conditional_on }}');
                         var targetField = document.getElementById('{{ field.name }}');
                         var options = JSON.parse(targetField.dataset.options);
-                        conditionalField.addEventListener('change', function() {
+
+                        // Function to update the target field's options based on the conditional field's value
+                        function updateTargetOptions() {
                             var selectedValue = conditionalField.value;
                             var targetOptions = options[selectedValue] || [];
-                            targetField.innerHTML = '';
+                            targetField.innerHTML = ''; // Clear existing options
                             targetOptions.forEach(function(option) {
                                 var opt = document.createElement('option');
                                 opt.value = option;
                                 opt.innerHTML = option;
+                                if (option == '{{ field.value }}')
+                                    opt.selected = true;
                                 targetField.appendChild(opt);
                             });
-                        });
-                        // Trigger change to initialize the options
-                        conditionalField.dispatchEvent(new Event('change'));
+                        }
+
+                        // Add event listener to the conditional field to update target field on change
+                        conditionalField.addEventListener('change', updateTargetOptions);
+                   
+                        updateTargetOptions();
+
                     {% endif %}
                 {% endfor %}
             }
