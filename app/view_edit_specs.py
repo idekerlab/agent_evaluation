@@ -13,7 +13,7 @@ object_specifications = {
             "type": {
                 "type": "string",
                 "input_type": "dropdown",
-                "options": ["OpenAI", "Groq", "GoogleAI", "LocalModel"],
+                "options": ["OpenAI", "Anthropic", "Groq", "GoogleAI", "LocalModel"],
                 "view": "text",
                 "editable": True,
                 "default": "Groq"
@@ -23,6 +23,7 @@ object_specifications = {
                 "input_type": "dropdown",
                 "conditional_on": "type",
                 "options": {"OpenAI": ["gpt-3.5-turbo", "gpt-4-turbo"],
+                            "Anthropic": ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229", "claude-3-5-sonnet-20240620"],
                             "Groq": ["llama3-8b-8192", "llama3-70b-8192"],
                             "GoogleAI": ["gemini-1.5-pro-latest", "gemini-1.5-pro-001",  "gemini-1.5-flash-latest", "gemini-1.5-flash-001", "gemini-1.0-pro-latest", "gemini-1.0-pro-001"], 
                             "LocalModel": ['mistral:7b', 'mixtral:latest', 'mixtral:instruct', 'llama2:7b', 'llama2:latest']},
