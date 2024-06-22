@@ -171,7 +171,10 @@ object_specifications = {
                 "input_type": "number",
                 "view": "text",
                 "editable": True,
-                "default": 2
+                "default": 2,
+                "min": 1,
+                "max": "",
+                "step": 1,
             },
             "biological_context": {
                 "type": "string",
