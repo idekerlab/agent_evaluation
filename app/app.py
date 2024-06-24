@@ -79,7 +79,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
     # Process object links to include object names
     link_names = {}
     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
-        if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and processed_properties[prop_name]:
+        if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and prop_name in processed_properties:
             if prop_spec['view'] == 'object_link':
                 obj_id = processed_properties[prop_name]
                 try:
