@@ -63,6 +63,41 @@
                     document.getElementById('object-list').innerHTML = '<p>Error loading objects</p>';
                 });
         }
+
+        function deleteObjects(object_type) {
+            console.log('deleteObjects function called');
+            const selected = Array.from(document.querySelectorAll('input[name="delete"]:checked'));
+            if (selected.length === 0) {
+                alert('No objects selected for deletion.');
+                return;
+            }
+            if (confirm('Are you sure you want to delete these objects?')) {
+                const ids = selected.map(checkbox => checkbox.value);
+                Promise.all(ids.map(id => {
+                    return fetch(`/objects/${object_type}/${id}/delete`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Error deleting object with id:', id);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting object with id:', id, error);
+                    });
+                })).then(() => {
+                    // window.location.reload();
+                    loadObjects(object_type)
+                });
+            }
+        }
+
+        function toggleSelectAll(source) {
+            checkboxes = document.getElementsByName('delete');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
     </script>
 </body>
 </html>
