@@ -75,10 +75,38 @@ async def view_object(request: Request, object_type: str, object_id: str):
         raise HTTPException(status_code=404, detail="Object not found")
     # Preprocess CSV data
     processed_properties = preprocess_properties(properties, object_type)
+    
+    # Process object links to include object names
+    link_names = {}
+    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+        if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and processed_properties[prop_name]:
+            if prop_spec['view'] == 'object_link':
+                obj_id = processed_properties[prop_name]
+                try:
+                    linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
+                    if "name" in linked_object_properties:
+                        link_names[obj_id] = linked_object_properties['name']
+                    else:
+                        link_names[obj_id] = "unnamed"
+                except Exception as e:
+                    link_names[obj_id] = "Invalid ID"
+                
+            elif prop_spec['view'] == 'list_of_object_links':
+                for obj_id in processed_properties[prop_name]:
+                    try:
+                        linked_object_properties, linked_object_type = db.load(obj_id)
+                        if "name" in linked_object_properties:
+                            link_names[obj_id] = linked_object_properties['name']
+                        else:
+                            link_names[obj_id] = "unnamed"
+                    except Exception as e:
+                        link_names[obj_id] = "Invalid ID"
+                        
     return templates.TemplateResponse("view_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": processed_properties,
-                                                           "object_spec": object_specifications[object_type]})
+                                                           "object_spec": object_specifications[object_type],
+                                                           "link_names": link_names})
 
 # get the edit page with a new object of the same type and default properties
 @app.get("/objects/{object_type}/blank/new", response_class=HTMLResponse)
@@ -190,7 +218,6 @@ async def update_object(request: Request, object_type: str, object_id: str):
     for field_name, field_spec in object_spec["properties"].items():
         if field_spec.get("type") == "list_of_object_ids":
             id_list = form_data.get(field_name).replace("'", '"')
-            print(id_list)
             id_list = json.loads(id_list) 
             form_data[field_name] = id_list
     db = request.app.state.db
