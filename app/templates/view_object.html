@@ -175,11 +175,13 @@
                             {% elif prop_spec['view'] == 'list_of_object_links' and object[prop_name] %}
                             <p style="max-width: 600px;" class="property-container">
                                     {% for object_id in object[prop_name] %}
+                                        {{ link_names[object_id] }}:
                                         <a href="/objects/{{ prop_spec['object_type'] }}/{{ object_id }}">{{ object_id }}</a><br>
                                     {% endfor %}
                             </p>
                             {% elif prop_spec['view'] == 'object_link' and object[prop_name] %}
                             <p style="max-width: 600px;" class="property-container">
+                                {{ link_names[object[prop_name]] }}:
                                 <a href="/objects/{{ prop_spec['object_type'] }}/{{ object[prop_name] }}">{{ object[prop_name] }}</a>
                             </p>
                             {% else %}

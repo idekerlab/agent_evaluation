@@ -51,8 +51,9 @@ class HypothesisGenerator:
                     # Create and save the hypothesis
                     hypothesis = Hypothesis.create(
                         self.db,
-                        data=data,
                         hypothesis_text=hypothesis_text.strip(),
+                        data=data,
+                        biological_context=analysis_run.biological_context,
                         analyst_id=analyst_id,
                         dataset_id=dataset.object_id,
                         description=description, 
@@ -66,8 +67,9 @@ class HypothesisGenerator:
             # Create and save the hypothesis
             hypothesis = Hypothesis.create(
                 self.db,
-                data=data,
                 hypothesis_text=hypothesis_text,
+                data=data,
+                biological_context=analysis_run.biological_context,
                 analyst_id=analyst_id,
                 dataset_id=dataset.object_id,
                 description=description, 
