@@ -284,7 +284,7 @@ class FormSubmissionError(Exception):
 async def handle_form_submission(form_data, object_type, db):
     try:
         # Extract CSV file from form data
-        csv_file = form_data.pop('data', None)
+        csv_file = form_data.pop('data', None) if object_type == "dataset" else None
         if csv_file:
             # Read the contents of the CSV file as text
             #csv_content = csv_file.read().decode('utf-8')

@@ -235,6 +235,13 @@ object_specifications = {
                 "label": "hypotheses",
                 "editable": False
             },
+            "analysis_plan_id": {
+                "type": "object_id",
+                "object_type": "analysis_plan",
+                "label": "analysis plan",
+                "view": "object_link",
+                "editable": False
+            },
             "description": {
                 "type": "string",
                 "editable": True,
@@ -259,14 +266,21 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
+            "hypothesis_text": {
+                "type": "string",
+                "editable": False,
+                "input_type": "textarea",
+                "view": "text"
+            },
             "data": {
                 "type": "csv",
                 "view": "scrolling_table",
                 "editable": False,
                 "object_type": "dataset"
             },
-            "hypothesis_text": {
+            "biological_context": {
                 "type": "string",
+                "label": "biological context",
                 "editable": False,
                 "input_type": "textarea",
                 "view": "text"
