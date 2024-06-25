@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+import asyncio
+import functools
 from contextlib import asynccontextmanager
 from app.sqlite_database import SqliteDatabase
 from jsonschema import validate, ValidationError
@@ -12,6 +14,8 @@ import csv
 from io import StringIO
 import os
 import json
+from models.analysis_plan import AnalysisPlan
+from services.analysisrunner import AnalysisRunner
 
 
 app = FastAPI()
@@ -306,7 +310,27 @@ def validate_form_data(data, specifications):
         "required": [key for key, value in specifications["properties"].items() if value.get("required", False)]
     }
     validate(instance=data, schema=schema)
-
+    
+@app.post("/objects/{object_type}/{object_id}/execute", response_class=HTMLResponse)
+async def execute_object(request: Request, object_type: str, object_id: str):
+    if object_type == "analysis_plan":
+        db = request.app.state.db
+        analysis_plan = AnalysisPlan.load(db, object_id)
+        analysis_run = analysis_plan.generate_analysis_run()
+        
+        
+        def execute_analysis_plan(analysis_run_id):
+            _, uri, _, _ = load_database_config()
+            db = SqliteDatabase(uri)
+            runner = AnalysisRunner(db, analysis_run_id)
+            result = runner.run()
+            return result
+        
+        loop = asyncio.get_event_loop()
+        runner_func = functools.partial(execute_analysis_plan, analysis_run.object_id)
+        result = await loop.run_in_executor(None, runner_func)
+        return RedirectResponse(url=f"/objects/{object_type}/{result}", status_code=303)
+        
 
 class FormSubmissionError(Exception):
     """Custom exception for form submission errors."""
