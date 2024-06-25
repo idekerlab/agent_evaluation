@@ -1,0 +1,21 @@
+"""
+
+The provided dataset includes measurements of “protein abundance” and “mRNA expression” changes after infection of human cells with Dengue virus as compared to mock infected controls. 
+
+The data has 2 time points: 24 hours after infection or 48 hours after infection.
+
+Here is a detailed description of the columns in the dataset:
+
+A- Official human gene symbol (HGNC)
+B- Gene identifier
+C- Uniprot identifier
+D- Protein abundance 24 hours after infection
+E- Protein abundance 48 hours after infection
+G- mRNA expression 24 after infection
+H- mRNA expression 48 hurs after infection
+
+Please note:
+
+“Protein abundance” and “mRNA expression” measurements <0 reflect a "decrease" while measurements >0 indicate an "increase".
+
+"""
