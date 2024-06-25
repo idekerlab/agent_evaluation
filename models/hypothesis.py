@@ -32,7 +32,8 @@ class Hypothesis:
         hypothesis = cls(db, name, hypothesis_text, data, biological_context, analyst_id, dataset_id, 
                    description, analysis_run_id, object_id=object_id, created=created)
         if not name:
-            hypothesis.update(name=f"hypothesis {created['created']}")
+            analyst_properties, analyst_type = db.load(analyst_id)
+            hypothesis.update(name=f"hypothesis - {analyst_properties['name']} - {biological_context}")
 
         return hypothesis
 

@@ -53,6 +53,12 @@ async def list_objects(request: Request, object_type: str):
         raise HTTPException(status_code=404, detail="Object type not found")
     db = request.app.state.db
     objects = db.find(object_type)  # Fetch all objects of the given type
+    if object_type == 'hypothesis':
+        for index, obj in enumerate(objects):
+            analyst_id = obj['properties']['analyst_id']
+            analyst_properties, analyst_type = db.load(analyst_id)
+            objects[index]['properties']['analyst_id'] = f"({analyst_properties['name']}) {analyst_id}"
+    
     return templates.TemplateResponse("object_list.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "objects": objects})
