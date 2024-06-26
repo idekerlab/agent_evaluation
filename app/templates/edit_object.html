@@ -201,33 +201,68 @@
                                         style="width: 100%; max-width: 600px; padding: 5px;"
                                         name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'select_single_object' %}
-                                        <p>placeholder for select_single_object</p>
-                                        <input type="text" id="{{ field.name }}" 
-                                        name="{{ field.name }}" value="{{ field.value }}" style="width: 600px;">
+                                        <select id="{{ field.name }}" name="{{ field.name }}">
+                                            {% for option in field.options %}
+                                                <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
+                                            {% endfor %}
+                                        </select>
                                     {% elif field.input_type == 'select_multiple_objects' %}
                                         <div id="{{ field.name }}-container">
-                                            <ul id="{{ field.name }}-list">
+                                            <ul id="{{ field.name }}-list" class="idList">
                                                 {% for id in field.value %}
-                                                    <li>
-                                                        <input type="text" name="{{ field.name }}" value="{{ id }}" readonly>
+                                                    <li id-value="{{ id }}" arr-value="{{ field.options }}">
+                                                        <span class="label-placeholder">Loading...</span>
+                                                        <input style="display:none;" type="text" name="{{ field.name }}" value="{{ id }}" readonly>
                                                         <button type="button" onclick="removeId(this)">Remove</button>
                                                     </li>
                                                 {% endfor %}
                                             </ul>
-                                            <input type="text" id="{{ field.name }}-new-id" placeholder="Add new ID">
+                                            <select id="{{ field.name }}-new-id" name="{{ field.name }}">
+                                                {% for option in field.options %}
+                                                    <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
+                                                {% endfor %}
+                                            </select>
                                             <button type="button" onclick="addId('{{ field.name }}')">Add</button>
                                         </div>
                                         <textarea style="display:none;" id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
                                     
                                         <script>
+                                            function findLabelByValue(arr, value) {
+                                                const item = arr.find(obj => obj.value === value);
+                                                return item ? item.label : null; // or you can return an appropriate default value or message
+                                            }
+
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                const listItems = document.querySelectorAll(".idList li");
+
+                                                listItems.forEach(li => {
+                                                    const value = li.getAttribute("id-value");
+                                                    const arr = li.getAttribute("arr-value");
+                                                    // Replace single quotes with double quotes to make it a valid JSON string
+                                                    const validJsonString = arr.replace(/'/g, '"');
+                                                    // Parse the JSON string into a JavaScript array
+                                                    const parsedArray = JSON.parse(validJsonString);
+                                                    const label = findLabelByValue(parsedArray, value);
+
+                                                    const labelSpan = li.querySelector(".label-placeholder");
+                                                    if (labelSpan) {
+                                                        labelSpan.textContent = label || "Label not found";
+                                                    }
+                                                });
+                                            });
+
                                             function addId(fieldName) {
-                                                var newId = document.getElementById(fieldName + '-new-id').value;
+                                                const selectElement = document.getElementById(fieldName + '-new-id');
+                                                var newId = selectElement.value;
+
                                                 if (newId) {
                                                     var ul = document.getElementById(fieldName + '-list');
                                                     var li = document.createElement('li');
-                                                    li.innerHTML = '<input type="text" name="' + fieldName + '" value="' + newId + '" readonly> <button type="button" onclick="removeId(this)">Remove</button>';
+
+                                                    const selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
+                                                    li.innerHTML = selectedOptionText + ' <input style="display:none;" type="text" name="' + fieldName + '" value="' + newId + '" readonly> <button type="button" onclick="removeId(this)">Remove</button>';
                                                     ul.appendChild(li);
-                                                    document.getElementById(fieldName + '-new-id').value = '';
+                                                    selectElement.selectedIndex = 0;
                                                     updateHiddenInput(fieldName);
                                                 }
                                             }

@@ -96,7 +96,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
                 try:
                     linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
                     if "name" in linked_object_properties:
-                        link_names[obj_id] = linked_object_properties['name']
+                        link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
                     else:
                         link_names[obj_id] = "unnamed"
                 except Exception as e:
@@ -107,7 +107,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
                     try:
                         linked_object_properties, linked_object_type = db.load(obj_id)
                         if "name" in linked_object_properties:
-                            link_names[obj_id] = linked_object_properties['name']
+                            link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
                         else:
                             link_names[obj_id] = "unnamed"
                     except Exception as e:
@@ -127,7 +127,7 @@ async def new_object(request: Request, object_type: str):
     new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
     new_properties["object_id"] = new_object_id
     new_properties["name"] = f"{object_type} {new_properties['created']}"
-    form_fields = generate_form(object_type, object_specifications, new_properties)
+    form_fields = generate_form(db, object_type, object_specifications, new_properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": new_properties, 
@@ -147,7 +147,7 @@ async def edit_object(request: Request, object_type: str, object_id: str):
     properties, _ = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
-    form_fields = generate_form(object_type, object_specifications, properties)
+    form_fields = generate_form(db, object_type, object_specifications, properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": properties, 
@@ -165,7 +165,7 @@ async def clone_object(request: Request, object_type: str, object_id: str):
     cloned_object_id, cloned_properties, _ = db.add(object_id=None, properties=properties, object_type=object_type)
     cloned_properties["object_id"] = cloned_object_id
     cloned_properties["name"] = f"{object_type} {cloned_properties['created']}"
-    form_fields = generate_form(object_type, object_specifications, cloned_properties)
+    form_fields = generate_form(db, object_type, object_specifications, cloned_properties)
     return templates.TemplateResponse("edit_object.html", {"request": request, 
                                                            "object_type": object_type, 
                                                            "object": cloned_properties, 
@@ -174,7 +174,7 @@ async def clone_object(request: Request, object_type: str, object_id: str):
 
 
 # make the form fields based on the object type and its properties
-def generate_form(object_type, specifications, obj_properties):
+def generate_form(db, object_type, specifications, obj_properties):
     fields = []
 
     # Ensure the object_type exists in the specifications
@@ -187,6 +187,20 @@ def generate_form(object_type, specifications, obj_properties):
 
     for field_name, field_spec in object_spec["properties"].items():
         try:
+            if (field_spec.get("input_type", "") == "select_single_object" 
+                or field_spec.get("input_type", "") == "select_multiple_objects"):
+                field_object_type = field_spec.get("object_type", "")
+                field_objects = db.find(field_object_type)
+                option_dicts = []
+                for field_object in field_objects:
+                    field_obj_id = field_object['object_id']
+                    field_obj_name = field_object['properties']['name'] if 'name' in field_object['properties'] else "none"
+                    field_obj_name = field_obj_name if len(field_obj_name) > 0 else "none"
+                    option_label = f"({field_obj_name}) {field_obj_id}"
+                    option_dicts.append({"label": option_label, "value": field_obj_id})
+                    
+                field_spec["options"] = option_dicts
+
             field = {
                 "name": field_name,
                 "type": field_spec.get("type", "text"),  # Default to "text
