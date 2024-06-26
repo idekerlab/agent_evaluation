@@ -201,14 +201,11 @@
                                         style="width: 100%; max-width: 600px; padding: 5px;"
                                         name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'select_single_object' %}
-                                        <p>placeholder for select_single_object</p>
                                         <select id="{{ field.name }}" name="{{ field.name }}">
                                             {% for option in field.options %}
                                                 <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
                                             {% endfor %}
                                         </select>
-                                        <!-- <input type="text" id="{{ field.name }}" 
-                                        name="{{ field.name }}" value="{{ field.value }}" style="width: 600px;"> -->
                                     {% elif field.input_type == 'select_multiple_objects' %}
                                         <div id="{{ field.name }}-container">
                                             <ul id="{{ field.name }}-list" class="idList">
@@ -225,7 +222,6 @@
                                                     <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
                                                 {% endfor %}
                                             </select>
-                                            <!-- <input type="text" id="{{ field.name }}-new-id" placeholder="Add new ID"> -->
                                             <button type="button" onclick="addId('{{ field.name }}')">Add</button>
                                         </div>
                                         <textarea style="display:none;" id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
