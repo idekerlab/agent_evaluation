@@ -31,7 +31,13 @@
     </style>
 </head>
 <body>
-    <h1>{{ object_type }}s</h1>
+    <h1>
+        {% if  object_type == "hypothesis" %}
+            hypotheses
+        {% else %}
+            {{ object_type }}s
+        {% endif %}
+    </h1>
     <button class="button" onclick="window.location.href='/objects/{{ object_type }}/blank/new'">New {{ object_type }}</button>
     <button class="button" style="background-color: crimson;" onclick="deleteObjects('{{ object_type }}')">Delete</button>
     <table>
