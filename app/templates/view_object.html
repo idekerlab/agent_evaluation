@@ -120,8 +120,8 @@
             {% endif %}
         </div>
         <div style="margin-left: auto;">
-            {% if object_type == "analysis_plan" %}
-                <button class="button" style="background-color: rgb(42, 138, 0);" onclick="executeAnalysisPlan(this)">
+            {% if object_type == "analysis_plan" or object_type == "review_plan" %}
+                <button class="button" style="background-color: rgb(42, 138, 0);" onclick="executePlan(this)">
                     Execute Plan
                 </button>
             {% endif %}
@@ -148,7 +148,7 @@
                     }
                 }
 
-                async function executeAnalysisPlan(button) {
+                async function executePlan(button) {
                     if (confirm('Are you sure you want to start a new run?')) {
                         button.innerHTML = '<i class="fa-solid fa-spinner fa-spin-pulse fa-lg"></i>';
                         try {
@@ -168,27 +168,6 @@
                         }
                     }
                 }
-
-                // async function executeAnalysisPlan(button) {
-                //     if (confirm('Are you sure you want to start a new run?')) {
-                //         button.innerHTML = '<i class="fa-solid fa-spinner fa-spin-pulse fa-lg"></i>';
-                //         // Perform delete operation here
-                //         fetch('/objects/{{ object_type }}/{{ object.object_id }}/execute', {
-                //             method: 'POST'
-                //         })
-                //         .then(response => {
-                //             if (response.ok) {
-                //                 button.innerHTML = 'Execute Plan';
-                //                 window.location.href = response.url;
-                //             } else {
-                //                 console.error('Error starting analysis run');
-                //             }
-                //         })
-                //         .catch(error => {
-                //             console.error('Error executing analysis plan:', error);
-                //         });
-                //     }
-                // }
             </script>
         </div>
 
