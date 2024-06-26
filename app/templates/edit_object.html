@@ -237,8 +237,6 @@
                                             }
 
                                             document.addEventListener("DOMContentLoaded", function() {
-                                                console.log("In here");
-
                                                 const listItems = document.querySelectorAll(".idList li");
 
                                                 listItems.forEach(li => {
@@ -250,7 +248,6 @@
                                                     const parsedArray = JSON.parse(validJsonString);
                                                     const label = findLabelByValue(parsedArray, value);
 
-                                                    console.log(label);
                                                     const labelSpan = li.querySelector(".label-placeholder");
                                                     if (labelSpan) {
                                                         labelSpan.textContent = label || "Label not found";
