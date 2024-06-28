@@ -92,8 +92,8 @@ object_specifications = {
                 "label": "prompt\ntemplate",
                 "input_type": "textarea",
                 "view": "text",
-                "regex": ".*\{experiment_description\}[^]*\{data\}.*|.*\{data\}[^]*\{experiment_description\}.*",
-                "regex_description": "The text must include \{data\} and \{experiment_description\} in any order. Valid keywords are: \{data\}, \{experiment_description\}, \{biological_context\}, \{hypotheses_text\}. Do not add open curly braces."
+                # "regex": ".*\{experiment_description\}[^]*\{data\}.*|.*\{data\}[^]*\{experiment_description\}.*",
+                # "regex_description": "The text must include \{data\} and \{experiment_description\} in any order. Valid keywords are: \{data\}, \{experiment_description\}, \{biological_context\}, \{hypotheses_text\}. Do not add open curly braces."
             },
             "description": {
                 "type": "string",
