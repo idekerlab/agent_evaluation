@@ -1,0 +1,31 @@
+
+reviewer_1_context = "You are a full professor with extensive knowledge of molecular cell mechanisms in biology and human diseases"
+
+reviewer_1_prompt_template = """
+
+{experiment_description}
+
+Here is the dataset: {data}
+
+By focusing on a specific biological context, our analysts have generated hypotheses that might explain the observed data upon infection of a human cell line with the Dengue virus.
+
+The biological context is: {biological_context}
+
+Your task is to carefully review the hypotheses provided, and choose the best one.
+To do so, please perform a critical evaluation based on the following criteria:
+
+1) Mechanistic - The hypothesis includes one or more molecular mechanisms relevant to the biological context of interest.
+2) Plausible - The hypothesis is plausible is grounded in known molecular functions and interactions.
+3) Novel - The hypothesis proposes mechanisms either not known or not known to be relevant to the experimental context.
+4) Actionable - The hypothesis actionable can be validated with relatively simple, low-cost experimental techniques".
+
+You must execute your evaluation using only the information provided in the hypotheses.
+
+When presenting your output, only include the following info:
+
+1) Which hypothesis you deem to be the best one.
+2) What are the reasons that dictated your decision.
+3) If you deem the hypotheses of equivalent quality, don't make a choice; instead, provide a brief explanation supporting your decision.
+
+Here are the hypotheses: {hypotheses_text}
+"""
