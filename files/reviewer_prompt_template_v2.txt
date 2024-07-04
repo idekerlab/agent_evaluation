@@ -3,10 +3,6 @@ reviewer_1_context = "You are a full professor with extensive knowledge of molec
 
 reviewer_1_prompt_template = """
 
-{experiment_description}
-
-Here is the dataset: {data}
-
 By focusing on a specific biological context, our analysts have generated hypotheses that might explain the observed data upon infection of a human cell line with the Dengue virus.
 
 The biological context is: {biological_context}

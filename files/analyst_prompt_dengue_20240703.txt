@@ -4,11 +4,11 @@
 
 Here is the dataset: {data}
 
-Your task is to use the provided data to generate a hypothesis describing mechanisms that may contribute to the disease state and could potentially be targeted by drug therapies. Each hypothesis should meet the following criteria:
+Your task is to use the provided dataset to generate a hypothesis describing mechanisms that may contribute to the disease state and could potentially be targeted by drug therapies. Each hypothesis should meet the following criteria:
 
-1. Incorporate Data Columns: use the specific columns "Protein abundance 24 hours after infection vs mock control", "Protein abundance 48 hours after infection vs mock control", "mRNA expression 24 hours after infection (log2FC_24hpi)", "mRNA expression 48 hours after infection (log2FC_48hpi)", and "siRNA Screen Average Z-score".
+1. Incorporate Data Columns: use the specific columns A, B, C, D, E and F from the provided dataset.
 
-2. Verify Data Points: ensure that each data point (protein abundance, mRNA expression, siRNA Z-score) used in the hypothesis is directly extracted and cross-checked from the dataset.
+2. Verify Data Points: ensure that each data point (protein abundance, mRNA expression, siRNA Z-score) used in your hypothesis is directly extracted from and cross-checked with the provided dataset.
 
 3. Include Molecular Mechanisms: each hypothesis should include one or more molecular mechanisms involving genes/proteins present in the dataset.
 
@@ -25,7 +25,7 @@ When presenting your results, adhere to the following guidelines:
 Avoid including any code.
 Do not describe the analytical steps you took.
 Your output should consist solely of the hypothesis you propose. Each hypothesis should:
-- Mention the relevant genes in the dataset with accurate measurement values.
+- Mention the relevant genes with accurate measurement values as shown in the dataset provided.
 - Provide details about other prior knowledge that supports the hypothesis.
 - Follow the 6 criteria described above.
 

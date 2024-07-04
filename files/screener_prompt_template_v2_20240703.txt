@@ -7,7 +7,7 @@ You will be provided with a dataset and the text of 3 scientific hypotheses.
 
 Your task is to perform a Quality Control inspection of the hypotheses text to verify that the gene names and relative measurement values mentioned in the text are accurately reflected in the dataset.
 
-If a hypothesis text mentions genes and/or measurement values that are not reflected in the dataset, that hypothesis will fail your quality control inspection. Time point mismatches should not be considered as a failure. 
+If a hypothesis text mentions genes with measurement values that are not present in the dataset, that hypothesis will fail your quality control inspection.
 
 Limit your output to the following information:
 
@@ -23,16 +23,7 @@ Mismatched info:
 - Value mismatch: LAMC2 increased expression (1.116969129) mentioned in hypothesis but not present in dataset.
 QC Result: Failed
 
-Here is another output example:
-
-Hypothesis #2
-Mismatched info:
-- Time point mismatch: gene TRIM69 increased mRNA expression at 24h (2.966759419) mentioned in hypothesis is actually shown at 48h in the dataset.
-QC result: Passed 
-
 Here is the dataset: {data}
 
-Here are the details describing the provided dataset: {experiment_description}
-
-Here are the hypotheses to inspect: {hypotheses_text}
+Here are the hypotheses text to inspect: {hypotheses_text}
 """
