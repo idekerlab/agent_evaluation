@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div id="controls">
+        <button id="toggleRunPause">Run</button>
+        <button id="resetQueryCount">Reset Query Count</button>
+    </div>
+    <div id="chat">
+        <div id="conversation">
+            <h2>Conversation</h2>
+            <ul id="messages"></ul>
+        </div>
+        <div id="hypothesis">
+            <h2>Current Hypothesis</h2>
+            <p id="currentHypothesis"></p>
+        </div>
+        <div id="data">
+            <h2>Data Table</h2>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Gene</th>
+                        <th>Expression</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

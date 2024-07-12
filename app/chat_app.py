@@ -1,8 +1,47 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from typing import List, Dict, Any
 import json
+import os
+from contextlib import asynccontextmanager
+from app.sqlite_database import SqliteDatabase, load_database_config
+from app.cxdb import CXDB
+from models.llm import LLM
+from models.analyst import Analyst  
+from models.chat import Chat
 
 app = FastAPI()
+
+# Setup templates and static files
+base_dir = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(base_dir, "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load the database connection details
+    _, uri, _, _ = load_database_config()
+    db = SqliteDatabase(uri)
+    
+    # Provide the database instance to the app
+    app.state.db = db
+
+    # Add the CXDB instance to the app for dialog and context management
+    app.state.cxdb = CXDB()
+
+    yield
+
+    # Shutdown
+    db.close()
+
+app = FastAPI(lifespan=lifespan)
+
+@app.get("/")
+async def read_index():
+    index_path = os.path.join(static_dir, "index.html")
+    with open(index_path) as f:
+        return HTMLResponse(content=f.read())
 
 # In-memory storage for conversation history and current hypothesis
 conversation_history: List[Dict[str, Any]] = []
@@ -11,23 +50,20 @@ run_pause_state = False
 query_limit = 100
 current_query_count = 0
 
-class Dataset:
-    def __init__(self, data: str, description: str):
-        self.data = data  # CSV format data
-        self.description = description
+# load two Analysts
+analyst_1 = Analyst.load("agent1_id")
+analyst_2 = Analyst.load("agent2_id")
 
-class LLM:
-    def __init__(self, parameters: Dict[str, Any]):
-        self.parameters = parameters
+# load their respective LLMs
+llm_1 = LLM.load(analyst_1.llm_id)
+llm_2 = LLM.load(analyst_2.llm_id)
 
-    def query(self, prompt: str) -> str:
-        # Simulate querying an LLM with given parameters
-        return f"Response to '{prompt}' with parameters {self.parameters}"
+# Create a Chat
+discussion = Chat("Discussion", 
+                  analyst_1, analyst_2,
+                  llm_1, llm_2,
+                  query_limit=query_limit)
 
-# Example dataset and LLMs
-dataset = Dataset("gene,expression\nG1,2.5\nG2,3.6", "Description of the dataset")
-llm_agent1 = LLM({"name": "Agent 1", "param": "value1"})
-llm_agent2 = LLM({"name": "Agent 2", "param": "value2"})
 
 async def handle_agent(agent, websocket: WebSocket):
     global current_hypothesis, current_query_count, run_pause_state
