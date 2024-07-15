@@ -1,33 +1,31 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import './App.css'
-
-const api_base = "http://127.0.0.1:8000"
+import { api_base } from '../helpers/constants'
 
 const ObjectList = ({objectType, ...props}) => {
   const navigate = useNavigate()
-    const [loading, setLoading] = useState(true)
-    const [objects, setObjects] = useState([]); // Replace with your actual data fetching logic
-    const [checkedObjects, setCheckedObjects] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [objects, setObjects] = useState([]) // Replace with your actual data fetching logic
+  const [checkedObjects, setCheckedObjects] = useState([])
 
-    useEffect(() => {
-        getObjects();
-    }, [objectType]);
+  useEffect(() => {
+      getObjects()
+  }, [objectType])
 
   const getObjects = () => {
     axios.get(api_base+`/objects/${objectType}`)
       .then(response => {
         // Handle the response data
-        // console.log(response);
-        setObjects(response.data.objects);
-        setLoading(false);
+        // console.log(response)
+        setObjects(response.data.objects)
+        setLoading(false)
       })
       .catch(error => {
         // Handle any errors
         alert(error)
-        setLoading(false);
-      });
+        setLoading(false)
+      })
   }
 
   const toggleSelectAll = (e) => {
@@ -57,21 +55,21 @@ const ObjectList = ({objectType, ...props}) => {
         // Map the checkedObjects array to an array of promises
         const deletePromises = checkedObjects.map(id => 
           axios.post(`${api_base}/objects/${objectType}/${id}/delete`)
-        );
+        )
 
         // Wait for all deletion requests to complete
-        const responses = await Promise.all(deletePromises);
-        // console.log("done deleting");
+        const responses = await Promise.all(deletePromises)
+        // console.log("done deleting")
 
         // Clear checked objects and refresh the objects list
-        setCheckedObjects([]);
-        getObjects();
+        setCheckedObjects([])
+        getObjects()
       } catch (error) {
           // Handle any errors that occur during the deletion process
-          alert(error);
+          alert(error)
       }
     }
-  };
+  }
 
 
   return (
@@ -130,7 +128,7 @@ const ObjectList = ({objectType, ...props}) => {
       </table>
 }
     </div>
-  );
-};
+  )
+}
 
-export default ObjectList;
+export default ObjectList

@@ -435,9 +435,26 @@ object_specifications = {
                 "label": "analysis run",
                 "object_type": "analysis_run",
                 "view": "object_link",
-                "editable": False}
+                "editable": False
             }
         }
+    },
+    "user": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
+            "username": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            }
+        }
+    }
 }
 
 # from jsonschema import validate, ValidationError
