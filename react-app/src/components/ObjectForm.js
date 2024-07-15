@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import './App.css'
-
-const api_base = "http://127.0.0.1:8000"
+import { api_base } from '../helpers/constants'
 
 const ObjectForm = ({ objectType, formType }) => {
     const { objectId } = useParams() 
@@ -42,68 +40,68 @@ const ObjectForm = ({ objectType, formType }) => {
     }
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
     
-        let newFormFields = [...formFields];
-        let updatedField = newFormFields.find(field => field.name === name);
+        let newFormFields = [...formFields]
+        let updatedField = newFormFields.find(field => field.name === name)
         
         if (updatedField)
-            updatedField.value = value;
+            updatedField.value = value
     
-        setFormFields(newFormFields);
-    };
+        setFormFields(newFormFields)
+    }
 
     const handleInputMultiChange = (e) => {
-        const { name, value, checked } = e.target;
+        const { name, value, checked } = e.target
     
-        let newFormFields = [...formFields];
-        let updatedField = newFormFields.find(field => field.name === name);
+        let newFormFields = [...formFields]
+        let updatedField = newFormFields.find(field => field.name === name)
     
         if (updatedField) {
             if (checked) {
-                updatedField.value = [...updatedField.value, value];
+                updatedField.value = [...updatedField.value, value]
             } else {
-                updatedField.value = updatedField.value.filter(val => val !== value);
+                updatedField.value = updatedField.value.filter(val => val !== value)
             }
         }
     
-        setFormFields(newFormFields);
-    };
+        setFormFields(newFormFields)
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
         // Create a FormData object from the form
-        const form = e.target;
-        const formData = new FormData(form);
+        const form = e.target
+        const formData = new FormData(form)
 
         // Convert FormData to a plain object
-        const formDataObj = {};
+        const formDataObj = {}
         formData.forEach((value, key) => {
             if (formDataObj[key]) {
                 if (Array.isArray(formDataObj[key])) {
-                    formDataObj[key].push(value);
+                    formDataObj[key].push(value)
                 } else {
-                    formDataObj[key] = [formDataObj[key], value];
+                    formDataObj[key] = [formDataObj[key], value]
                 }
             } else {
-                formDataObj[key] = value;
+                formDataObj[key] = value
             }
-        });
+        })
 
         // Convert array values to JSON strings
         Object.keys(objectSpec.properties).map(key => {
             if (objectSpec.properties[key].type == "list_of_object_ids") {
                 if (Array.isArray(formDataObj[key])) {
-                    formDataObj[key] = JSON.stringify(formDataObj[key]);
+                    formDataObj[key] = JSON.stringify(formDataObj[key])
                 } else {
-                    formDataObj[key] = JSON.stringify([formDataObj[key]]);
+                    formDataObj[key] = JSON.stringify([formDataObj[key]])
                 }
             }
         })
         for (const key in formDataObj) {
             if (Array.isArray(formDataObj[key])) {
-                formDataObj[key] = JSON.stringify(formDataObj[key]);
+                formDataObj[key] = JSON.stringify(formDataObj[key])
             }
         }
 
@@ -130,7 +128,7 @@ const ObjectForm = ({ objectType, formType }) => {
                     navigate(`/${objectType}/${response.data.object_id}`)
             })
             .catch(error => {
-                console.error('Error:', error.message);
+                console.error('Error:', error.message)
             })
     }
 

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useParams, useNavigate, NavLink } from 'react-router-dom';
+import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
-import './App.css'
-
-const api_base = "http://127.0.0.1:8000"
+import { api_base } from '../helpers/constants'
 
 const ObjectView = ({objectType, ...props}) => {
-    const { objectId } = useParams();
-    const navigate = useNavigate();
+    const { objectId } = useParams()
+    const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
     const [executing, setExecuting] = useState(false)
@@ -16,24 +14,24 @@ const ObjectView = ({objectType, ...props}) => {
     const [linkNames, setLinkNames] = useState([])
 
     useEffect(() => {
-        getObject();
-    }, [objectId]);
+        getObject()
+    }, [objectId])
 
     const getObject = () => {
         axios.get(api_base+`/objects/${objectType}/${objectId}`)
           .then(response => {
             // Handle the response data
-            console.log(response);
-            setObject(response.data.object);
+            console.log(response)
+            setObject(response.data.object)
             setObjectSpec(response.data.object_spec)
             setLinkNames(response.data.link_names)
-            setLoading(false);
+            setLoading(false)
           })
           .catch(error => {
             // Handle any errors
             alert(error)
-            setLoading(false);
-          });
+            setLoading(false)
+          })
       }
 
       const executePlan = () => {
@@ -42,15 +40,15 @@ const ObjectView = ({objectType, ...props}) => {
         axios.post(api_base+`/objects/${objectType}/${objectId}/execute`)
             .then(response => {
                 // Handle the response data
-                console.log(response);
+                console.log(response)
                 navigate(response.data.url)
-                setExecuting(false);
+                setExecuting(false)
             })
             .catch(error => {
                 // Handle any errors
                 alert(error)
-                setExecuting(false);
-            });
+                setExecuting(false)
+            })
       }
 
       const deleteObject = () => {
