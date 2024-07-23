@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><OAI-PMH
+	xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate>2024-06-12T18:06:25Z</responseDate><request verb="GetRecord" identifier="oai:pubmedcentral.nih.gov:7398486" metadataPrefix="oai_dc">https:/www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi</request><GetRecord><record><header><identifier>oai:pubmedcentral.nih.gov:7398486</identifier><datestamp>2021-06-19</datestamp><setSpec>nihpa</setSpec><setSpec>manuscript</setSpec></header><metadata><oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:title>The Molecular Basis of Atrial Fibrillation Pathophysiology and Therapy: A Translational Perspective</dc:title>
+  <dc:creator>Nattel, Stanley</dc:creator>
+  <dc:creator>Heijman, Jordi</dc:creator>
+  <dc:creator>Zhou, Liping</dc:creator>
+  <dc:creator>Dobrev, Dobromir</dc:creator>
+  <dc:source>Circ Res</dc:source>
+  <dc:subject>Article</dc:subject>
+  <dc:description>Atrial fibrillation (AF) is a highly prevalent arrhythmia, with substantial associated morbidity and mortality. There have been significant management advances over the past 2 decades, but the burden of the disease continues to increase and there is certainly plenty of room for improvement in treatment options. A potential key to therapeutic innovation is a better understanding of underlying fundamental mechanisms. This article reviews recent advances in understanding the molecular basis for AF, with a particular emphasis on relating these new insights to clinical translation opportunities. We first review the evidence relating basic electrophysiological mechanisms to the characteristics of clinical AF. We then discuss the molecular control of factors leading to some of the principal determinants, including abnormalities in impulse conduction (such as tissue fibrosis and other extra-cardiomyocyte alterations, connexin dysregulation and Na(+)-channel dysfunction), electrical refractoriness and impulse generation. We then consider the molecular drivers of AF progression, including a range of Ca(2+)-dependent intracellular processes, microRNA changes and inflammatory signaling. The concept of key interactome-related nodal points is then evaluated, dealing with systems like those associated with Ca(2+)/calmodulin-dependent protein kinase-II, NLRP3 (NACHT, LRR and PYD domains-containing protein-3) and transcription-factors like TBX5 and PitX2c.We conclude with a critical discussion of therapeutic implications, knowledge gaps and future directions, dealing with such aspects as drug repurposing, biologics, multispecific drugs, the targeting of cardiomyocyte inflammatory signaling and potential considerations in intervening at the level of interactomes and gene-regulation. The area of molecular intervention for AF management presents exciting new opportunities, along with substantial challenges.</dc:description>
+  <dc:date>2020-06-18</dc:date>
+  <dc:date>2020-06-19</dc:date>
+  <dc:identifier>/pmc/articles/PMC7398486/</dc:identifier>
+  <dc:identifier>/pubmed/32717172</dc:identifier>
+  <dc:identifier>http://dx.doi.org/10.1161/CIRCRESAHA.120.316363</dc:identifier>
+  <dc:type>Text</dc:type>
+  <dc:language>en</dc:language>
+  <dc:rights/>
+</oai_dc:dc>
+
+</metadata></record></GetRecord></OAI-PMH>
