@@ -1,0 +1,22 @@
+"""
+
+The provided dataset includes measurements of “protein abundance” and “mRNA expression” changes after infection of human cells with Dengue virus as compared to mock infected controls. The dataset also includes an siRNA screen average Z-score as well as information about viral interacting proteins for each given human gene.
+
+The data has 2 time points: 24 hours after infection or 48 hours after infection.
+
+Here is a detailed description of the columns in the dataset:
+
+A- Official human gene symbol (HGNC)
+B- Protein abundance 24 hours after infection
+C- Protein abundance 48 hours after infection
+D- siRNA screen average Z-score
+E- mRNA expression 24 after infection
+F- mRNA expression 48 hurs after infection
+
+Please note:
+
+“Protein abundance” and “mRNA expression” measurements <0 reflect a "decrease" while measurements >0 indicate an "increase".
+
+The siRNA Z-scores in column D: the higher the score, the stronger the negative effect on viral replication caused by that gene's silencing. The Z-score can range from 1.1 (minor negative effect on viral replication) to 2.9 (strong negative effect on viral replication). If this datapoint is available for a certain gene, it means that siRNA experiments have already been performed and you should not include this approach in the "Actionablity" criteria described below.
+Usually, if a gene has a Z-score value in column D, it will not have values in the other columns within the dataset.
+""

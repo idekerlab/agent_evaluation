@@ -92,25 +92,68 @@
                         var conditionalField = document.getElementById('{{ field.conditional_on }}');
                         var targetField = document.getElementById('{{ field.name }}');
                         var options = JSON.parse(targetField.dataset.options);
-                        conditionalField.addEventListener('change', function() {
+
+                        // Function to update the target field's options based on the conditional field's value
+                        function updateTargetOptions() {
                             var selectedValue = conditionalField.value;
                             var targetOptions = options[selectedValue] || [];
-                            targetField.innerHTML = '';
+                            targetField.innerHTML = ''; // Clear existing options
                             targetOptions.forEach(function(option) {
                                 var opt = document.createElement('option');
                                 opt.value = option;
                                 opt.innerHTML = option;
+                                if (option == '{{ field.value }}')
+                                    opt.selected = true;
                                 targetField.appendChild(opt);
                             });
-                        });
-                        // Trigger change to initialize the options
-                        conditionalField.dispatchEvent(new Event('change'));
+                        }
+
+                        // Add event listener to the conditional field to update target field on change
+                        conditionalField.addEventListener('change', updateTargetOptions);
+                   
+                        updateTargetOptions();
+
                     {% endif %}
                 {% endfor %}
             }
     
             document.addEventListener("DOMContentLoaded", function() {
                 updateConditionalDropdowns();
+            });
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // Display form errors for textarea custom regex rules
+                var form = document.getElementById('form');
+                
+                // Identify all textarea fields with regexes
+                {% for field in form_fields %}
+                    {% if field.input_type == 'textarea' %}
+                        {% if field.regex|length > 0  %}
+                            var textarea = document.getElementById('{{ field.name }}');
+                            if (textarea) {
+                                textarea.addEventListener('input', function() {
+                                    this.setCustomValidity('');
+                                });
+
+                                // Add event listener to the form submission and display error msg for custom regexes
+                                form.addEventListener('submit', function(event) {
+                                    var textarea = document.getElementById('{{ field.name }}');
+                                    var regexPattern = '{{ field.regex }}';
+                                    var regex = new RegExp(regexPattern);
+
+                                    if (!regex.test(textarea.value)) {
+                                        textarea.setCustomValidity('Invalid input format. {{field.regex_description}}');
+                                        textarea.reportValidity();
+                                        event.preventDefault(); // Prevent form submission
+                                    } else {
+                                        textarea.setCustomValidity(''); // Clear the custom error
+                                    }
+                                });
+                            }
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
             });
         </script>
 </head>
@@ -134,7 +177,7 @@
         </div>
     </div>
     <div class="main-content">
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="form">
             <input type="hidden" name="object_id" value="{{ object.object_id }}">
             <table>
                 <tbody>
@@ -142,7 +185,7 @@
                         <tr>
                             <td style="width: 100px; 
                                 min-width: 100px; word-wrap: break-word;
-                                padding-top: 5px; text-align: right";>{{ field.label }}</td>
+                                padding-top: 5px; text-align: right;">{{ field.label }}</td>
                             <td>
                                 {% if field.editable %}
                                     {% if field.input_type == 'text' %}
@@ -158,14 +201,89 @@
                                         style="width: 100%; max-width: 600px; padding: 5px;"
                                         name="{{ field.name }}">{{ field.value }}</textarea>
                                     {% elif field.input_type == 'select_single_object' %}
-                                        <p>placeholder for select_single_object</p>
-                                        <input type="text" id="{{ field.name }}" 
-                                        name="{{ field.name }}" value="{{ field.value }}" style="width: 600px;">
+                                        <select id="{{ field.name }}" name="{{ field.name }}">
+                                            {% for option in field.options %}
+                                                <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
+                                            {% endfor %}
+                                        </select>
                                     {% elif field.input_type == 'select_multiple_objects' %}
-                                        <p>placeholder for select_multiple_objects</p>
-                                        <textarea style="white-space: pre;"
-                                        id="{{ field.name }}" 
-                                        name="{{ field.name }}">{{ field.value }}</textarea>
+                                        <div id="{{ field.name }}-container">
+                                            <ul id="{{ field.name }}-list" class="idList">
+                                                {% for id in field.value %}
+                                                    <li id-value="{{ id }}" arr-value="{{ field.options }}">
+                                                        <span class="label-placeholder">Loading...</span>
+                                                        <input style="display:none;" type="text" name="{{ field.name }}" value="{{ id }}" readonly>
+                                                        <button type="button" onclick="removeId(this)">Remove</button>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            <select id="{{ field.name }}-new-id" name="{{ field.name }}">
+                                                {% for option in field.options %}
+                                                    <option value="{{ option['value'] }}" {% if option["value"] == field.value %}selected{% endif %}>{{ option['label'] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="button" onclick="addId('{{ field.name }}')">Add</button>
+                                        </div>
+                                        <textarea style="display:none;" id="{{ field.name }}" name="{{ field.name }}">{{ field.value }}</textarea>
+                                    
+                                        <script>
+                                            function findLabelByValue(arr, value) {
+                                                const item = arr.find(obj => obj.value === value);
+                                                return item ? item.label : null; // or you can return an appropriate default value or message
+                                            }
+
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                const listItems = document.querySelectorAll(".idList li");
+
+                                                listItems.forEach(li => {
+                                                    const value = li.getAttribute("id-value");
+                                                    const arr = li.getAttribute("arr-value");
+                                                    // Replace single quotes with double quotes to make it a valid JSON string
+                                                    const validJsonString = arr.replace(/'/g, '"');
+                                                    // Parse the JSON string into a JavaScript array
+                                                    const parsedArray = JSON.parse(validJsonString);
+                                                    const label = findLabelByValue(parsedArray, value);
+
+                                                    const labelSpan = li.querySelector(".label-placeholder");
+                                                    if (labelSpan) {
+                                                        labelSpan.textContent = label || "Label not found";
+                                                    }
+                                                });
+                                            });
+
+                                            function addId(fieldName) {
+                                                const selectElement = document.getElementById(fieldName + '-new-id');
+                                                var newId = selectElement.value;
+
+                                                if (newId) {
+                                                    var ul = document.getElementById(fieldName + '-list');
+                                                    var li = document.createElement('li');
+
+                                                    const selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
+                                                    li.innerHTML = selectedOptionText + ' <input style="display:none;" type="text" name="' + fieldName + '" value="' + newId + '" readonly> <button type="button" onclick="removeId(this)">Remove</button>';
+                                                    ul.appendChild(li);
+                                                    selectElement.selectedIndex = 0;
+                                                    updateHiddenInput(fieldName);
+                                                }
+                                            }
+                                    
+                                            function removeId(button) {
+                                                var li = button.parentNode;
+                                                var fieldName = li.querySelector('input').name;
+                                                li.parentNode.removeChild(li);
+                                                updateHiddenInput(fieldName);
+                                            }
+                                    
+                                            function updateHiddenInput(fieldName) {
+                                                var hiddenInput = document.getElementById(fieldName);
+                                                var inputs = document.querySelectorAll('#' + fieldName + '-list input[type="text"]');
+                                                var ids = [];
+                                                inputs.forEach(function(input) {
+                                                    ids.push(input.value);
+                                                });
+                                                hiddenInput.value = JSON.stringify(ids);
+                                            }
+                                        </script>
                                     {% elif field.input_type == 'upload_table' %}
                                         <label for="{{ field.name }}">Upload CSV:</label>
                                         <input type="file" id="{{ field.name }}" name="{{ field.name }}" accept=".csv">
@@ -184,21 +302,28 @@
                                     {% endif %}
                                 {% else %}
                                     {% if field.view == 'text' %}
-                                        <button type="button" class="collapsible">{{ field.value | truncate(15) }}</button>
-                                        <div class="content">
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        {% if field.type == 'int' %}
+                                            <!-- catch this case because the default is to assume that the value is text that can be truncated -->
                                             <pre>{{ field.value }}</pre>
-                                        </div>
+                                            
+                                        {% else %}
+                                            <p>text</p>
+                                            <button type="button" class="collapsible">{{ field.value | truncate(15) }}</button>
+                                            <pre>{{ field.value }}</pre>  
+                                        {% endif %} 
                                     {% elif field.view == 'object_link' %}
-                                        <a href="/objects/{{ field.value.object_type }}/{{ field.value.id }}">{{ field.value.id }}</a>
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        <pre>{{ field.value }}</pre>
                                     {% elif field.view == 'list_of_object_links' %}
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
                                         {% for item in field.value %}
-                                            <a href="/objects/{{ item.object_type }}/{{ item.id }}">{{ item.id }}</a><br>
+                                            <pre>{{ item }}</pre>
                                         {% endfor %}
                                     {% else %}
-                                        <p>placeholder for viewer of {{ item.object_type }}</p>
-                                        <div class="content">
-                                            <pre>{{ field.value }}</pre>
-                                        </div>
+                                        <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                                        <p>placeholder for viewer of {{ field.view }}</p>
+                                        <pre>{{ field.value }}</pre>
                                     {% endif %}
                                 {% endif %}
                             </td>

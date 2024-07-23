@@ -1,4 +1,5 @@
 agent_evaluation==0.2.0
+anthropic==0.29.0
 fastapi==0.111.0
 google-generativeai==0.6.0
 groq==0.8.0
