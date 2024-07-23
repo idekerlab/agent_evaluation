@@ -279,6 +279,8 @@ async def update_object(request: Request, object_type: str, object_id: str):
             id_list = form_data.get(field_name).replace("'", '"')
             id_list = json.loads(id_list) 
             form_data[field_name] = id_list
+        if field_spec.get("editable") == False:
+            form_data.pop(field_name, None)
     db = request.app.state.db
     try:
         await handle_form_submission(form_data, object_type, db)

@@ -143,6 +143,7 @@ const ObjectForm = ({ objectType, formType }) => {
                         value={field.value}
                         onChange={handleInputChange}
                         style={{ width: '100%', maxWidth: "800px", padding: '5px', boxSizing: "border-box" }}
+                        disabled={!field.editable}
                     />
                 )
             case 'number':
@@ -156,6 +157,7 @@ const ObjectForm = ({ objectType, formType }) => {
                         max={field.max}
                         step={field.step}
                         onChange={handleInputChange}
+                        disabled={!field.editable}
                     />
                 )
             case 'textarea':
@@ -165,6 +167,7 @@ const ObjectForm = ({ objectType, formType }) => {
                         name={field.name}
                         value={field.value}
                         onChange={handleInputChange}
+                        disabled={!field.editable}
                         style={{ width: '100%', maxWidth: "800px", padding: '5px', boxSizing: "border-box" }}
                     />
                 )
@@ -175,6 +178,7 @@ const ObjectForm = ({ objectType, formType }) => {
                         name={field.name}
                         value={field.value}
                         onChange={handleInputChange}
+                        disabled={!field.editable}
                     >
                         {field.options.map(option => (
                             <option key={option.value} value={option.value}>
@@ -186,20 +190,30 @@ const ObjectForm = ({ objectType, formType }) => {
             case 'select_multiple_objects':
                 return (
                     <div>
-                        {field.options.map(option => (
-                        <div key={option.value}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name={field.name}
-                                    value={option.value}
-                                    checked={field.value.includes(option.value)}
-                                    onChange={handleInputMultiChange}
-                                />
-                                {option.label}
-                            </label>
-                        </div>
-                    ))}
+                        {field.options.map(option => {
+                            if (!field.editable && !field.value.includes(option.value)) {
+                                return (
+                                   <></>
+                                )
+                            } else {
+                                return (
+                                    <div key={option.value}>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name={field.name}
+                                                value={option.value}
+                                                checked={field.value.includes(option.value)}
+                                                onChange={handleInputMultiChange}
+                                                disabled={!field.editable}
+                                            />
+                                            {option.label}
+                                        </label>
+                                    </div>
+                                )
+                            }
+                            
+                        })}
                     </div>
                     
                 )
@@ -212,6 +226,7 @@ const ObjectForm = ({ objectType, formType }) => {
                             value={field.value}
                             onChange={handleInputChange}
                             data-options={JSON.stringify(field.options)}
+                            disabled={!field.editable}
                         >
                             {field.options[formFields.find(field2 => field2.name === field.conditional_on).value].map(option => (
                                 <option key={option} value={option}>
@@ -227,6 +242,7 @@ const ObjectForm = ({ objectType, formType }) => {
                             name={field.name}
                             value={field.value}
                             onChange={handleInputChange}
+                            disabled={!field.editable}
                         >
                             {field.options.map(option => (
                                 <option key={option} value={option}>
@@ -275,7 +291,7 @@ const ObjectForm = ({ objectType, formType }) => {
                                                 {field.editable ? (
                                                     renderField(field)
                                                 ) : (
-                                                    <p>{field.value}</p>
+                                                    renderField(field)
                                                 )}
                                             </td>
                                         </tr>

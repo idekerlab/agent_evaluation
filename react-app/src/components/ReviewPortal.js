@@ -1,13 +1,46 @@
 import React, { useState, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import ReviewerLogin from './ReviewerLogin'
-
+import ReviewList from './ReviewList'
+import HypothesisList from './HypothesisList'
+import axios from 'axios'
+import { api_base } from '../helpers/constants'
 
 const ReviewPortal = () => {
     const navigate = useNavigate()
-    const [reviews, setReviews] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [analysisRuns, setAnalysisRuns] = useState([])
     const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null)
-    console.log(user);
+
+    useEffect(() => {
+        getAnalysisRuns()
+    }, [user])
+
+    const getAnalysisRuns = () => {
+        axios.get(api_base+`/objects/analysis_run`)
+            .then(response => {
+                // Handle the response data
+                // console.log(response)
+                let runs = response.data.objects
+                let filteredRuns = filterAnalysisRuns(runs)
+                setAnalysisRuns(filteredRuns)
+                setLoading(false)
+            })
+            .catch(error => {
+                // Handle any errors
+                alert(error)
+                setLoading(false)
+            })
+    }
+
+    const filterAnalysisRuns = (analysisRuns) => {
+        if (user != null) {
+            const filteredRuns = analysisRuns.filter(run => (run.properties.user_ids ?? []).includes(user.object_id));
+            return filteredRuns
+        }
+        return []
+    }
+
     return (
         <div className="portal-content">
             <div className="sidebar">
@@ -27,8 +60,10 @@ const ReviewPortal = () => {
                 <Routes>
                     { user != null &&
                         <>
-                            <Route path={`/pending`} element={<p>pending reviews</p>} />
-                            <Route path={`/complete`} element={<p>complete reviews</p>} />
+                            <Route path={`/pending`} element={<ReviewList analysisRuns={analysisRuns} />} />
+                            <Route path={`/pending/:objectId`} element={<HypothesisList analysisRuns={analysisRuns} />} />
+                            <Route path={`/complete`} element={<ReviewList analysisRuns={analysisRuns} />} />
+                            <Route path={`/complete/:objectId`} element={<HypothesisList analysisRuns={analysisRuns} />} />
                         </>
                     }
                     <Route path={`/*`} element={<ReviewerLogin user={user} setUser={(val)=>setUser(val)} />} />
