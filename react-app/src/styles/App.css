@@ -50,7 +50,7 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: orange;
+  background-color: #fc900d;
   color: white;
   border: none;
   cursor: pointer;
@@ -84,7 +84,7 @@
 } 
 
 .button {
-  background-color: orange;
+  background-color: #fc900d;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -93,7 +93,7 @@
 }
 
 .button:hover {
-  background-color: #ffcc00;
+  filter: brightness(1.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-color: #ffcc00;
 }
@@ -188,4 +188,36 @@ pre {
   border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.highlight {
+  background-color: #fff9c4; /* Soft yellow background for light attention */
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1em; /* Slightly increase font size */
+  line-height: 1.5; /* Improve readability */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for emphasis */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  animation: pulse 3s infinite;
+}
+
+/* import "ag-grid-community/styles/ag-grid.css" // Mandatory CSS required by the Data Grid
+import "ag-grid-community/styles/ag-theme-quartz.css" // Optional Theme applied to the Data Grid
+import "ag-grid-community/styles/ag-theme-alpine.css" */
+
+/* Mandatory CSS required by the Data Grid */
+@import "~ag-grid-community/styles/ag-grid.css";
+
+/* Optional Theme applied to the Data Grid */
+@import "~ag-grid-community/styles/ag-theme-quartz.css";
+@import "~ag-grid-community/styles/ag-theme-alpine.css";
+.ag-theme-quartz {
+  /* Changes the color of the grid text */
+    --ag-foreground-color: rgb(25, 25, 25);
+    /* Changes the color of the grid background */
+    --ag-background-color: #ffe2db;
+    /* Changes the header color of the top row */
+    --ag-header-background-color: #ffc5b6;
+    /* Changes the hover color of the row*/
+    --ag-row-hover-color: rgb(216, 226, 255);
 }
