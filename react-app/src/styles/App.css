@@ -1,0 +1,223 @@
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+}
+
+.home-button {
+  margin-left: auto; /* Push the button to the far right */
+  margin-right: 50px;
+  background-color: #007bff; /* Example button color */
+  color: white; /* Example text color */
+  border: none;
+  padding: 0px 10px;
+  cursor: pointer;
+  border-radius: 5px; /* Example border radius */
+}
+
+.home-button:hover {
+  background-color: #0056b3; /* Example hover color */
+}
+
+.container {
+  display: flex;
+  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+}
+
+.sidebar {
+  position: fixed;
+  top: 40px; /* Adjust if needed based on the height of the top-bar */
+  left: 0;
+  width: 180px; /* Adjust based on your layout */
+  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  background-color: skyblue; /* Optional: Sidebar background color */
+  overflow: hidden; /* Ensure sidebar does not scroll */
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */
+}
+
+.sidebar button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fc900d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.content {
+  margin-left: 200px; /* Same width as sidebar */
+  padding-top: 30px;
+  overflow-y: auto;
+  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  width: calc(100% - 200px); /* Ensure the content takes the remaining width */
+  background-color: #fff; /* Optional: Content background color */
+}
+
+.portal-content {
+  padding-top: 30px;
+  overflow-y: auto;
+  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  width: 100%; /* Ensure the content takes the remaining width */
+  background-color: #fff; /* Optional: Content background color */
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar a.active button {
+  background-color: rgb(82, 103, 96);
+  color: white; 
+} 
+
+.button {
+  background-color: #fc900d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-color: #ffcc00;
+}
+
+.button:disabled {
+  background-color: grey;
+  color: lightgrey;
+}
+
+.button:hover:disabled {
+  background-color: grey; /* Ensures background remains grey on hover */
+  color: lightgrey; /* Ensures text remains lightgrey on hover */
+  box-shadow: none;
+}
+
+.spaced-button {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.property-container {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  word-wrap: break-word;
+  text-align: left;
+  vertical-align: top;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+table {
+  border-collapse: collapse;
+  border: none;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.header img {
+  width: 100px;
+  height: 100px;
+  margin-right: 20px;
+}
+
+.header {
+  background-color: #9D695A;
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.review-portal-header {
+  position: fixed;
+  top: 40px; /* Adjust if needed based on the height of the top-bar */
+  left: 0;
+  width: 100%; /* Adjust based on your layout */
+  height: 100px; /* Adjust if needed based on the height of the top-bar */
+  background-color: skyblue; /* Optional: Sidebar background color */
+  color: white;
+  overflow: hidden; /* Ensure sidebar does not scroll */
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */
+}
+
+.main-content {
+  padding: 20px;
+}
+
+pre {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.highlight {
+  background-color: #fff9c4; /* Soft yellow background for light attention */
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1em; /* Slightly increase font size */
+  line-height: 1.5; /* Improve readability */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for emphasis */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  animation: pulse 3s infinite;
+}
+
+/* import "ag-grid-community/styles/ag-grid.css" // Mandatory CSS required by the Data Grid
+import "ag-grid-community/styles/ag-theme-quartz.css" // Optional Theme applied to the Data Grid
+import "ag-grid-community/styles/ag-theme-alpine.css" */
+
+/* Mandatory CSS required by the Data Grid */
+@import "~ag-grid-community/styles/ag-grid.css";
+
+/* Optional Theme applied to the Data Grid */
+@import "~ag-grid-community/styles/ag-theme-quartz.css";
+@import "~ag-grid-community/styles/ag-theme-alpine.css";
+.ag-theme-quartz {
+  /* Changes the color of the grid text */
+    --ag-foreground-color: rgb(25, 25, 25);
+    /* Changes the color of the grid background */
+    --ag-background-color: #ffe2db;
+    /* Changes the header color of the top row */
+    --ag-header-background-color: #ffc5b6;
+    /* Changes the hover color of the row*/
+    --ag-row-hover-color: rgb(216, 226, 255);
+}
