@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://kit.fontawesome.com/b25ef27063.js" crossorigin="anonymous"></script>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <title>{{ object_type }}</title>
     <style>
         /* CSS styles for the page */
@@ -118,10 +120,14 @@
             {% endif %}
         </div>
         <div style="margin-left: auto;">
+            {% if object_type == "analysis_plan" or object_type == "review_plan" %}
+                <button class="button" style="background-color: rgb(42, 138, 0);" onclick="executePlan(this)">
+                    Execute Plan
+                </button>
+            {% endif %}
             <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.object_id }}/edit'">Edit</button>
             <button class="button" onclick="window.location.href='/objects/{{ object_type }}/{{ object.object_id }}/clone'">Clone</button>
             <button class="button" style="background-color: crimson;" onclick="deleteObject()">Delete</button>
-
             <script>
                 function deleteObject() {
                     if (confirm('Are you sure you want to delete this object?')) {
@@ -139,6 +145,27 @@
                         .catch(error => {
                             console.error('Error deleting object:', error);
                         });
+                    }
+                }
+
+                async function executePlan(button) {
+                    if (confirm('Are you sure you want to start a new run?')) {
+                        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin-pulse fa-lg"></i>';
+                        try {
+                            let response = await fetch('/objects/{{ object_type }}/{{ object.object_id }}/execute', {
+                                method: 'POST'
+                            });
+                            if (response.ok) {
+                                button.innerHTML = 'Execute Plan';
+                                window.location.href = response.url;
+                            } else {
+                                console.error('Error starting analysis run');
+                                button.innerHTML = 'Execute Plan';
+                            }
+                        } catch (error) {
+                            console.error('Error executing analysis plan:', error);
+                            button.innerHTML = 'Execute Plan';
+                        }
                     }
                 }
             </script>
@@ -175,11 +202,13 @@
                             {% elif prop_spec['view'] == 'list_of_object_links' and object[prop_name] %}
                             <p style="max-width: 600px;" class="property-container">
                                     {% for object_id in object[prop_name] %}
+                                        {{ link_names[object_id] }} -
                                         <a href="/objects/{{ prop_spec['object_type'] }}/{{ object_id }}">{{ object_id }}</a><br>
                                     {% endfor %}
                             </p>
                             {% elif prop_spec['view'] == 'object_link' and object[prop_name] %}
                             <p style="max-width: 600px;" class="property-container">
+                                {{ link_names[object[prop_name]] }} -
                                 <a href="/objects/{{ prop_spec['object_type'] }}/{{ object[prop_name] }}">{{ object[prop_name] }}</a>
                             </p>
                             {% else %}
