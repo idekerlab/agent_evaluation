@@ -24,7 +24,7 @@ class AnalysisPlan:
             "description": description
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_plan")
-        return cls(db, analyst_ids, dataset_id, n_hypotheses_per_analyst, 
+        return cls(db, name, analyst_ids, dataset_id, n_hypotheses_per_analyst, 
                    description, object_id=object_id, created=created)
 
     @classmethod
