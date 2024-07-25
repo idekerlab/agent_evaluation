@@ -207,6 +207,7 @@ object_specifications = {
                 "label": "analysts",
                 "object_type": "analyst",
                 "view": "list_of_object_links",
+                "input_type": "select_multiple_objects",
                 "editable": False,
             },
             "dataset_id": {
@@ -234,6 +235,7 @@ object_specifications = {
                 "type": "list_of_object_ids",
                 "object_type": "hypothesis",
                 "view": "list_of_object_links",
+                "input_type": "select_multiple_objects",
                 "label": "hypotheses",
                 "editable": False
             },
@@ -256,6 +258,14 @@ object_specifications = {
                 "editable": False,
                 "input_type": "textarea",
                 "view": "text"
+            },
+            "user_ids": {
+                "type": "list_of_object_ids",
+                "label": "user reviewers",
+                "input_type": "select_multiple_objects",
+                "object_type": "user",
+                "view": "list_of_object_links",
+                "editable": True
             }
         }
     },
@@ -401,7 +411,7 @@ object_specifications = {
             "review_text": {
                 "type": "string",
                 "label": "review",
-                "editable": False,
+                "editable": True,
                 "view": "text"
             },
             "hypotheses_text": {
@@ -435,9 +445,26 @@ object_specifications = {
                 "label": "analysis run",
                 "object_type": "analysis_run",
                 "view": "object_link",
-                "editable": False}
+                "editable": False
             }
         }
+    },
+    "user": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
+            "username": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            }
+        }
+    }
 }
 
 # from jsonschema import validate, ValidationError
