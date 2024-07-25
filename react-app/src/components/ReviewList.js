@@ -1,17 +1,40 @@
 import { Link, useLocation } from "react-router-dom"
 
-const ReviewList = ({analysisRuns, ...props}) => {
+const ReviewList = ({type, analysisRuns, reviews, ...props}) => {
     const location = useLocation()
+
+    let completeAnalysisRunIds = []
+    reviews.map(review => {
+        if (review.status == "complete")
+            completeAnalysisRunIds.push(review.analysis_run_id) 
+    })
+
+    let analysisRunsToDisplay = []
+    if (type == "complete") {
+        analysisRuns.map(run => {
+            if (completeAnalysisRunIds.includes(run.object_id))
+                analysisRunsToDisplay.push(run)
+        })
+    } else {
+        analysisRuns.map(run => {
+            if (!completeAnalysisRunIds.includes(run.object_id))
+                analysisRunsToDisplay.push(run)
+        })
+    }
+    
+
+
 
     return (
         <div>
-            <h2>Review List</h2>
+            <h2>
+                {type == "complete" ? "Complete" : "Pending"} Review List
+            </h2>
             <div>
-                {analysisRuns.map(analysisRun => (
-                    <>
-                        <Link to={`${location.pathname}/${analysisRun.object_id}`}>{analysisRun.properties.name}</Link>
-                        <br/>
-                    </>
+                {analysisRunsToDisplay.map(analysisRun => (
+                    <div key={analysisRun.object_id}>
+                        <Link to={`${location.pathname}/${analysisRun.object_id}`}>{analysisRun.properties.name == "" ? `unnamed - ${analysisRun.object_id}` : analysisRun.properties.name}</Link>
+                    </div>
                 ))}
             </div>
         </div>

@@ -9,12 +9,14 @@ import { api_base } from '../helpers/constants'
 const ReviewPortal = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+    const [reload, setReload] = useState(false)
     const [analysisRuns, setAnalysisRuns] = useState([])
+    const [reviews, setReviews] = useState([])
     const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null)
 
     useEffect(() => {
         getAnalysisRuns()
-    }, [user])
+    }, [user, reload])
 
     const getAnalysisRuns = () => {
         axios.get(api_base+`/objects/analysis_run`)
@@ -24,6 +26,25 @@ const ReviewPortal = () => {
                 let runs = response.data.objects
                 let filteredRuns = filterAnalysisRuns(runs)
                 setAnalysisRuns(filteredRuns)
+                getReviews()
+                // setLoading(false)
+            })
+            .catch(error => {
+                // Handle any errors
+                alert(error)
+                // setLoading(false)
+            })
+    }
+
+    const getReviews = () => {
+        axios.get(api_base+`/objects/review`)
+            .then(response => {
+                // Handle the response data
+                // console.log(response)
+                let reviews = response.data.objects
+                let filteredReviews = filterReviews(reviews)
+                // console.log(filteredReviews);
+                setReviews(filteredReviews)
                 setLoading(false)
             })
             .catch(error => {
@@ -33,12 +54,44 @@ const ReviewPortal = () => {
             })
     }
 
-    const filterAnalysisRuns = (analysisRuns) => {
+    const filterReviews = (reviews) => {
         if (user != null) {
-            const filteredRuns = analysisRuns.filter(run => (run.properties.user_ids ?? []).includes(user.object_id));
+            const filteredRuns = []
+            reviews.filter(review => {
+                // console.log(review.properties.review_text);
+                if (isValidJSON(review.properties.review_text)) {
+                    let reviewObj = JSON.parse(review.properties.review_text)
+                    if (reviewObj.user_id == user.object_id) {
+                        filteredRuns.push({...reviewObj, analysis_run_id: review.properties.analysis_run_id, object_id: review.object_id})
+                        return true
+                    }
+                }
+                return false
+            })
             return filteredRuns
         }
         return []
+    }
+
+    const isValidJSON = (str) => {
+        try {
+            JSON.parse(str)
+            return true
+        } catch (e) {
+            return false
+        }
+    }
+
+    const filterAnalysisRuns = (analysisRuns) => {
+        if (user != null) {
+            const filteredRuns = analysisRuns.filter(run => (run.properties.user_ids ?? []).includes(user.object_id))
+            return filteredRuns
+        }
+        return []
+    }
+
+    const getHypothesisList = () => {
+        return <HypothesisList analysisRuns={analysisRuns} user={user} savedReviews={reviews} setReload={setReload} />
     }
 
     return (
@@ -55,15 +108,14 @@ const ReviewPortal = () => {
                     <button className='button' disabled={user == null}>Complete Reviews</button>
                 </NavLink>
             </div>
-               
-                <div className="main-content">
+            <div className="main-content">
                 <Routes>
                     { user != null &&
                         <>
-                            <Route path={`/pending`} element={<ReviewList analysisRuns={analysisRuns} />} />
-                            <Route path={`/pending/:objectId`} element={<HypothesisList analysisRuns={analysisRuns} />} />
-                            <Route path={`/complete`} element={<ReviewList analysisRuns={analysisRuns} />} />
-                            <Route path={`/complete/:objectId`} element={<HypothesisList analysisRuns={analysisRuns} />} />
+                            <Route path={`/pending`} element={<ReviewList type="pending" analysisRuns={analysisRuns} reviews={reviews} />} />
+                            <Route path={`/pending/:objectId`} element={getHypothesisList()} />
+                            <Route path={`/complete`} element={<ReviewList type="complete" analysisRuns={analysisRuns} reviews={reviews} />} />
+                            <Route path={`/complete/:objectId`} element={getHypothesisList()} />
                         </>
                     }
                     <Route path={`/*`} element={<ReviewerLogin user={user} setUser={(val)=>setUser(val)} />} />

@@ -1,24 +1,32 @@
 import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 import HypothesisReviewForm from './HumanReviewForm'
 
-const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, handleReviewChange, handleNextHypothesis, ...props}) => {
+const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, handleReviewChange, handleNextHypothesis, disableForm, ...props}) => {
 
     let colDefs = []
     let rowData = []
 
-    hypothesis.data.map((row, index) => {
-        if (index == 0) {
-            row.map(label => {
-                colDefs.push({ field: label })
+    try {
+        if (hypothesis.data.length > 0) {
+            hypothesis.data.map((row, index) => {
+                if (index == 0) {
+                    row.map(label => {
+                        colDefs.push({ field: label })
+                    })
+                } else {
+                    let newRow = {}
+                    row.map((value, index) => {
+                        newRow[`${colDefs[index]["field"]}`] =  value
+                    })
+                    rowData.push(newRow)
+                }
             })
-        } else {
-            let newRow = {}
-            row.map((value, index) => {
-                newRow[`${colDefs[index]["field"]}`] =  value
-            })
-            rowData.push(newRow)
         }
-    })
+        
+    } catch (error) {
+        console.log("Error with dataset");
+    }
+    
 
 
     return (
@@ -35,19 +43,23 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, hand
                 </button>
             </div>
             
-            <HypothesisReviewForm review={review} handleReviewChange={handleReviewChange} />
+            <HypothesisReviewForm review={review} disableForm={disableForm} handleReviewChange={handleReviewChange} />
             <p>
                 <b>biological context:</b> {hypothesis.biological_context}
             </p>
             <p className='highlight'>
                 <b>hypothesis:</b> {hypothesis.hypothesis_text}
             </p>
-            <div className="ag-theme-quartz" style={{ height: 500 }} >
-                <AgGridReact
-                    rowData={rowData}
-                    columnDefs={colDefs}
-                />
-            </div>
+            { colDefs.length > 0 && rowData.length > 0 ?
+                <div className="ag-theme-quartz" style={{ height: 500 }} >
+                    <AgGridReact
+                        rowData={rowData}
+                        columnDefs={colDefs}
+                    />
+                </div>
+                :
+                <p style={{color: "red"}}><b>Error displaying table data</b></p>
+            }
             <p>
                 <b>data description:</b> {dataset.description}
             </p>
