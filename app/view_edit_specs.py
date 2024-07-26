@@ -411,7 +411,7 @@ object_specifications = {
             "review_text": {
                 "type": "string",
                 "label": "review",
-                "editable": False,
+                "editable": True,
                 "view": "text"
             },
             "hypotheses_text": {
