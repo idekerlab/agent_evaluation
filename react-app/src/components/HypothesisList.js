@@ -5,6 +5,7 @@ import { api_base } from '../helpers/constants'
 import HypothesisView from './HypothesisView'
 
 const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props}) => {
+
     const { objectId } = useParams()
     const [loading, setLoading] = useState(true)
     const [analysisRun, setAnalysisRun] = useState(null)
@@ -12,6 +13,7 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
     const [datasets, setDatasets] = useState([])
     const [reviews, setReviews] = useState([])
     const [hypothesisIndex, setHypothesisIndex] = useState(0)
+
     const [alreadySavedData, setAlreadySavedData] = useState({})
     const navigate = useNavigate()
 
@@ -38,12 +40,13 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
             setReviews(hypotheses.map(_=> ({rating: null, comments: ""})))
         }
     }
-
     const fetchAnalysisRun = () => {
         axios.get(api_base+`/objects/analysisRun/${objectId}`)
             .then(response => {
                 // Handle the response data
+
                 // console.log(response)
+
                 const analysisRun = response.data.object
                 setAnalysisRun(analysisRun)
                 fetchHypotheses(analysisRun.hypothesis_ids)
@@ -154,10 +157,12 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
                 <p>loading</p>
             ) : (
                 <div>
+
                     { hypotheses && hypotheses.length > 0 ? (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                 <h2>Review of {analysisRun.name}</h2>
+
                                 { disableForm ?
                                         <button className='button' style={{backgroundColor: "grey"}} onClick={handleUndoSubmission}>Undo Submission</button>
                                     :
@@ -181,7 +186,7 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
                                     disableForm={disableForm}
                                 />
                             }
-                            
+
                         </>
                         
                     ) : (

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 const StarRating = ({rating, setRating, totalStars, disabled, ...props}) => {
+
     // const [rating, setRating] = useState(null);
     const [hover, setHover] = useState(null);
     // const [totalStars, setTotalStars] = useState(5);
@@ -13,7 +14,9 @@ const StarRating = ({rating, setRating, totalStars, disabled, ...props}) => {
                     <label key={index}>
                     <input
                         type="radio"
+
                         disabled={disabled}
+
                         name="rating"
                         style={{display: "none"}}
                         value={currentRating}
@@ -25,6 +28,7 @@ const StarRating = ({rating, setRating, totalStars, disabled, ...props}) => {
                             color: currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9",
                             fontSize: '2.3em'
                         }}
+
                         onMouseEnter={() => setHover(disabled ? null : currentRating)}
                         onMouseLeave={() => setHover(null)}
                     >

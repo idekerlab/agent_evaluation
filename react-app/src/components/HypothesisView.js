@@ -1,10 +1,13 @@
 import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 import HypothesisReviewForm from './HumanReviewForm'
 
+
 const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, handleReviewChange, handleNextHypothesis, disableForm, ...props}) => {
+
 
     let colDefs = []
     let rowData = []
+
 
     try {
         if (hypothesis.data.length > 0) {
@@ -42,14 +45,16 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, hand
                     Next <i className="fa-solid fa-arrow-right-long fa-lg"></i>
                 </button>
             </div>
-            
+
             <HypothesisReviewForm review={review} disableForm={disableForm} handleReviewChange={handleReviewChange} />
+
             <p>
                 <b>biological context:</b> {hypothesis.biological_context}
             </p>
             <p className='highlight'>
                 <b>hypothesis:</b> {hypothesis.hypothesis_text}
             </p>
+
             { colDefs.length > 0 && rowData.length > 0 ?
                 <div className="ag-theme-quartz" style={{ height: 500 }} >
                     <AgGridReact
@@ -60,6 +65,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, hand
                 :
                 <p style={{color: "red"}}><b>Error displaying table data</b></p>
             }
+
             <p>
                 <b>data description:</b> {dataset.description}
             </p>

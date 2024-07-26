@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 
+
 const ReviewList = ({type, analysisRuns, reviews, ...props}) => {
     const location = useLocation()
 
@@ -35,6 +36,7 @@ const ReviewList = ({type, analysisRuns, reviews, ...props}) => {
                     <div key={analysisRun.object_id}>
                         <Link to={`${location.pathname}/${analysisRun.object_id}`}>{analysisRun.properties.name == "" ? `unnamed - ${analysisRun.object_id}` : analysisRun.properties.name}</Link>
                     </div>
+
                 ))}
             </div>
         </div>

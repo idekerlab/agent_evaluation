@@ -9,14 +9,18 @@ import { api_base } from '../helpers/constants'
 const ReviewPortal = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
+
     const [reload, setReload] = useState(false)
     const [analysisRuns, setAnalysisRuns] = useState([])
     const [reviews, setReviews] = useState([])
+
     const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null)
 
     useEffect(() => {
         getAnalysisRuns()
+
     }, [user, reload])
+
 
     const getAnalysisRuns = () => {
         axios.get(api_base+`/objects/analysis_run`)
@@ -26,6 +30,7 @@ const ReviewPortal = () => {
                 let runs = response.data.objects
                 let filteredRuns = filterAnalysisRuns(runs)
                 setAnalysisRuns(filteredRuns)
+
                 getReviews()
                 // setLoading(false)
             })
@@ -45,6 +50,7 @@ const ReviewPortal = () => {
                 let filteredReviews = filterReviews(reviews)
                 // console.log(filteredReviews);
                 setReviews(filteredReviews)
+
                 setLoading(false)
             })
             .catch(error => {
@@ -53,6 +59,7 @@ const ReviewPortal = () => {
                 setLoading(false)
             })
     }
+
 
     const filterReviews = (reviews) => {
         if (user != null) {
@@ -90,6 +97,7 @@ const ReviewPortal = () => {
         return []
     }
 
+
     const getHypothesisList = () => {
         return <HypothesisList analysisRuns={analysisRuns} user={user} savedReviews={reviews} setReload={setReload} />
     }
@@ -108,6 +116,7 @@ const ReviewPortal = () => {
                     <button className='button' disabled={user == null}>Complete Reviews</button>
                 </NavLink>
             </div>
+
             <div className="main-content">
                 <Routes>
                     { user != null &&
