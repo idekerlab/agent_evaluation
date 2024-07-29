@@ -15,7 +15,7 @@ const HumanReviewForm = ({review, handleReviewChange, disableForm, ...props}) =>
 
         newReview["comments"] = e.target.value
         handleReviewChange(newReview)
-
+    }
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
 
