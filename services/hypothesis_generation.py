@@ -57,7 +57,8 @@ class HypothesisGenerator:
                         analyst_id=analyst_id,
                         dataset_id=dataset.object_id,
                         description=description, 
-                        analysis_run_id=analysis_run_id
+                        analysis_run_id=analysis_run_id, 
+                        full_prompt = prompt
                     )
                     ids.append(hypothesis.object_id)
             return ids
@@ -73,7 +74,8 @@ class HypothesisGenerator:
                 analyst_id=analyst_id,
                 dataset_id=dataset.object_id,
                 description=description, 
-                analysis_run_id=analysis_run_id
+                analysis_run_id=analysis_run_id, 
+                full_prompt = prompt
             )
 
             return [hypothesis.object_id]

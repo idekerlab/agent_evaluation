@@ -3,7 +3,7 @@
 class Hypothesis:
     def __init__(self, db, name=None, hypothesis_text=None, data=None, biological_context=None, analyst_id=None, 
                  dataset_id=None, description=None, analysis_run_id=None, 
-                 object_id=None, created=None):
+                 object_id=None, full_prompt = None, created=None):
         self.db = db
         self.hypothesis_text = hypothesis_text
         self.data = data
@@ -15,9 +15,10 @@ class Hypothesis:
         self.object_id = object_id
         self.created = created
         self.name = name
+        self.full_prompt = full_prompt
 
     @classmethod
-    def create(cls, db, hypothesis_text, data, biological_context, analyst_id, dataset_id, description, analysis_run_id, name=None):
+    def create(cls, db, hypothesis_text, data, biological_context, analyst_id, dataset_id, description, analysis_run_id, name=None, full_prompt = None):
         properties = {
             "name": name,
             "hypothesis_text": hypothesis_text,
@@ -26,11 +27,12 @@ class Hypothesis:
             "analyst_id": analyst_id,
             "dataset_id": dataset_id,
             "description": description,
-            "analysis_run_id": analysis_run_id
+            "analysis_run_id": analysis_run_id,
+            "full_prompt": full_prompt
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="hypothesis")
         hypothesis = cls(db, name, hypothesis_text, data, biological_context, analyst_id, dataset_id, 
-                   description, analysis_run_id, object_id=object_id, created=created)
+                   description, analysis_run_id, object_id=object_id, full_prompt = full_prompt, created=created)
         if not name:
             analyst_properties, analyst_type = db.load(analyst_id)
             hypothesis.update(name=f"hypothesis - {analyst_properties['name']} - {biological_context}")
