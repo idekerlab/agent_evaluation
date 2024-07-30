@@ -320,10 +320,17 @@ object_specifications = {
             },
             "analysis_run_id": {
                 "type": "object_id",
-                "object_type": "analysis_run",
                 "view": "object_link",
                 "label": "analysis run",
                 "editable": False
+            },
+            "full_prompt": {
+                "type": "string",
+                "object_type": "prompt",
+                "label": "prompt",
+                "editable": False,
+                "input_type": "textarea",
+                "view": "text"
             }
         }
     },
