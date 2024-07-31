@@ -211,7 +211,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css" */
 /* Optional Theme applied to the Data Grid */
 @import "~ag-grid-community/styles/ag-theme-quartz.css";
 @import "~ag-grid-community/styles/ag-theme-alpine.css";
-.ag-theme-quartz {
+.ag-theme-quartz-red {
   /* Changes the color of the grid text */
     --ag-foreground-color: rgb(25, 25, 25);
     /* Changes the color of the grid background */

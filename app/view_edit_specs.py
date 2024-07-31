@@ -281,7 +281,7 @@ object_specifications = {
             "hypothesis_text": {
                 "type": "string",
                 "label": "hypothesis",
-                "editable": False,
+                "editable": True,
                 "input_type": "textarea",
                 "view": "text"
             },

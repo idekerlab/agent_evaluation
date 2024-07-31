@@ -56,7 +56,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, hand
             </p>
 
             { colDefs.length > 0 && rowData.length > 0 ?
-                <div className="ag-theme-quartz" style={{ height: 500 }} >
+                <div className="ag-theme-quartz ag-theme-quartz-red" style={{ height: 500 }} >
                     <AgGridReact
                         rowData={rowData}
                         columnDefs={colDefs}

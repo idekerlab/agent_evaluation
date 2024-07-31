@@ -74,7 +74,9 @@ async def list_objects(request: Request, object_type: str):
             analyst_properties, analyst_type = db.load(analyst_id)
             objects[index]['properties']['analyst_id'] = f"({analyst_properties['name']}) {analyst_id}"
             
-    return {"object_type": object_type, "objects": objects}
+    objects.reverse()
+            
+    return {"object_type": object_type, "objects": objects, "object_spec": object_specifications[object_type]}
     
     return templates.TemplateResponse("object_list.html", {"request": request, 
                                                            "object_type": object_type, 
@@ -266,6 +268,7 @@ from fastapi import HTTPException
 async def update_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
+    print(form_data)
     # Ensure the object_type exists in the specifications
     if object_type not in object_specifications:
         print(f"Error: '{object_type}' is not a valid object type in specifications.")
@@ -275,8 +278,8 @@ async def update_object(request: Request, object_type: str, object_id: str):
     object_spec = object_specifications[object_type]
     # Process the form data to handle list_of_object_ids
     for field_name, field_spec in object_spec["properties"].items():
-        if field_spec.get("type") == "list_of_object_ids":
-            id_list = form_data.get(field_name).replace("'", '"')
+        if field_spec.get("type") == "list_of_object_ids" and field_name in form_data:
+            id_list = form_data[field_name].replace("'", '"')
             id_list = json.loads(id_list) 
             form_data[field_name] = id_list
         if field_spec.get("editable") == False:
@@ -430,9 +433,10 @@ async def handle_form_submission(form_data, object_type, db):
         # Extract CSV file from form data
         csv_file = form_data.pop('data', None) if object_type == "dataset" else None
         if csv_file:
+            print("File:", csv_file)
             # Read the contents of the CSV file as text
-            #csv_content = csv_file.read().decode('utf-8')
             csv_content = (await csv_file.read()).decode('utf-8')
+            print("Content", csv_content)
             # Include the CSV text data in form_data
             form_data['data'] = csv_content
         

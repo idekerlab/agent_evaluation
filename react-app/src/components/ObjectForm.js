@@ -68,59 +68,101 @@ const ObjectForm = ({ objectType, formType }) => {
         setFormFields(newFormFields)
     }
 
+    // const handleSubmit = (e) => {
+    //     e.preventDefault()
+
+    //     // Create a FormData object from the form
+    //     const form = e.target
+    //     const formData = new FormData(form)
+
+    //     // Convert FormData to a plain object
+    //     const formDataObj = {}
+    //     formData.forEach((value, key) => {
+    //         console.log(key, ";", value);
+    //         if (formDataObj[key]) {
+    //             if (Array.isArray(formDataObj[key])) {
+    //                 formDataObj[key].push(value)
+    //             } else {
+    //                 formDataObj[key] = [formDataObj[key], value]
+    //             }
+    //         } else {
+    //             if (key == "data") {
+    //                 const fileInput = document.getElementById(key);
+    //                 const file = fileInput.files[0];
+    //                 formDataObj[key] = file
+    //             } else {
+    //                 formDataObj[key] = value
+    //             }
+    //         }
+    //     })
+
+    //     // Convert array values to JSON strings
+    //     Object.keys(objectSpec.properties).map(key => {
+    //         if (objectSpec.properties[key].type == "list_of_object_ids") {
+    //             if (Array.isArray(formDataObj[key])) {
+    //                 formDataObj[key] = JSON.stringify(formDataObj[key])
+    //             } else {
+    //                 formDataObj[key] = JSON.stringify([formDataObj[key]])
+    //             }
+    //         }
+    //     })
+    //     for (const key in formDataObj) {
+    //         if (Array.isArray(formDataObj[key])) {
+    //             formDataObj[key] = JSON.stringify(formDataObj[key])
+    //         }
+    //     }
+
+    //     handleFormSubmit(formDataObj)
+        
+    // }
+
     const handleSubmit = (e) => {
-        e.preventDefault()
-
+        e.preventDefault();
+    
         // Create a FormData object from the form
-        const form = e.target
-        const formData = new FormData(form)
-
-        // Convert FormData to a plain object
-        const formDataObj = {}
+        const form = e.target;
+        const formData = new FormData(form);
+    
+        // Process and handle special cases
         formData.forEach((value, key) => {
-            if (formDataObj[key]) {
-                if (Array.isArray(formDataObj[key])) {
-                    formDataObj[key].push(value)
-                } else {
-                    formDataObj[key] = [formDataObj[key], value]
-                }
-            } else {
-                formDataObj[key] = value
+            console.log(key, ";", value);
+            if (key === "data") {
+                const fileInput = document.getElementById(key);
+                const file = fileInput.files[0];
+                formData.set(key, file);
             }
-        })
-
-        // Convert array values to JSON strings
-        Object.keys(objectSpec.properties).map(key => {
-            if (objectSpec.properties[key].type == "list_of_object_ids") {
-                if (Array.isArray(formDataObj[key])) {
-                    formDataObj[key] = JSON.stringify(formDataObj[key])
-                } else {
-                    formDataObj[key] = JSON.stringify([formDataObj[key]])
+        });
+    
+        // Convert array values to JSON strings as required
+        Object.keys(objectSpec.properties).forEach(key => {
+            if (objectSpec.properties[key].type === "list_of_object_ids") {
+                const values = formData.getAll(key);
+                if (values.length > 0) {
+                    formData.set(key, JSON.stringify(values));
                 }
             }
-        })
-        for (const key in formDataObj) {
-            if (Array.isArray(formDataObj[key])) {
-                formDataObj[key] = JSON.stringify(formDataObj[key])
+        });
+    
+        for (const key of formData.keys()) {
+            const values = formData.getAll(key);
+            if (values.length > 1) {
+                formData.set(key, JSON.stringify(values));
             }
         }
-
-        handleFormSubmit(formDataObj)
-        
+    
+        // Call handleFormSubmit with the FormData object
+        handleFormSubmit(formData);
     }
 
     const handleFormSubmit = (formDataObj) => {
+        console.log("Submitting the following data:", formDataObj);
         let submitPath = api_base
         if (formType == "edit")
             submitPath += `/objects/${objectType}/${objectId}/edit`
         else if (formType == "new")
             submitPath += `/objects/${objectType}/blank/new`
 
-        axios.post(submitPath, formDataObj, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
+        axios.post(submitPath, formDataObj)
             .then(response => {
                 if (formType == "edit")
                     navigate(`/${objectType}/${objectId}`)
@@ -216,6 +258,14 @@ const ObjectForm = ({ objectType, formType }) => {
                         })}
                     </div>
                     
+                )
+            case 'upload_table':
+                return (
+                    <div>
+                        <label htmlFor={field.name}>Upload CSV: </label>
+                        <input type="file" id={field.name} name={field.name} accept=".csv" />
+                        {/* <pre>{field.value}</pre> */}
+                    </div>
                 )
             case 'dropdown':
                 if (field.conditional_on) {

@@ -21,7 +21,7 @@ const ObjectView = ({objectType, ...props}) => {
         axios.get(api_base+`/objects/${objectType}/${objectId}`)
           .then(response => {
             // Handle the response data
-            console.log(response)
+            // console.log(response)
             setObject(response.data.object)
             setObjectSpec(response.data.object_spec)
             setLinkNames(response.data.link_names)
