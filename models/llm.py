@@ -68,7 +68,7 @@ class LLM:
             return self.query_local_model(context, prompt)
         else:
             raise ValueError(f"Unsupported llm type: {self.type}")
-
+    
     
     def query_openai(self, context, prompt):
         """
