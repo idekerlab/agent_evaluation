@@ -33,7 +33,7 @@ class HypothesisGenerator:
         prompt = analyst.prompt_template.format_map(safe_dict)
         
         if (n_hypotheses_per_analyst > 1):
-            prompt += f"\n\n Generate {n_hypotheses_per_analyst} hypotheses. Separate the text between each hypothesis with the following symbols: {separation_symbol}"
+            prompt += f"\n\nGenerate {n_hypotheses_per_analyst} hypotheses without explicitly mention the number of hypotheses in the response text. Separate the text between each hypothesis with the following symbols: {separation_symbol}."
 
         # Load the LLM associated with the analyst
         llm = LLM.load(self.db, analyst.llm_id)
@@ -47,11 +47,20 @@ class HypothesisGenerator:
             ids = []
             hypothesis_arr = hypothesis_text.split(separation_symbol)
             for hypothesis_text in hypothesis_arr:
-                if len(hypothesis_text) > 5:
+                # Strip leading and trailing whitespace
+                cleaned_text = hypothesis_text.strip()
+        
+                # Remove "Hypothesis #" prefix if it exists
+                if cleaned_text.lower().startswith('hypothesis '):
+                    colon_index = cleaned_text.find(':')
+                    if colon_index != -1:
+                        cleaned_text = cleaned_text[colon_index + 1:].strip()
+                
+                if len(cleaned_text) > 5:
                     # Create and save the hypothesis
                     hypothesis = Hypothesis.create(
                         self.db,
-                        hypothesis_text=hypothesis_text.strip(),
+                        hypothesis_text=cleaned_text.strip(),
                         data=data,
                         biological_context=analysis_run.biological_context,
                         analyst_id=analyst_id,
