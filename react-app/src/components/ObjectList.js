@@ -1,24 +1,70 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { api_base } from '../helpers/constants'
+import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 
 const ObjectList = ({objectType, ...props}) => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [objects, setObjects] = useState([]) // Replace with your actual data fetching logic
+  const [objectSpec, setObjectSpec]= useState({})
   const [checkedObjects, setCheckedObjects] = useState([])
+  const [rowData, setRowData] = useState([])
+  const gridRef = useRef()
+  
+
+  const colKeys = Object.keys(objectSpec)
+  colKeys.splice(1, 0, "created")
+  colKeys.splice(2, 0, "id")
+
+  const colDefs = colKeys.map((key) => {
+    if (key == "name") {
+      return ({
+        field: "name",
+        filter: "agTextColumnFilter",
+        headerCheckboxSelection: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        checkboxSelection: true,
+        showDisabledCheckboxes: true,
+        filterParams: {
+          buttons: ["reset", "apply"],
+          closeOnApply: true
+        },
+        filterValueGetter: props => {
+          return props.data.name.name
+        },
+        cellRenderer: props => (
+          <Link to={`/${objectType}/${props.value.object_id}`}>{props.value.name || 'none'}</Link>
+        )
+      })
+    }
+    return {
+      field: key, 
+      filter: true,  
+      filterParams: {
+        buttons: ["reset", "apply"],
+        closeOnApply: true
+      }
+    }
+  })
+
 
   useEffect(() => {
       getObjects()
+      clearFilters()
   }, [objectType])
+
 
   const getObjects = () => {
     axios.get(api_base+`/objects/${objectType}`)
       .then(response => {
         // Handle the response data
-        // console.log(response)
-        setObjects(response.data.objects)
+        const objects = response.data.objects
+        // console.log("Get Objects output", response.data);
+        setObjects(objects)
+        setObjectSpec(response.data.object_spec.properties)
+        updateRowData(objects)
         setLoading(false)
       })
       .catch(error => {
@@ -28,40 +74,54 @@ const ObjectList = ({objectType, ...props}) => {
       })
   }
 
-  const toggleSelectAll = (e) => {
-    if (checkedObjects.length == objects.length)
-      setCheckedObjects([])
-    else {
-      setCheckedObjects(objects.map((object)=> (object.object_id)))
-    }
+
+  const updateRowData = (objs) => {
+
+    let newRowData = objs.map((obj) => {
+      let newRow = {}
+      Object.keys(obj.properties).map((key)=> {
+        const value = obj.properties[key]
+        if (key == "name") {
+          newRow[key] = {object_id: obj.object_id, name: obj.properties.name}
+        } else {
+          newRow[key] = value
+        }
+      })
+
+      if (newRow.name == null) {
+        newRow['name'] = {object_id: obj.object_id, name: "none"}
+      }
+
+      newRow['id'] = obj.object_id
+      return newRow
+    })
+    setRowData(newRowData)
   }
 
-  const handleCheckboxChange = (id) => {
-    let newCheckedObjects = [...checkedObjects]
-    if (newCheckedObjects.includes(id)) {
-      // Remove the id
-      newCheckedObjects = newCheckedObjects.filter(element => element !== id)
-      setCheckedObjects(newCheckedObjects)
-    } else {
-      newCheckedObjects.push(id)
-      setCheckedObjects(newCheckedObjects)
-    }
-  }
+  const clearFilters = useCallback(() => {
+    if (gridRef.current)
+      gridRef.current.api.setFilterModel(null)
+  }, [])
 
   const deleteCheckedObjects = async () => {
 
     if (window.confirm(`Are you sure you want to delete ${checkedObjects.length} objects?`)) {
       try {
         // Map the checkedObjects array to an array of promises
-        const deletePromises = checkedObjects.map(id => 
-          axios.post(`${api_base}/objects/${objectType}/${id}/delete`)
+          const deletePromises = checkedObjects.map(node => {
+            let objId = node.data.name.object_id
+
+            return axios.post(`${api_base}/objects/${objectType}/${objId}/delete`)
+          }
         )
 
         // Wait for all deletion requests to complete
         const responses = await Promise.all(deletePromises)
-        // console.log("done deleting")
 
         // Clear checked objects and refresh the objects list
+        checkedObjects.map(node => {
+          node.setSelected(false)
+        })
         setCheckedObjects([])
         getObjects()
       } catch (error) {
@@ -70,6 +130,14 @@ const ObjectList = ({objectType, ...props}) => {
       }
     }
   }
+
+  const onSelectionChanged = useCallback(
+    (event) => {
+      let nodes = event.api.getSelectedNodes()
+      setCheckedObjects(nodes)
+    },
+    [window],
+  );
 
 
   return (
@@ -92,41 +160,21 @@ const ObjectList = ({objectType, ...props}) => {
       { loading ? 
         <p>Loading...</p>
         :
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <input type="checkbox" onClick={toggleSelectAll} />
-            </th>
-            <th>Name</th>
-            <th>Created</th>
-            <th>Properties</th>
-          </tr>
-        </thead>
-        <tbody>
-          {objects.map((obj) => (
-            <tr key={obj.object_id}>
-              <td>
-                <input type="checkbox" checked={checkedObjects.includes(obj.object_id)}  onChange={()=>handleCheckboxChange(obj.object_id)} />
-              </td>
-              <td>
-                <Link to={`/${objectType}/${obj.object_id}`}>
-                  {obj.properties.name || 'none'}
-                </Link>
-              </td>
-              <td>{obj.properties.created}</td>
-              <td>
-                {Object.entries(obj.properties).map(([key, value]) => (
-                  <div key={key}>
-                    {key}: {String(value).length > 75 ? String(value).substring(0, 75) + '...' : String(value)}
-                  </div>
-                ))}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-}
+        rowData.length > 0 ?
+          <div className="ag-theme-quartz" style={{ height: '75vh' }} >
+              <AgGridReact
+                ref={gridRef}
+                rowSelection="multiple"
+                onSelectionChanged={onSelectionChanged}
+                rowData={rowData}
+                columnDefs={colDefs}
+                paginationPageSize={50}
+                pagination={true}
+              />
+          </div>
+          :
+          <p>No {objectType} objects to display. Try adding a new one.</p>
+      }
     </div>
   )
 }
