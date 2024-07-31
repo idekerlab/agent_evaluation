@@ -68,54 +68,6 @@ const ObjectForm = ({ objectType, formType }) => {
         setFormFields(newFormFields)
     }
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault()
-
-    //     // Create a FormData object from the form
-    //     const form = e.target
-    //     const formData = new FormData(form)
-
-    //     // Convert FormData to a plain object
-    //     const formDataObj = {}
-    //     formData.forEach((value, key) => {
-    //         console.log(key, ";", value);
-    //         if (formDataObj[key]) {
-    //             if (Array.isArray(formDataObj[key])) {
-    //                 formDataObj[key].push(value)
-    //             } else {
-    //                 formDataObj[key] = [formDataObj[key], value]
-    //             }
-    //         } else {
-    //             if (key == "data") {
-    //                 const fileInput = document.getElementById(key);
-    //                 const file = fileInput.files[0];
-    //                 formDataObj[key] = file
-    //             } else {
-    //                 formDataObj[key] = value
-    //             }
-    //         }
-    //     })
-
-    //     // Convert array values to JSON strings
-    //     Object.keys(objectSpec.properties).map(key => {
-    //         if (objectSpec.properties[key].type == "list_of_object_ids") {
-    //             if (Array.isArray(formDataObj[key])) {
-    //                 formDataObj[key] = JSON.stringify(formDataObj[key])
-    //             } else {
-    //                 formDataObj[key] = JSON.stringify([formDataObj[key]])
-    //             }
-    //         }
-    //     })
-    //     for (const key in formDataObj) {
-    //         if (Array.isArray(formDataObj[key])) {
-    //             formDataObj[key] = JSON.stringify(formDataObj[key])
-    //         }
-    //     }
-
-    //     handleFormSubmit(formDataObj)
-        
-    // }
-
     const handleSubmit = (e) => {
         e.preventDefault();
     
