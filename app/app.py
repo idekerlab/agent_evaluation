@@ -407,7 +407,7 @@ async def execute_object(request: Request, object_type: str, object_id: str):
         loop = asyncio.get_event_loop()
         runner_func = functools.partial(execute_review_plan, review_set.object_id)
         result = await loop.run_in_executor(None, runner_func)
-        return {"url": f"/{object_type}/{review_set.object_id}"}
+        return {"url": f"/review_set/{review_set.object_id}"}
         return RedirectResponse(url=f"/objects/{object_type}/{review_set.object_id}", status_code=303)
     
 @app.get("/{full_path:path}", response_class=HTMLResponse)
