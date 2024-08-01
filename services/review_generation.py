@@ -1,10 +1,40 @@
 from models.dataset import Dataset
 from models.analyst import Analyst
+from models.analysis_run import AnalysisRun
 from models.llm import LLM
 from models.review import Review
 from models.review_set import ReviewSet
 from helpers.safe_dict import SafeDict
+import re
 
+def extract_summary_review(long_string):
+    pattern = r'\nSummary Review:(.*)'
+    match = re.search(pattern, long_string, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    else:
+        return "Summary Review section not found."
+    
+def extract_final_rankings(long_string):
+    # First, extract the Final Rankings section
+    pattern = r'Final Rankings:(.*?)(?=\n\S|\Z)'
+    match = re.search(pattern, long_string, re.DOTALL)
+    
+    if not match:
+        return "Final Rankings section not found."
+    
+    rankings_text = match.group(1).strip()
+    
+    # Now, parse the rankings into tuples
+    ranking_pattern = r'Hypothesis#(\d+):\s*(\d+)'
+    rankings = re.findall(ranking_pattern, rankings_text)
+    
+    # Convert strings to integers and sort by hypothesis number
+    rankings = [(int(hyp), int(rank)) for hyp, rank in rankings]
+    rankings.sort(key=lambda x: x[0])
+    
+    return rankings
+        
 class ReviewGenerator:
     def __init__(self, db):
         self.db = db
@@ -39,12 +69,27 @@ class ReviewGenerator:
 
         # Generate hypothesis text using the LLM
         review_text = llm.query(analyst.context, prompt)
+        summary_review = extract_summary_review(review_text)
+        ranking_tuples = extract_final_rankings(review_text)
+
+        # Combine the tuples with the analyst_id and the hypothesis_ids in the AnalysisRun 
+        # to generate the rankings datastructure
+        rankings = {"user_id": analyst_id, "status": "done"}
+        analysis_run = AnalysisRun.load(self.db, analysis_run_id)
+        r = {}
+        for order, rank in ranking_tuples:
+            hypothesis_id = analysis_run.hypothesis_ids[order-1]
+            r[hypothesis_id] = {"stars": rank, "order": order, "comments": ""}
+
+        rankings["rankings"]=r
 
         # Create and save the hypothesis
         review = Review.create(
             self.db,
             data=data,
             hypotheses_text=hypotheses_text,
+            rankings=rankings,
+            summary_review=summary_review,
             review_text=review_text,
             analyst_id=analyst_id,
             analysis_run_id=analysis_run_id,
