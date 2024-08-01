@@ -2,7 +2,7 @@ import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 import HypothesisReviewForm from './HumanReviewForm'
 
 
-const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, handleReviewChange, handleNextHypothesis, disableForm, ...props}) => {
+const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {
 
 
     let colDefs = []
@@ -46,7 +46,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, review, hand
                 </button>
             </div>
 
-            <HypothesisReviewForm review={review} disableForm={disableForm} handleReviewChange={handleReviewChange} />
+            <HypothesisReviewForm rank={rank} disableForm={disableForm} handleRankingChange={handleRankingChange} />
 
             <p>
                 <b>biological context:</b> {hypothesis.biological_context}
