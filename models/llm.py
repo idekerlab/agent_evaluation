@@ -244,18 +244,34 @@ class LLM:
             {'role':'user',
             'parts': prompt}
             ]
-        try: 
-            response = model.generate_content(
-                messages, 
-                generation_config=genai.types.GenerationConfig(
-                    max_output_tokens=self.max_tokens, 
-                    temperature=self.temperature
+        
+        backoff_time = 10
+        retries = 0
+        max_retries = 5
+        while retries < max_retries:
+            try: 
+                response = model.generate_content(
+                    messages, 
+                    generation_config=genai.types.GenerationConfig(
+                        max_output_tokens=self.max_tokens, 
+                        temperature=self.temperature
+                    )
                 )
-            )
-            response_content = response.text
-            return response_content
-        except Exception as e:
-            raise Exception(f"google model error occurred: {e}")
+                response_content = response.text
+                return response_content
+            except requests.exceptions.RequestException as e:
+                if e.response is not None and e.response.status_code in [500, 503]: # Server error wait and retry
+                    print(f"Server issue detected (status code {e.response.status_code}), retrying in {backoff_time} seconds...")
+                    time.sleep(backoff_time)
+                    retries += 1
+                    backoff_time *= 2
+                else:
+                    raise Exception(f"Request error occurred: {e}")
+            except Exception as e:
+                raise Exception(f"An unexpected error occurred: {e}")
+        
+        raise Exception(f"Error: Max retries exceeded. Last exception: {e}")
+
     
    
     def query_local_model(self, context, prompt):
