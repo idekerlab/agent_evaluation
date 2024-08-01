@@ -12,7 +12,7 @@ const ReviewPortal = () => {
 
     const [reload, setReload] = useState(false)
     const [analysisRuns, setAnalysisRuns] = useState([])
-    const [reviews, setReviews] = useState([])
+    const [rankings, setRankings] = useState([])
 
     const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null)
 
@@ -49,7 +49,7 @@ const ReviewPortal = () => {
                 let reviews = response.data.objects
                 let filteredReviews = filterReviews(reviews)
                 // console.log(filteredReviews);
-                setReviews(filteredReviews)
+                setRankings(filteredReviews)
 
                 setLoading(false)
             })
@@ -66,10 +66,10 @@ const ReviewPortal = () => {
             const filteredRuns = []
             reviews.filter(review => {
                 // console.log(review.properties.review_text);
-                if (isValidJSON(review.properties.review_text)) {
-                    let reviewObj = JSON.parse(review.properties.review_text)
-                    if (reviewObj.user_id == user.object_id) {
-                        filteredRuns.push({...reviewObj, analysis_run_id: review.properties.analysis_run_id, object_id: review.object_id})
+                if (isValidJSON(review.properties.ranking_data)) {
+                    let rankingObj = JSON.parse(review.properties.ranking_data)
+                    if (rankingObj.user_id == user.object_id) {
+                        filteredRuns.push({...rankingObj, analysis_run_id: review.properties.analysis_run_id, object_id: review.object_id})
                         return true
                     }
                 }
@@ -99,7 +99,7 @@ const ReviewPortal = () => {
 
 
     const getHypothesisList = () => {
-        return <HypothesisList analysisRuns={analysisRuns} user={user} savedReviews={reviews} setReload={setReload} />
+        return <HypothesisList analysisRuns={analysisRuns} user={user} savedRankings={rankings} setReload={setReload} />
     }
 
     return (
@@ -121,9 +121,9 @@ const ReviewPortal = () => {
                 <Routes>
                     { user != null &&
                         <>
-                            <Route path={`/pending`} element={<ReviewList type="pending" analysisRuns={analysisRuns} reviews={reviews} />} />
+                            <Route path={`/pending`} element={<ReviewList type="pending" analysisRuns={analysisRuns} rankings={rankings} />} />
                             <Route path={`/pending/:objectId`} element={getHypothesisList()} />
-                            <Route path={`/complete`} element={<ReviewList type="complete" analysisRuns={analysisRuns} reviews={reviews} />} />
+                            <Route path={`/complete`} element={<ReviewList type="complete" analysisRuns={analysisRuns} rankings={rankings} />} />
                             <Route path={`/complete/:objectId`} element={getHypothesisList()} />
                         </>
                     }

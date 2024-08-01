@@ -421,6 +421,12 @@ object_specifications = {
                 "editable": True,
                 "view": "text"
             },
+            "ranking_data": {
+                "type": "string",
+                "label": "ranking data",
+                "editable": True,
+                "view": "text"
+            },
             "hypotheses_text": {
                 "type": "string",
                 "label": "hypotheses list",

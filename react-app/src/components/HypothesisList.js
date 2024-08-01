@@ -4,14 +4,14 @@ import axios from 'axios'
 import { api_base } from '../helpers/constants'
 import HypothesisView from './HypothesisView'
 
-const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props}) => {
+const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}) => {
 
     const { objectId } = useParams()
     const [loading, setLoading] = useState(true)
     const [analysisRun, setAnalysisRun] = useState(null)
     const [hypotheses, setHypotheses] = useState([])
     const [datasets, setDatasets] = useState([])
-    const [reviews, setReviews] = useState([])
+    const [ranking, setRanking] = useState({})
     const [hypothesisIndex, setHypothesisIndex] = useState(0)
 
     const [alreadySavedData, setAlreadySavedData] = useState({})
@@ -31,22 +31,23 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
     }, [loading, hypotheses])
 
     const initializeReviewData = () => {
-        let saved = savedReviews.find(review=> review.analysis_run_id == objectId)
+        let saved = savedRankings.find(review=> review.analysis_run_id == objectId)
 
         if (saved) {
             setAlreadySavedData(saved)
-            setReviews(saved.reviews)
+            setRanking(saved.ranking)
         } else {
-            setReviews(hypotheses.map(_=> ({rating: null, comments: ""})))
+            let newRanking = {}
+            hypotheses.map((hypo, index)=> {
+                newRanking[hypo.object_id] = {stars: null, comments: "", order: index+1}
+            })
+            setRanking(newRanking)
         }
     }
     const fetchAnalysisRun = () => {
         axios.get(api_base+`/objects/analysisRun/${objectId}`)
             .then(response => {
                 // Handle the response data
-
-                // console.log(response)
-
                 const analysisRun = response.data.object
                 setAnalysisRun(analysisRun)
                 fetchHypotheses(analysisRun.hypothesis_ids)
@@ -107,17 +108,17 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
         }
     }
 
-    const handleReviewsChange = (newReview, index) => {
-        let newReviews = [...reviews]
-        newReviews[index] = newReview
-        setReviews(newReviews)
+    const handleRankingChange = (newRank, hypothesisId) => {
+        let newRankings = {...ranking}
+        newRankings[hypothesisId] = newRank
+        setRanking(newRankings)
     }
 
     const handleSave = (statusStr, hasUndone=false) => {
-        let review_str =  JSON.stringify({user_id: user.object_id, status: statusStr, reviews: reviews})
+        let review_str =  JSON.stringify({user_id: user.object_id, status: statusStr, ranking: ranking})
 
         let submitPath = api_base + `/objects/review/blank/new`
-        let submitObj = {review_text: review_str, analysis_run_id: analysisRun.object_id}
+        let submitObj = {ranking_data: review_str, analysis_run_id: analysisRun.object_id}
 
         if (hasSavedReview) {
             submitPath = api_base + `/objects/review/${alreadySavedData.object_id}/edit`
@@ -144,12 +145,42 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
     }
 
     const handleSubmit = () => {
-        handleSave("complete")
+        let hasRankedAllHypotheses = true
+        Object.keys(ranking).map(key => {
+            let rank = ranking[key]
+            if (rank.stars == null)
+                hasRankedAllHypotheses = false
+        })
+
+        if (hasRankedAllHypotheses)
+            handleSave("complete")
+        else
+            alert("Please assign stars to all hypotheses to submit.")
     }
 
     const handleUndoSubmission = () => {
         handleSave("pending", true)
     }
+
+    const getOrderedRanks = () => {
+        let ranks = []
+
+        Object.keys(ranking).map(key => {
+            let rank = ranking[key]
+            ranks.push(rank)
+        })
+
+        ranks.sort((a,b) => b.stars - a.stars)
+        return (
+            <ul>
+                {ranks.map(rank => (
+                    <li>Hypothesis {rank.order}, stars {rank.stars ? '*'.repeat(rank.stars) + ` (${rank.stars})` : "-"}</li>
+                ))}
+            </ul>
+        )
+    }
+
+    
 
     return (
         <div>
@@ -172,16 +203,18 @@ const HypothesisList = ({analysisRuns, user, savedReviews, setReload, ...props})
                                     </>
 
                                 }
-                                
+                                <div style={{ position: 'absolute', right: 70 }}>
+                                    {getOrderedRanks()}
+                                </div>
                             </div>
-                            { reviews.length > 0 &&
+                            { Object.keys(ranking).length > 0 &&
                                 <HypothesisView 
                                     hypothesis={hypotheses[hypothesisIndex]} 
                                     dataset={datasets[hypothesisIndex]} 
                                     index={hypothesisIndex} 
                                     numHypotheses={hypotheses.length} 
-                                    review={reviews[hypothesisIndex]}
-                                    handleReviewChange={(newReview) => handleReviewsChange(newReview, hypothesisIndex)}
+                                    rank={ranking[hypotheses[hypothesisIndex].object_id]}
+                                    handleRankingChange={(newRank) => handleRankingChange(newRank, hypotheses[hypothesisIndex].object_id)}
                                     handleNextHypothesis={handleNextHypothesis}
                                     disableForm={disableForm}
                                 />
