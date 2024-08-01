@@ -3,7 +3,7 @@ class AnalysisRun:
     def __init__(self, db, analysis_plan_id, analyst_ids=None, dataset_id=None, 
                  n_hypotheses_per_analyst=0, hypothesis_ids=None, biological_context=None,
                  description=None, run_log=None, attempts=None, status='pending', 
-                 object_id=None, created=None, **kwargs):
+                 object_id=None, created=None, name=None, **kwargs):
         self.db = db
         self.analysis_plan_id = analysis_plan_id
         self.analyst_ids = analyst_ids if analyst_ids else []
@@ -16,25 +16,27 @@ class AnalysisRun:
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
         self.object_id = object_id
+        self.name = name
         self.created = created
 
     @classmethod
     def create(cls, db, analysis_plan_id, analyst_ids, dataset_id, 
-               n_hypotheses_per_analyst, biological_context, description):
+               n_hypotheses_per_analyst, biological_context, description, name):
         properties = {
             "analysis_plan_id": analysis_plan_id,
             "analyst_ids": analyst_ids,
             "dataset_id": dataset_id,
             "n_hypotheses_per_analyst": n_hypotheses_per_analyst,
             "hypothesis_ids": [],
-            "biological_context": biological_context,
+            "biological_context": biological_context, 
             "description": description,
             "attempts": {analyst: [] for analyst in analyst_ids},
+            "name": name,
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_run")
         return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [],
-                   biological_context, description, "", properties['attempts'], 'pending', object_id, created)
+                   biological_context, description, "", properties['attempts'], 'pending', object_id, name, created)
 
     @classmethod
     def load(cls, db, object_id):
@@ -51,6 +53,11 @@ class AnalysisRun:
             "run_log": self.run_log
         }
         self.db.update(self.object_id, properties)
+
+    def update_properties(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        self.db.update(self.object_id, kwargs)
 
     def delete(self):
         self.db.remove(self.object_id)
