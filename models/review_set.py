@@ -2,7 +2,7 @@
 class ReviewSet:
     def __init__(self, db, review_plan_id, analyst_ids=None, analysis_run_id=None, 
                  review_ids=None, description=None, run_log=None, attempts=None,
-                 status='pending', object_id=None, created=None):
+                 status='pending', object_id=None, name=None, created=None):
         self.db = db
         self.review_plan_id = review_plan_id
         self.analyst_ids = analyst_ids if analyst_ids else []
@@ -13,22 +13,24 @@ class ReviewSet:
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
         self.object_id = object_id
+        self.name = name
         self.created = created
 
     @classmethod
-    def create(cls, db, review_plan_id, analyst_ids, analysis_run_id, description):
+    def create(cls, db, review_plan_id, analyst_ids, analysis_run_id, description, name):
         properties = {
             "review_plan_id": review_plan_id,
             "analyst_ids": analyst_ids,
             "analysis_run_id": analysis_run_id,
             "review_ids": [],
             "description": description,
+            "name": name,
             "attempts": {analyst: [] for analyst in analyst_ids},
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_set")
         return cls(db, review_plan_id, analyst_ids, analysis_run_id, [], 
-                   description, "", properties['attempts'], 'pending', object_id, created)
+                   description, "", properties['attempts'], 'pending', object_id, name, created)
 
     @classmethod
     def load(cls, db, object_id):
