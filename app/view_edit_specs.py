@@ -326,7 +326,6 @@ object_specifications = {
             },
             "full_prompt": {
                 "type": "string",
-                "object_type": "prompt",
                 "label": "prompt",
                 "editable": False,
                 "input_type": "textarea",
