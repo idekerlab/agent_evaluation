@@ -165,6 +165,7 @@ cython_debug/
 # CH Dev not yet public 
 RAG/
 models/llm_old.py
+notebooks/*_CH*
 
 # dependencies
 /react-app/node_modules
