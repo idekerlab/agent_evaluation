@@ -54,5 +54,5 @@ class AnalysisPlan:
                 n_hypotheses_per_analyst=self.n_hypotheses_per_analyst,
                 biological_context=self.biological_context if biological_context == None else biological_context,
                 description=self.description,
-                name=analysis_run_name
+                name=analysis_run_name if analysis_run_name else "none"
             )

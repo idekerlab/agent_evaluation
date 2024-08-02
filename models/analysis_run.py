@@ -3,7 +3,7 @@ class AnalysisRun:
     def __init__(self, db, analysis_plan_id, analyst_ids=None, dataset_id=None, 
                  n_hypotheses_per_analyst=0, hypothesis_ids=None, biological_context=None,
                  description=None, run_log=None, attempts=None, status='pending', 
-                 object_id=None, created=None, name=None, **kwargs):
+                 object_id=None, created=None, name=None, user_ids=None):
         self.db = db
         self.analysis_plan_id = analysis_plan_id
         self.analyst_ids = analyst_ids if analyst_ids else []
@@ -16,7 +16,8 @@ class AnalysisRun:
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
         self.object_id = object_id
-        self.name = name
+        self.name = name if name else "none"
+        self.user_ids = user_ids if user_ids else []
         self.created = created
 
     @classmethod
@@ -32,11 +33,12 @@ class AnalysisRun:
             "description": description,
             "attempts": {analyst: [] for analyst in analyst_ids},
             "name": name,
+            "user_ids": [],
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analysis_run")
         return cls(db, analysis_plan_id, analyst_ids, dataset_id, n_hypotheses_per_analyst, [],
-                   biological_context, description, "", properties['attempts'], 'pending', object_id, name, created)
+                   biological_context, description, "", properties['attempts'], 'pending', object_id, name, [], created)
 
     @classmethod
     def load(cls, db, object_id):
