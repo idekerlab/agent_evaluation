@@ -14,21 +14,23 @@ def extract_summary_review(long_string):
     if match:
         return match.group(1).strip()
     else:
-        return "Summary Review section not found."
+        return ""
     
 def extract_final_rankings(long_string):
-    # First, extract the Final Rankings section
-    pattern = r'Final Rankings:(.*?)(?=\n\S|\Z)'
+    # Extract the Final Rankings section
+    pattern = r'Final Rankings:(.*?)(?=\n\nSummary Review:)'
     match = re.search(pattern, long_string, re.DOTALL)
     
     if not match:
-        return "Final Rankings section not found."
+        return None
     
     rankings_text = match.group(1).strip()
+    print("Extracted rankings text:", rankings_text)  # Debugging print
     
-    # Now, parse the rankings into tuples
+    # Parse the rankings into tuples
     ranking_pattern = r'Hypothesis#(\d+):\s*(\d+)'
     rankings = re.findall(ranking_pattern, rankings_text)
+    print("Parsed rankings:", rankings)  # Debugging print
     
     # Convert strings to integers and sort by hypothesis number
     rankings = [(int(hyp), int(rank)) for hyp, rank in rankings]
@@ -72,26 +74,29 @@ class ReviewGenerator:
         review_text = llm.query(analyst.context, prompt)
         summary_review = extract_summary_review(review_text)
         ranking_tuples = extract_final_rankings(review_text)
+        ranking_data = ""
 
-        # Combine the tuples with the analyst_id and the hypothesis_ids in the AnalysisRun 
-        # to generate the rankings datastructure
-        rankings = {"user_id": analyst_id, "status": "done"}
-        analysis_run = AnalysisRun.load(self.db, analysis_run_id)
-        r = {}
-        for order, rank in ranking_tuples:
-            hypothesis_id = analysis_run.hypothesis_ids[order-1]
-            r[hypothesis_id] = {"stars": rank, "order": order, "comments": ""}
+        if ranking_tuples is not None:
+            # Combine the tuples with the analyst_id and the hypothesis_ids in the AnalysisRun 
+            # to generate the rankings datastructure
+            rankings = {"user_id": analyst_id, "status": "done"}
+            analysis_run = AnalysisRun.load(self.db, analysis_run_id)
+            r = {}
+            for order, rank in ranking_tuples:
+                hypothesis_id = analysis_run.hypothesis_ids[order - 1]
+                r[hypothesis_id] = {"stars": rank, "order": order, "comments": ""}
 
-        rankings["rankings"]=r
+            rankings["rankings"]=r
+            ranking_data = json.dumps(rankings)
 
         # Create and save the hypothesis
         review = Review.create(
             self.db,
             data=data,
             hypotheses_text=hypotheses_text,
-            rankings=json.dumps(rankings),
-            summary_review=summary_review,
             review_text=review_text,
+            ranking_data=ranking_data,
+            summary_review=summary_review,
             analyst_id=analyst_id,
             analysis_run_id=analysis_run_id,
             description=None, # Not sure why this is here

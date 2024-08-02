@@ -1,7 +1,8 @@
  
 
 class Review:
-    def __init__(self, db, data=None, hypotheses_text=None, review_text=None, rankings=None, summary_review=None,
+    def __init__(self, db, data=None, hypotheses_text=None, review_text=None, 
+                 ranking_data=None, summary_review=None,
                  analyst_id=None,  ##### May have to add a hypotheses section
                  analysis_run_id=None, description=None, review_set_id=None, 
                  object_id=None, created=None):
@@ -9,7 +10,7 @@ class Review:
         self.data = data
         self.hypotheses_text = hypotheses_text
         self.review_text = review_text
-        self.rankings = rankings
+        self.ranking_data = ranking_data
         self.summary_review = summary_review
         self.analyst_id = analyst_id
         self.analysis_run_id = analysis_run_id
@@ -19,18 +20,20 @@ class Review:
         self.created = created
 
     @classmethod
-    def create(cls, db, data, hypotheses_text, review_text, rankings, summary_review, analyst_id, analysis_run_id, description, review_set_id):
+    def create(cls, db, data, hypotheses_text, review_text, ranking_data, summary_review, analyst_id, analysis_run_id, description, review_set_id):
         properties = {
             "data": data,
             "hypotheses_text": hypotheses_text,
             "review_text": review_text,
+            "ranking_data": ranking_data,
+            "summary_review": summary_review,
             "analyst_id": analyst_id,
             "analysis_run_id": analysis_run_id,
             "description": description,
             "review_set_id": review_set_id
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review")
-        return cls(db, data, review_text, rankings, summary_review, analyst_id, analysis_run_id, 
+        return cls(db, data, review_text, ranking_data, summary_review, analyst_id, analysis_run_id, 
                    description, review_set_id, object_id=object_id, created=created)
 
     @classmethod
