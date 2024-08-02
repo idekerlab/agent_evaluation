@@ -89,9 +89,7 @@ const ObjectForm = ({ objectType, formType }) => {
         Object.keys(objectSpec.properties).forEach(key => {
             if (objectSpec.properties[key].type === "list_of_object_ids") {
                 const values = formData.getAll(key);
-                if (values.length > 0) {
-                    formData.set(key, JSON.stringify(values));
-                }
+                formData.set(key, JSON.stringify(values));
             }
         });
     

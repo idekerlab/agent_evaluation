@@ -423,6 +423,8 @@ object_specifications = {
             "ranking_data": {
                 "type": "string",
                 "label": "ranking data",
+                "view": "text",
+                "editable": True,
             },
             "summary_review": {
                 "type": "string",
