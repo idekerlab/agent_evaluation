@@ -109,7 +109,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
                 obj_id = processed_properties[prop_name]
                 try:
                     linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
-                    if "name" in linked_object_properties:
+                    if "name" in linked_object_properties and linked_object_properties['name'] is not None:
                         link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
                     else:
                         link_names[obj_id] = "unnamed"

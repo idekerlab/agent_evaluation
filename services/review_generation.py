@@ -6,6 +6,7 @@ from models.review import Review
 from models.review_set import ReviewSet
 from helpers.safe_dict import SafeDict
 import re
+import json
 
 def extract_summary_review(long_string):
     pattern = r'\nSummary Review:(.*)'
@@ -88,7 +89,7 @@ class ReviewGenerator:
             self.db,
             data=data,
             hypotheses_text=hypotheses_text,
-            rankings=rankings,
+            rankings=json.dumps(rankings),
             summary_review=summary_review,
             review_text=review_text,
             analyst_id=analyst_id,
