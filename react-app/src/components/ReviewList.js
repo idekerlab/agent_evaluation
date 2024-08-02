@@ -1,13 +1,13 @@
 import { Link, useLocation } from "react-router-dom"
 
 
-const ReviewList = ({type, analysisRuns, reviews, ...props}) => {
+const ReviewList = ({type, analysisRuns, rankings, ...props}) => {
     const location = useLocation()
 
     let completeAnalysisRunIds = []
-    reviews.map(review => {
-        if (review.status == "complete")
-            completeAnalysisRunIds.push(review.analysis_run_id) 
+    rankings.map(ranking => {
+        if (ranking.status == "complete")
+            completeAnalysisRunIds.push(ranking.analysis_run_id) 
     })
 
     let analysisRunsToDisplay = []

@@ -8,8 +8,44 @@ from sklearn.manifold import TSNE
 import umap
 from typing import List, Tuple
 from itertools import combinations
+from models import Review
+import json
 
-def create_review_judgment_vector(review_set, reviewer):
+# {
+#   "user_id": "user_15579855-9160-4aac-97d4-361ecdfdd4a8",
+#   "status": "pending",
+#   "rankings": {
+#     "hypothesis_id7r3297": {
+#       "stars": 3,
+#       "comments": "",
+#       "order": 1
+#     },
+#     "hypothesis_id7r3297": {
+#       "stars": 3,
+#       "comments": "",
+#       "order": 3
+#     },
+#     "hypothesis_id7r3297": {
+#       "stars": 5,
+#       "comments": "",
+#       "order": 4
+#     },
+#     "hypothesis_id7r3297": {
+#       "stars": 1,
+#       "comments": "",
+#       "order": 2
+#     }
+#   }
+# }
+
+def get_review(review_set, reviewer_id):
+    for review_id in review_set.reviews:
+        review = Review.load(review_id)
+        if review.analyst == reviewer_id:
+            return review
+    raise ValueError("Reviewer not in ReviewSet")
+
+def create_review_judgment_vector(review_set, reviewer_id):
     """
     Create a judgment vector for the Review 
     belonging to the Reviewer in the ReviewSet
@@ -35,18 +71,28 @@ def create_review_judgment_vector(review_set, reviewer):
     :param review_set: ReviewSet object
     :return: NumPy array representing the judgment vector
     """
-    N = len(review_set.rankings)  # Number of Hypothesis objects in the ReviewSet
+    review = get_review(review_set, reviewer_id)
+
+    result = json.load(review.result)
+
+    N = len(result.rankings)  # Number of Hypothesis objects in the ReviewSet
+
+    rankings = np.zeros(N+1, dtype=int) # it's N+1 because the reviewer might give from N to zero stars
+    for hypothesis_id, ranking in result.rankings.items():
+        order = int(ranking["order"])
+        stars = int(ranking["stars"])
+        rankings[order] = stars
     
     # Create a vector long enough to hold the unique A-B comparisons,
     # not including self comparisons
     review_judgment_vector_length = (N * (N - 1) // 2)
-    review_judgment_vector = np.zeros(judgment_vector_length, dtype=np.int8)
+    review_judgment_vector = np.zeros(review_judgment_vector_length, dtype=np.int8)
     
     idx = 0
     for i, j in combinations(range(N), 2):
-        if review_set.rankings[i] < review_set.rankings[j]:
+        if rankings[i] < rankings[j]:
             review_judgment_vector[idx] = -1
-        elif review_set.rankings[i] > review_set.rankings[j]:
+        elif rankings[i] > rankings[j]:
             review_judgment_vector[idx] = 1
         # If the hypotheses are tied, the value remains 0
         idx += 1
