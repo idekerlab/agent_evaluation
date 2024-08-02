@@ -19,6 +19,8 @@ from models.analysis_plan import AnalysisPlan
 from models.review_plan import ReviewPlan
 from services.analysisrunner import AnalysisRunner
 from services.reviewrunner import ReviewRunner
+import decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 app = FastAPI()
 
@@ -82,13 +84,30 @@ async def list_objects(request: Request, object_type: str):
                                                            "object_type": object_type, 
                                                            "objects": objects})
 
+# function to round up numeric values
+def format_numeric_values(data):
+    for i, row in enumerate(data):
+        for j, value in enumerate(row):
+            # Check if the value is a numeric string, including negative numbers
+            if value.lstrip('-').replace('.', '', 1).isdigit():
+                try:
+                    value_decimal = Decimal(value)
+                    data[i][j] = str(value_decimal.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
+                except decimal.InvalidOperation:
+                    continue
+    return data
+
 def preprocess_properties(properties, object_type):
     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
         if prop_spec.get('type') == 'csv' and properties.get(prop_name):
             csv_data = StringIO(properties[prop_name])
             reader = csv.reader(csv_data)
             rows = list(reader)
-            properties[prop_name] = rows
+
+            # Format numeric values in CSV content, 2 decimal places
+            formatted_rows = format_numeric_values(rows)
+            properties[prop_name] = formatted_rows
+
     return properties
 
 # get the view page with the object and its properties
@@ -100,7 +119,8 @@ async def view_object(request: Request, object_type: str, object_id: str):
         raise HTTPException(status_code=404, detail="Object not found")
     # Preprocess CSV data
     processed_properties = preprocess_properties(properties, object_type)
-    
+
+
     # Process object links to include object names
     link_names = {}
     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
@@ -437,8 +457,21 @@ async def handle_form_submission(form_data, object_type, db):
             # Read the contents of the CSV file as text
             csv_content = (await csv_file.read()).decode('utf-8')
             print("Content", csv_content)
-            # Include the CSV text data in form_data
-            form_data['data'] = csv_content
+            # # Include the CSV text data in form_data
+            # form_data['data'] = csv_content
+            # Process the CSV content
+            csv_data = StringIO(csv_content)
+            reader = csv.reader(csv_data)
+            rows = list(reader)
+
+            # Format numeric values in CSV content
+            formatted_rows = format_numeric_values(rows)
+
+            # Convert back to CSV string
+            output = StringIO()
+            writer = csv.writer(output)
+            writer.writerows(formatted_rows)
+            form_data['data'] = output.getvalue()
         
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)
