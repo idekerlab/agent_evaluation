@@ -5,7 +5,8 @@ Optionally, a parent interactome network in CX2 format will be used in creating 
 We therefore need a Hierarchy class to represent the hierarchical network with methods to
 obtain the parent network and to create Dataset instances from the hierarchical network. 
 """
-from dataset import Dataset
+from models.dataset import Dataset
+import json
 
 class Hierarchy():
     def __init__(self, hierarchy_cx, derived_from_cx=None):
@@ -27,7 +28,7 @@ class Hierarchy():
             if members is not None and size is not None:
                 if filter is not None:
                     names = filter.get("names")
-                    if names is not None and not names.contains(assembly.get_name()):
+                    if names is not None and assembly.get("name") not in names:
                         continue
                     max_size = filter.get("max_size")
                     if max_size is not None and size > max_size:
@@ -38,11 +39,13 @@ class Hierarchy():
                         continue
                 assemblies.append(assembly) 
         return assemblies
+    
 
-    def get_datasets(self, filter=None, member_attributes=None, member_data_only=True):
+    # Adds the data from the interactome to the assemblies selected by the filter.
+    # returns those assemblies
+    def add_data_to_assemblies(self, filter=None, member_attributes=None):
         assemblies = self.get_assemblies(filter)
         # print(f'number of assemblies = {len(assemblies)}')        
-        datasets = []
         interactome_nodes = self.derived_from_cx.get_nodes().values()
         interactome_data =[]
         for interactome_node in interactome_nodes:
@@ -54,9 +57,9 @@ class Hierarchy():
         for assembly in assemblies:
             attributes = assembly.get("v")
             members = attributes.get("CD_MemberList").split(" ")
-            if member_data_only:
-                filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
-                datasets.append(Dataset(members, filtered_interactome_data, self.get_experiment_description()))
-            else:
-                datasets.append(Dataset(members, interactome_data, self.get_experiment_description()))
-        return datasets
+            filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
+            self.hierarchy_cx.set_node_attribute(assembly, "data", json.dumps(filtered_interactome_data))
+        return assemblies
+    
+    # TODO
+    # dataset_from_assembly
