@@ -1,35 +1,8 @@
-import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 import HypothesisReviewForm from './HumanReviewForm'
+import DataViewer from './DataViewer'
 
 
-const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {
-
-
-    let colDefs = []
-    let rowData = []
-
-
-    try {
-        if (hypothesis.data.length > 0) {
-            hypothesis.data.map((row, index) => {
-                if (index == 0) {
-                    row.map(label => {
-                        colDefs.push({ field: label })
-                    })
-                } else {
-                    let newRow = {}
-                    row.map((value, index) => {
-                        newRow[`${colDefs[index]["field"]}`] =  value
-                    })
-                    rowData.push(newRow)
-                }
-            })
-        }
-        
-    } catch (error) {
-        console.log("Error with dataset");
-    }
-    
+const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {    
 
 
     return (
@@ -55,16 +28,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
                 <b>hypothesis:</b> {hypothesis.hypothesis_text}
             </p>
 
-            { colDefs.length > 0 && rowData.length > 0 ?
-                <div className="ag-theme-quartz ag-theme-quartz-red" style={{ height: 500 }} >
-                    <AgGridReact
-                        rowData={rowData}
-                        columnDefs={colDefs}
-                    />
-                </div>
-                :
-                <p style={{color: "red"}}><b>Error displaying table data</b></p>
-            }
+            <DataViewer data={hypothesis.data} />
 
             <p>
                 <b>data description:</b> {dataset.description}

@@ -203,7 +203,7 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
                                     </>
 
                                 }
-                                <div style={{ position: 'absolute', right: 70 }}>
+                                <div>
                                     {getOrderedRanks()}
                                 </div>
                             </div>

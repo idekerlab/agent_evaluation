@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
 import { api_base } from '../helpers/constants'
+import DataViewer from './DataViewer'
 
 const ObjectView = ({objectType, ...props}) => {
     const { objectId } = useParams()
@@ -145,35 +146,7 @@ const ObjectView = ({objectType, ...props}) => {
                                     </td>
                                     <td style={{ overflowX: "scroll", border: 'none'}}>
                                     {propSpec.view === "scrolling_table" ? (
-                                        <div
-                                        style={{
-                                            height: "300px",
-                                            overflowY: "scroll",
-                                            border: "1px solid black",
-                                            width: "100%",
-                                            maxWidth: "800px",
-                                        }}
-                                        >
-                                        <table style={{ minWidth: "1200px" }}>
-                                        {Array.isArray(object[propName]) ? (
-                                            object[propName].map((row, rowIndex) => (
-                                                <tr key={rowIndex}>
-                                                    {Array.isArray(row) ? (
-                                                        row.map((cell, cellIndex) => (
-                                                            <td key={cellIndex}>{cell}</td>
-                                                        ))
-                                                    ) : (
-                                                        <td>{row}</td>
-                                                    )}
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td>{object[propName]}</td>
-                                            </tr>
-                                        )}
-                                        </table>
-                                        </div>
+                                        <DataViewer data={object[propName]} />
                                     ) : propSpec.view === "list_of_object_links" &&
                                         object[propName] ? (
                                         <p
