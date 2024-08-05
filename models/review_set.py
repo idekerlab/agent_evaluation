@@ -13,7 +13,7 @@ class ReviewSet:
         self.attempts = attempts if attempts is not None else {analyst: [] for analyst in analyst_ids}
         self.status = status
         self.object_id = object_id
-        self.name = name
+        self.name = name if name else "none"
         self.created = created
 
     @classmethod

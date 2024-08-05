@@ -197,6 +197,7 @@ class LLM:
                         {"role": "user", "content": prompt}],
                     max_tokens=self.max_tokens,
                     stop=None,
+                    seed=self.seed,
                     temperature=self.temperature,
                 )
                 response_content = response.choices[0].message.content.strip()
