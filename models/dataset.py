@@ -61,6 +61,9 @@ def format_as_yaml(dataset_df, key_column=None):
     if key_column is not None and key_column not in dataset_df.columns:
         raise ValueError(f"Key column '{key_column}' not found in DataFrame")
 
+    def clean_dict(d):
+        return {k: v for k, v in d.items() if pd.notna(v) and v != "" and v is not None}
+
     if key_column:
         # Use the specified column as keys
         data_dict = dataset_df.set_index(key_column).to_dict(orient='index')
@@ -68,8 +71,11 @@ def format_as_yaml(dataset_df, key_column=None):
         # Use row indices as keys
         data_dict = dataset_df.to_dict(orient='index')
 
+    # Clean the dictionary
+    cleaned_data_dict = {k: clean_dict(v) for k, v in data_dict.items()}
+
     # Convert to YAML
-    yaml_str = yaml.dump(data_dict, default_flow_style=False, sort_keys=False)
+    yaml_str = yaml.dump(cleaned_data_dict, default_flow_style=False, sort_keys=False)
     
     return yaml_str
 

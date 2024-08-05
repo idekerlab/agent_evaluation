@@ -58,7 +58,7 @@ class Hierarchy():
             attributes = assembly.get("v")
             members = attributes.get("CD_MemberList").split(" ")
             filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
-            self.hierarchy_cx.set_node_attribute(assembly, "data", json.dumps(filtered_interactome_data))
+            self.hierarchy_cx.set_node_attribute(assembly["id"], "data", json.dumps(filtered_interactome_data))
         return assemblies
     
     # TODO
