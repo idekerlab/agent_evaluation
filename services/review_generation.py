@@ -57,7 +57,15 @@ class ReviewGenerator:
 
         # Use properties directly from the loaded objects
         data = dataset.data
+
+        # check the number of hypotheses loaded 
+        analysis_run = AnalysisRun.load(self.db, analysis_run_id)
+        n_hypotheses = len(analysis_run.hypothesis_ids)
+        if n_hypotheses == 0:
+            raise ValueError("No hypotheses found in AnalysisRun")
+
         safe_dict = SafeDict({
+            'n': n_hypotheses, 
             'data': data,
             'experiment_description': dataset.experiment_description,
             'hypotheses_text': hypotheses_text
