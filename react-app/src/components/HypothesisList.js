@@ -4,9 +4,10 @@ import axios from 'axios'
 import { api_base } from '../helpers/constants'
 import HypothesisView from './HypothesisView'
 
-const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}) => {
+const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, viewOnly, ...props}) => {
 
     const { objectId } = useParams()
+    const analysisRunId = runId ? runId : objectId
     const [loading, setLoading] = useState(true)
     const [analysisRun, setAnalysisRun] = useState(null)
     const [hypotheses, setHypotheses] = useState([])
@@ -18,7 +19,7 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
     const navigate = useNavigate()
 
     const hasSavedReview = Object.keys(alreadySavedData).length > 0
-    const disableForm = hasSavedReview ? alreadySavedData.status == "complete" : false
+    const disableForm = viewOnly ? true : (hasSavedReview ? alreadySavedData.status == "complete" : false)
     
 
     useEffect(() => {
@@ -31,7 +32,7 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
     }, [loading, hypotheses])
 
     const initializeReviewData = () => {
-        let saved = savedRankings.find(review=> review.analysis_run_id == objectId)
+        let saved = savedRankings.find(review=> review.analysis_run_id == analysisRunId)
 
         if (saved) {
             setAlreadySavedData(saved)
@@ -45,7 +46,7 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
         }
     }
     const fetchAnalysisRun = () => {
-        axios.get(api_base+`/objects/analysisRun/${objectId}`)
+        axios.get(api_base+`/objects/analysisRun/${analysisRunId}`)
             .then(response => {
                 // Handle the response data
                 const analysisRun = response.data.object
@@ -180,7 +181,6 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
         )
     }
 
-    
 
     return (
         <div>
@@ -192,17 +192,21 @@ const HypothesisList = ({analysisRuns, user, savedRankings, setReload, ...props}
                     { hypotheses && hypotheses.length > 0 ? (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <h2>Review of {analysisRun.name}</h2>
+                                <h2>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h2>
 
-                                { disableForm ?
-                                        <button className='button' style={{backgroundColor: "grey"}} onClick={handleUndoSubmission}>Undo Submission</button>
-                                    :
+                                { !viewOnly &&
                                     <>
-                                        <button className='button' style={{backgroundColor: "grey"}} onClick={()=>handleSave("pending")}>Save</button>
-                                        <button className='button' style={{backgroundColor: "green"}} onClick={handleSubmit}>Submit</button>
+                                        { disableForm ?
+                                            <button className='button' style={{backgroundColor: "grey"}} onClick={handleUndoSubmission}>Undo Submission</button>
+                                            :
+                                            <>
+                                                <button className='button' style={{backgroundColor: "grey"}} onClick={()=>handleSave("pending")}>Save</button>
+                                                <button className='button' style={{backgroundColor: "green"}} onClick={handleSubmit}>Submit</button>
+                                            </>
+                                        }
                                     </>
-
                                 }
+                                
                                 <div>
                                     {getOrderedRanks()}
                                 </div>
