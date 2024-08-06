@@ -232,7 +232,7 @@ const ObjectView = ({objectType, ...props}) => {
                                                         {object[propName]}
                                                     </Link>
                                                     </p>
-                                                ) : propSpec.collapsible ?  (
+                                                ) : (propSpec.collapsible && object[propName] && object[propName].length > 50) ?  (
                                                     <div>
                                                         <button className="button" style={{backgroundColor: "grey"}} onClick={()=>handleToggleExpand(propName)}>
                                                             {expanded[propName] ? <><i className="fa-solid fa-minus"></i>  Collapse</> : <><i className="fa-solid fa-arrows-up-down"></i>  Expand</>}
