@@ -15,6 +15,7 @@ const ObjectView = ({objectType, ...props}) => {
     const [objectSpec, setObjectSpec] = useState({})
     const [linkNames, setLinkNames] = useState([])
     const [showFriendly, setShowFriendly] = useState(false)
+    const [expanded, setExpanded] = useState({})
 
     useEffect(() => {
         getObject()
@@ -85,6 +86,21 @@ const ObjectView = ({objectType, ...props}) => {
         } catch (e) {
             return false;
         }
+    }
+
+    const truncateString = (str) => {
+        if (str.length > 50)
+          return str.substring(0, 50) + '...'
+        else
+          return str
+    }
+
+    const handleToggleExpand = (propName) => {
+        setExpanded(prev => {
+            let newExpanded = {...prev}
+            newExpanded[propName] = !newExpanded[propName]
+            return newExpanded
+        })
     }
 
     return (
@@ -216,9 +232,19 @@ const ObjectView = ({objectType, ...props}) => {
                                                         {object[propName]}
                                                     </Link>
                                                     </p>
+                                                ) : propSpec.collapsible ?  (
+                                                    <div>
+                                                        <button className="button" style={{backgroundColor: "grey"}} onClick={()=>handleToggleExpand(propName)}>
+                                                            {expanded[propName] ? <><i className="fa-solid fa-minus"></i>  Collapse</> : <><i className="fa-solid fa-arrows-up-down"></i>  Expand</>}
+                                                        </button>
+                                                        <pre style={{ maxWidth: "800px" }}>
+                                                            {expanded[propName] ? object[propName] : truncateString(object[propName])}
+                                                        </pre>
+                                                    </div>
+                                                    
                                                 ) : (
                                                     <pre style={{ maxWidth: "800px" }}>
-                                                    {object[propName]}
+                                                        {object[propName]}
                                                     </pre>
                                                 )}
                                                 </td>

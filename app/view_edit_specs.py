@@ -246,6 +246,14 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
+            "user_ids": {
+                "type": "list_of_object_ids",
+                "label": "user reviewers",
+                "input_type": "select_multiple_objects",
+                "object_type": "user",
+                "view": "list_of_object_links",
+                "editable": True
+            },
             "description": {
                 "type": "string",
                 "editable": True,
@@ -257,15 +265,8 @@ object_specifications = {
                 "label": "run log",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
-            },
-            "user_ids": {
-                "type": "list_of_object_ids",
-                "label": "user reviewers",
-                "input_type": "select_multiple_objects",
-                "object_type": "user",
-                "view": "list_of_object_links",
-                "editable": True
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -329,7 +330,8 @@ object_specifications = {
                 "label": "prompt",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -401,7 +403,8 @@ object_specifications = {
                 "label": "run log",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -436,7 +439,8 @@ object_specifications = {
                 "type": "string",
                 "label": "hypotheses list",
                 "editable": False,
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             },
             "analyst_id": {
                 "type": "object_id",
