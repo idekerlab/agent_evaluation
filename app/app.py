@@ -73,10 +73,11 @@ async def list_objects(request: Request, object_type: str):
     objects = db.find(object_type)  # Fetch all objects of the given type
     if object_type == 'hypothesis':
         for index, obj in enumerate(objects):
-            if 'analyst_id' in obj['properties']:
-                analyst_id = obj['properties']['analyst_id']
-                analyst_properties, analyst_type = db.load(analyst_id)
-                objects[index]['properties']['analyst_id'] = f"({analyst_properties['name']}) {analyst_id}"
+            if ("agent_id" in obj['properties']):
+                agent_id = obj['properties']['agent_id']
+                agent_properties, agent_type = db.load(agent_id)
+                objects[index]['properties']['agent_id'] = f"({agent_properties['name']}) {agent_id}"
+            
             
     objects.reverse()
             

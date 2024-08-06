@@ -1,5 +1,5 @@
 from models.dataset import Dataset
-from models.analyst import Analyst
+from models.agent import Agent
 from models.analysis_run import AnalysisRun
 from models.llm import LLM
 from models.review import Review
@@ -42,12 +42,12 @@ class ReviewGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_review(self, analyst_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id):
-        # Load the dataset and analyst using the newly created classes
+    def generate_review(self, agent_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id):
+        # Load the dataset and agent using the newly created classes
         dataset = Dataset.load(self.db, dataset_id)
-        analyst = Analyst.load(self.db, analyst_id)
-        if not dataset or not analyst:
-            raise ValueError("Dataset or Analyst not found in generate_hypothesis")
+        agent = Agent.load(self.db, agent_id)
+        if not dataset or not agent:
+            raise ValueError("Dataset or Agent not found in generate_hypothesis")
         
         if review_set_id:
             # Load the ReviewSet using the newly created class
@@ -71,23 +71,23 @@ class ReviewGenerator:
             'hypotheses_text': hypotheses_text
         })
         
-        prompt = analyst.prompt_template.format_map(safe_dict)
+        prompt = agent.prompt_template.format_map(safe_dict)
 
-        # Load the LLM associated with the analyst
-        llm = LLM.load(self.db, analyst.llm_id)
+        # Load the LLM associated with the agent
+        llm = LLM.load(self.db, agent.llm_id)
         if not llm:
             raise ValueError("LLM not found")
 
         # Generate hypothesis text using the LLM
-        review_text = llm.query(analyst.context, prompt)
+        review_text = llm.query(agent.context, prompt)
         summary_review = extract_summary_review(review_text)
         ranking_tuples = extract_final_rankings(review_text)
         ranking_data = ""
 
         if ranking_tuples is not None:
-            # Combine the tuples with the analyst_id and the hypothesis_ids in the AnalysisRun 
+            # Combine the tuples with the agent_id and the hypothesis_ids in the AnalysisRun 
             # to generate the rankings datastructure
-            rankings = {"user_id": analyst_id, "status": "done"}
+            rankings = {"user_id": agent_id, "status": "done"}
             analysis_run = AnalysisRun.load(self.db, analysis_run_id)
             r = {}
             for order, rank in ranking_tuples:
@@ -105,7 +105,7 @@ class ReviewGenerator:
             review_text=review_text,
             ranking_data=ranking_data,
             summary_review=summary_review,
-            analyst_id=analyst_id,
+            agent_id=agent_id,
             analysis_run_id=analysis_run_id,
             description=None, # Not sure why this is here
             review_set_id=review_set_id     
@@ -115,4 +115,4 @@ class ReviewGenerator:
 
 # Example usage:
 # generator = ReviewGenerator(db)
-# hypothesis_id = generator.generate_hypothesis(analyst_id, dataset_id)
+# hypothesis_id = generator.generate_hypothesis(agent_id, dataset_id)

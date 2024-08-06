@@ -1,26 +1,26 @@
 from models.review_set import ReviewSet
 
 class ReviewPlan:
-    def __init__(self, db, name=None, analyst_ids=None, analysis_run_id=None, 
+    def __init__(self, db, name=None, agent_ids=None, analysis_run_id=None, 
                  description=None, object_id=None, created=None):
         self.db = db
         self.name = name
-        self.analyst_ids = analyst_ids if analyst_ids is not None else []
+        self.agent_ids = agent_ids if agent_ids is not None else []
         self.analysis_run_id = analysis_run_id
         self.description = description
         self.object_id = object_id
         self.created = created
 
     @classmethod
-    def create(cls, db, name, analyst_ids, analysis_run_id, description=''):
+    def create(cls, db, name, agent_ids, analysis_run_id, description=''):
         properties = {
             "name": name,
-            "analyst_ids": analyst_ids,
+            "agent_ids": agent_ids,
             "analysis_run_id": analysis_run_id,
             "description": description
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_plan")
-        return cls(db, name = name, analyst_ids = analyst_ids, analysis_run_id = analysis_run_id, description = description, object_id=object_id, created=created)
+        return cls(db, name = name, agent_ids = agent_ids, analysis_run_id = analysis_run_id, description = description, object_id=object_id, created=created)
 
     @classmethod
     def load(cls, db, object_id):
@@ -39,12 +39,12 @@ class ReviewPlan:
 
     def generate_review_set(self, review_set_name=None):
             """ Generate a new ReviewSet instance based on this ReviewPlan. """
-            if not self.analyst_ids or not self.analysis_run_id:
+            if not self.agent_ids or not self.analysis_run_id:
                 raise ValueError("ReviewPlan is not properly configured.")
             return ReviewSet.create(
                 db=self.db,
                 review_plan_id=self.object_id,
-                analyst_ids=self.analyst_ids,
+                agent_ids=self.agent_ids,
                 analysis_run_id=self.analysis_run_id,
                 description=self.description,
                 name=review_set_name

@@ -41,7 +41,7 @@ import json
 def get_review(db, review_set, reviewer_id):
     for review_id in review_set.review_ids:
         review = Review.load(db, review_id)
-        if review.analyst_id == reviewer_id:
+        if review.agent_id == reviewer_id:
             return review
     raise ValueError("Reviewer not in ReviewSet")
 

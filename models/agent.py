@@ -1,5 +1,5 @@
 
-class Analyst:
+class Agent:
     def __init__(self, db, llm_id=None, context=None, 
                  prompt_template=None, name=None, description=None, 
                  object_id=None, created=None):
@@ -21,7 +21,7 @@ class Analyst:
             "name": name,
             "description": description,
         }
-        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="analyst")
+        object_id, created, _ = db.add(object_id=None, properties=properties, object_type="agent")
         return cls(db, llm_id, context, prompt_template, name, description, object_id=object_id, created=created)
 
     @classmethod
