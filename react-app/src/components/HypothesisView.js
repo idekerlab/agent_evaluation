@@ -1,9 +1,55 @@
 import HypothesisReviewForm from './HumanReviewForm'
 import DataViewer from './DataViewer'
+import { useState } from 'react'
+import GeneSymbolReference from './GeneSymbolReference'
 
+const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {
+    const [iframeSrc, setIframeSrc] = useState('')
+    
+    const areAllLettersUpperCase = (str) => {
+        // Remove non-letter characters from the string
+        const lettersOnly = str.replace(/[^a-zA-Z]/g, '')
+        
+        // Check if the remaining letters are all uppercase
+        return lettersOnly.length > 0 && lettersOnly === lettersOnly.toUpperCase()
+    }
 
-const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {    
+    const enhanceGeneSymbols = (textArr, symbols) => {
+        let hypoArr = []
+        
+        textArr.map(str => {
+            if (symbols.includes(str)) {
+                hypoArr.push(
+                    // <a href={`https://www.genenames.org/tools/search/#!/?query=${str}`} >{str}</a>
+                    <span 
+                        key={str}
+                        style={{ color: 'blue', cursor: 'pointer' }}
+                        onClick={() => setIframeSrc(`https://www.genenames.org/tools/search/#!/?query=${str}`)}
+                    >
+                        {str}
+                    </span>
+                )
+            } else {
+                hypoArr.push(str)
+            }
+        })
+        return hypoArr.map((text, index) => (<>{text}{index < hypoArr.length - 1 && ' '}</>))
+    }
 
+    const hypothesisTextDisplay = (text) => {
+        let textArr = text.split(' ')
+
+        let geneSymbols = textArr.filter(str => areAllLettersUpperCase(str))
+
+        let enhancedText = enhanceGeneSymbols(textArr, geneSymbols)
+        
+
+        return (
+            <p className='highlight'>
+                <b>hypothesis:</b> {enhancedText}
+            </p>
+        )
+    }
 
     return (
         <div>
@@ -24,9 +70,9 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
             <p>
                 <b>biological context:</b> {hypothesis.biological_context}
             </p>
-            <p className='highlight'>
-                <b>hypothesis:</b> {hypothesis.hypothesis_text}
-            </p>
+
+            {hypothesisTextDisplay(hypothesis.hypothesis_text)}
+            
 
             <DataViewer data={hypothesis.data} />
 
@@ -36,6 +82,9 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
             <p>
                 <b>experiment description:</b> {dataset.experiment_description}
             </p>
+            {iframeSrc && (
+                <GeneSymbolReference iframeSrc={iframeSrc} closeIframe={() => setIframeSrc("")} />
+            )}
         </div>
     )
 }
