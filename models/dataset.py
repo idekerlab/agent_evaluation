@@ -1,7 +1,5 @@
 import pandas as pd
-import yaml
-from xml.etree.ElementTree import Element, SubElement, tostring
-from xml.dom import minidom
+
 
 class Dataset:
     def __init__(self, db, 
@@ -57,52 +55,3 @@ def update_column_names(dataset_df, column_mapping):
     
     return updated_dataset
 
-def format_as_yaml(dataset_df, key_column=None):
-    if key_column is not None and key_column not in dataset_df.columns:
-        raise ValueError(f"Key column '{key_column}' not found in DataFrame")
-
-    def clean_dict(d):
-        return {k: v for k, v in d.items() if pd.notna(v) and v != "" and v is not None}
-
-    if key_column:
-        # Use the specified column as keys
-        data_dict = dataset_df.set_index(key_column).to_dict(orient='index')
-    else:
-        # Use row indices as keys
-        data_dict = dataset_df.to_dict(orient='index')
-
-    # Clean the dictionary
-    cleaned_data_dict = {k: clean_dict(v) for k, v in data_dict.items()}
-
-    # Convert to YAML
-    yaml_str = yaml.dump(cleaned_data_dict, default_flow_style=False, sort_keys=False)
-    
-    return yaml_str
-
-def format_as_xml(dataset_df, key_column=None):
-    # Create the root element
-    root = Element('dataset')
-
-    # Iterate through DataFrame rows
-    for idx, row in dataset_df.iterrows():
-        # Create a new element for each row
-        row_elem = SubElement(root, 'record')
-        
-        # If a key column is specified, use it as an attribute
-        if key_column and key_column in dataset_df.columns:
-            row_elem.set('key', str(row[key_column]))
-        else:
-            row_elem.set('id', str(idx))
-        
-        # Add each column as a subelement
-        for col, value in row.items():
-            if col != key_column:  # Skip the key column if it's used as an attribute
-                field_elem = SubElement(row_elem, col)
-                field_elem.text = str(value)
-
-    # Convert to a string and pretty print
-    rough_string = tostring(root, 'utf-8')
-    reparsed = minidom.parseString(rough_string)
-    xml_string = reparsed.toprettyxml(indent="  ")
-    
-    return xml_string

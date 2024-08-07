@@ -5,8 +5,14 @@ Optionally, a parent interactome network in CX2 format will be used in creating 
 We therefore need a Hierarchy class to represent the hierarchical network with methods to
 obtain the parent network and to create Dataset instances from the hierarchical network. 
 """
-from models.dataset import Dataset
+
 import json
+import pandas as pd
+import os
+import yaml
+from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.dom import minidom
+from models.dataset import Dataset
 
 class Hierarchy():
     def __init__(self, hierarchy_cx, derived_from_cx=None):
@@ -16,6 +22,7 @@ class Hierarchy():
     def get_experiment_description(self):
         return self.hierarchy_cx.get_network_attributes().get("experiment_description")
     
+
     def get_assemblies(self, filter=None):
         assemblies = []
         for assembly in self.hierarchy_cx.get_nodes().values():
@@ -28,7 +35,12 @@ class Hierarchy():
             if members is not None and size is not None:
                 if filter is not None:
                     names = filter.get("names")
-                    if names is not None and assembly.get("name") not in names:
+                    if names is not None:
+                        names = [name.lower() for name in names]
+                    assembly_names = get_assembly_names(assembly)
+                    if assembly_names is not None:
+                        assembly_names = [name.lower() for name in assembly_names]
+                    if names is not None and not any_element_in(assembly_names, names):
                         continue
                     max_size = filter.get("max_size")
                     if max_size is not None and size > max_size:
@@ -43,7 +55,7 @@ class Hierarchy():
 
     # Adds the data from the interactome to the assemblies selected by the filter.
     # returns those assemblies
-    def add_data_to_assemblies(self, filter=None, member_attributes=None):
+    def add_data_from_interactome(self, filter=None, member_attributes=None):
         assemblies = self.get_assemblies(filter)
         # print(f'number of assemblies = {len(assemblies)}')        
         interactome_nodes = self.derived_from_cx.get_nodes().values()
@@ -60,6 +72,156 @@ class Hierarchy():
             filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
             self.hierarchy_cx.set_node_attribute(assembly["id"], "data", json.dumps(filtered_interactome_data))
         return assemblies
+
+
+    def add_data_from_file(self, file_path, key_column='name', columns=None, filter=None, sheet_name=0, delimiter=None, decimal_places=None):
+        # Determine file type from extension
+        _, file_extension = os.path.splitext(file_path)
+        file_extension = file_extension.lower()
+
+        # Read the file based on its type
+        if file_extension == '.xlsx':
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+        elif file_extension == '.csv':
+            df = pd.read_csv(file_path, delimiter=',' if delimiter is None else delimiter)
+        elif file_extension == '.tsv':
+            df = pd.read_csv(file_path, delimiter='\t' if delimiter is None else delimiter)
+        else:
+            raise ValueError(f"Unsupported file type: {file_extension}. Supported types are .xlsx, .csv, and .tsv")
+        
+        if decimal_places is not None:
+            df = reduce_float_precision(df, decimal_places)
+
+        # Ensure the key column exists in the input file/dataframe
+        if key_column not in df.columns:
+            raise ValueError(f"Key column '{key_column}' not found in the file")
+
+        # Handle column selection and renaming
+        if columns is not None:
+            # Ensure key_column is included
+            if key_column not in columns:
+                columns[key_column] = key_column
+            
+            # Select and rename columns
+            df = df[[col for col in columns.keys() if col in df.columns]]
+            df.rename(columns=columns, inplace=True)
+
+        # Convert DataFrame to list of dictionaries
+        data_dict_list = df.to_dict('records')
+
+        def clean_dict(d):
+            return {k: v for k, v in d.items() if pd.notna(v) and v != "" and v is not None}
+
+        # Clean the dictionaries
+        cleaned_data_dict_list = [clean_dict(d) for d in data_dict_list]
+
+        # Get assemblies
+        assemblies = self.get_assemblies(filter)
+
+        for assembly in assemblies:
+            attributes = assembly.get("v")
+            members = attributes.get("CD_MemberList", "").split(" ")
+            assembly_data = {}
+            
+            # iterate over all the data rows
+            for gene_dict in cleaned_data_dict_list:
+                mapped_key_column = columns[key_column]
+                if mapped_key_column in gene_dict:
+                    gene_symbol = gene_dict[mapped_key_column]
+                    if gene_symbol in members:
+                        assembly_data[gene_symbol] = gene_dict
+            else:
+                print(f'mapped key column {mapped_key_column} is not in data row {gene_dict}')
+            #filtered_file_data = [data for data in cleaned_data_dict_list if data[columns[key_column]] in members]
+            
+            # Add filtered data to assembly
+            self.hierarchy_cx.set_node_attribute(assembly["id"], "data", json.dumps(assembly_data))
+
+        return assemblies
     
-    # TODO
-    # dataset_from_assembly
+        
+import re
+
+def remove_number_suffix(text):
+    # This pattern matches a space, followed by an opening parenthesis,
+    # then any number of digits (possibly with a decimal point),
+    # and finally a closing parenthesis at the end of the string
+    pattern = r'\s\(\d+(?:\.\d+)?\)$'
+    
+    # Use re.sub to replace the matched pattern with an empty string
+    return re.sub(pattern, '', text)
+
+def get_assembly_names(assembly):
+    names = []
+    attributes = assembly.get("v")
+    if "LLM Name" in attributes and attributes.get("LLM Name") is not None:
+        llm_name = remove_number_suffix(attributes.get("LLM Name"))
+        if llm_name != "skipped":
+            names.append(llm_name)
+    if "CD_CommunityName" in attributes and attributes.get("CD_CommunityName") is not None:
+        names.append(attributes.get("CD_CommunityName"))
+    if "name" in attributes and attributes.get("name") is not None:
+        names.append(attributes.get("name"))
+    return names
+        
+def any_element_in(list1, list2):
+    return bool(set(list1) & set(list2))
+
+def dataset_from_assembly(db, assembly, type="yaml", columns=None, experiment_description=""):
+    data_dict = json.loads(assembly["v"]["data"])
+
+    # Filter the data dict on columns
+    if columns is not None:
+        filtered_data_dict = {}
+        for key, value in data_dict.items():
+            filtered_data_dict[key] = {col: value[col] for col in columns if col in value}
+        data_dict = filtered_data_dict
+
+    if type == "yaml":
+        datastring = yaml.dump(data_dict, default_flow_style=False, sort_keys=False)
+    elif type == "xml":
+        datastring = format_as_xml(data_dict)
+    elif type in ["csv", "tsv"]:
+        data_table = pd.DataFrame(data_dict).T  # Transpose to get correct orientation
+        separator = "," if type == "csv" else "\t"
+        datastring = data_table.to_csv(sep=separator)
+    else:
+        raise ValueError(f"Unsupported data format type: {type}")
+    
+    assembly_names = json.dumps(get_assembly_names(assembly),indent=4)
+    if len(assembly_names) == 0:
+        dataset_name = assembly["v"]["name"]
+    else:
+        dataset_name = json.dumps(get_assembly_names(assembly)[0])
+    dataset = Dataset.create(db, dataset_name, datastring, experiment_description, description=assembly_names)
+    return dataset
+
+def format_as_xml(data_dict):
+    root = Element('dataset')
+
+    for key, item in data_dict.items():
+        record = SubElement(root, 'record')
+        record.set('id', str(key))
+        
+        for field, value in item.items():
+            field_elem = SubElement(record, field)
+            field_elem.text = str(value)
+
+    rough_string = tostring(root, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    xml_string = reparsed.toprettyxml(indent="  ")
+    
+    return xml_string
+
+def reduce_float_precision(dataset_df, decimal_places=2):
+    # Create a copy of the DataFrame to avoid modifying the original
+    rounded_df = dataset_df.copy()
+    
+    # Identify float columns
+    float_columns = rounded_df.select_dtypes(include=['float64', 'float32']).columns
+    
+    # Round float columns to specified decimal places
+    for col in float_columns:
+        rounded_df[col] = rounded_df[col].round(decimal_places)
+    
+    return rounded_df
