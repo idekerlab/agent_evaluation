@@ -44,9 +44,12 @@ const ObjectView = ({objectType, ...props}) => {
         axios.post(api_base+`/objects/${objectType}/${objectId}/execute`)
             .then(response => {
                 // Handle the response data
-                console.log(response)
-                navigate(response.data.url)
                 setExecuting(false)
+                
+                if (response.data.error)
+                    alert(response.data.error)
+                else
+                    navigate(response.data.url)
             })
             .catch(error => {
                 // Handle any errors

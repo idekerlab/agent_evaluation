@@ -91,8 +91,8 @@ object_specifications = {
             }
         },
     },
-    # MARK:analyst
-    "analyst": {
+    # MARK:agent
+    "agent": {
         "properties": {
             "name": {
                 "type": "string",
@@ -171,11 +171,11 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
+                "label": "agents",
                 "input_type": "select_multiple_objects",
-                "object_type": "analyst",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "editable": True
             },
@@ -187,9 +187,9 @@ object_specifications = {
                 "view": "object_link",
                 "editable": True
             },
-            "n_hypotheses_per_analyst": {
+            "n_hypotheses_per_agent": {
                 "type": "int",
-                "label": "hypotheses\nper analyst",
+                "label": "hypotheses\nper agent",
                 "input_type": "number",
                 "view": "text",
                 "editable": True,
@@ -222,10 +222,10 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
-                "object_type": "analyst",
+                "label": "agents",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "input_type": "select_multiple_objects",
                 "editable": False,
@@ -237,12 +237,12 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
-            "n_hypotheses_per_analyst": {
+            "n_hypotheses_per_agent": {
                 "type": "int",
                 "editable": False,
                 "input_type": "number",
                 "view": "text",
-                "label": "hypotheses\nper analyst",
+                "label": "hypotheses\nper agent",
             },
             "biological_context": {
                 "type": "string",
@@ -319,10 +319,10 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text"
             },
-            "analyst_id": {
+            "agent_id": {
                 "type": "object_id",
-                "object_type": "analyst",
-                "label": "analyst",
+                "object_type": "agent",
+                "label": "agent",
                 "view": "object_link",
                 "editable": False
             },
@@ -365,11 +365,11 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
+                "label": "agents",
                 "input_type": "select_multiple_objects",
-                "object_type": "analyst",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "editable": True
             },
@@ -462,12 +462,12 @@ object_specifications = {
                 "view": "text",
                 "collapsible": True
             },
-            "analyst_id": {
+            "agent_id": {
                 "type": "object_id",
-                "label": "analyst",
+                "label": "agent",
                 "editable": False,
                 "view": "object_link",
-                "object_type": "analyst"
+                "object_type": "agent"
             },
             "description": {
                 "type": "string",
