@@ -67,7 +67,7 @@ const App = () => {
           <div className={inReviewPortal ? "content" : "content"}>
             <Routes>
               {objectTypes.map((type, index) => (
-                <>
+                <React.Fragment key={`${index}-routes`}>
                   <Route 
                     exact 
                     path={`/${type}`} 
@@ -89,7 +89,7 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
-                </>
+                </React.Fragment>
                 
               ))}
               <Route path={`/my_reviews/*`} element={<ReviewPortal />} />

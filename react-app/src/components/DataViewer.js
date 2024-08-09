@@ -1,6 +1,9 @@
 import { AgGridReact } from 'ag-grid-react'
+import React, { useState } from 'react'
+import FriendlyIFrame from './FriendlyIFrame'
 
 const DataViewer = ({data, ...props}) => {
+    const [iframeSrc, setIframeSrc] = useState('')
 
     let colDefs = []
     let rowData = []
@@ -11,7 +14,7 @@ const DataViewer = ({data, ...props}) => {
             data.map((row, index) => {
                 if (index == 0) {
                     row.map(label => {
-                        colDefs.push({ 
+                        let newCol = { 
                             field: label, 
                             filter: true,  
                             filterParams: {
@@ -32,20 +35,30 @@ const DataViewer = ({data, ...props}) => {
                                     else
                                         return isDescending ?  -1 : 1
                                 }
-                                
                             }
-                        })
+                        }
+
+                        if (label.includes("HGNC")) {
+                            newCol["cellRenderer"] = (props) => (
+                                    <span 
+                                        style={{ color: 'blue', cursor: 'pointer' }}
+                                        onClick={() => setIframeSrc(`https://www.ncbi.nlm.nih.gov/gene/?term=${props.value}`)}
+                                    >
+                                        {props.value}
+                                    </span>
+                                )
+                        } 
+                        colDefs.push(newCol)
                     })
                 } else {
                     let newRow = {}
                     row.map((value, index) => {
-                        newRow[`${colDefs[index]["field"]}`] =  value
+                            newRow[`${colDefs[index]["field"]}`] =  value
                     })
                     rowData.push(newRow)
                 }
             })
         }
-        
     } catch (error) {
         console.log("Error with dataset");
     }
@@ -63,6 +76,9 @@ const DataViewer = ({data, ...props}) => {
                 :
                 <p style={{color: "red"}}><b>Error displaying table data</b></p>
             }
+            {iframeSrc && (
+                <FriendlyIFrame iframeSrc={iframeSrc} closeIframe={() => setIframeSrc("")} />
+            )}
         </div>
     )
 }

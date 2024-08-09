@@ -1,7 +1,7 @@
 import Draggable from 'react-draggable'
 import { ResizableBox } from 'react-resizable'
 
-const GeneSymbolReference = ({ iframeSrc, closeIframe, ...props }) => {
+const FriendlyIFrame = ({ iframeSrc, closeIframe, ...props }) => {
     
     return (
         <Draggable handle=".drag-handle">
@@ -34,7 +34,12 @@ const GeneSymbolReference = ({ iframeSrc, closeIframe, ...props }) => {
                             padding: '0 10px'
                         }}
                     >
-                        <span><i className="fa-solid fa-up-down-left-right fa-lg"></i></span>
+                        <span>
+                            <i className="fa-solid fa-up-down-left-right fa-lg"></i>
+                            <a href={iframeSrc} style={{color: "blue", marginLeft: "10px"}} target='_blank'>
+                                <i className="fa-solid fa-arrow-up-right-from-square fa-lg" ></i>
+                            </a>
+                        </span>
                         <button
                             onClick={closeIframe}
                             className='button'
@@ -66,7 +71,7 @@ const GeneSymbolReference = ({ iframeSrc, closeIframe, ...props }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    backgroundColor: 'lightgray',
+                                    backgroundColor: '#f0f0f0',
                                     borderRadius: '5px'
                                 }}
                             >
@@ -85,4 +90,4 @@ const GeneSymbolReference = ({ iframeSrc, closeIframe, ...props }) => {
     )
 }
 
-export default GeneSymbolReference
+export default FriendlyIFrame

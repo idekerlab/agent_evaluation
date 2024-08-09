@@ -19,6 +19,7 @@ from models.analysis_plan import AnalysisPlan
 from models.review_plan import ReviewPlan
 from services.analysisrunner import AnalysisRunner
 from services.reviewrunner import ReviewRunner
+from services.gene_validator import GeneValidator
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -72,9 +73,10 @@ async def list_objects(request: Request, object_type: str):
     objects = db.find(object_type)  # Fetch all objects of the given type
     if object_type == 'hypothesis':
         for index, obj in enumerate(objects):
-            analyst_id = obj['properties']['analyst_id']
-            analyst_properties, analyst_type = db.load(analyst_id)
-            objects[index]['properties']['analyst_id'] = f"({analyst_properties['name']}) {analyst_id}"
+            if 'analyst_id' in obj['properties']:
+                analyst_id = obj['properties']['analyst_id']
+                analyst_properties, analyst_type = db.load(analyst_id)
+                objects[index]['properties']['analyst_id'] = f"({analyst_properties['name']}) {analyst_id}"
             
     objects.reverse()
             
@@ -146,6 +148,16 @@ async def view_object(request: Request, object_type: str, object_id: str):
                             link_names[obj_id] = "unnamed"
                     except Exception as e:
                         link_names[obj_id] = "Invalid ID"
+                        
+    if (object_type == "hypothesis"):
+        hypo_text = processed_properties["hypothesis_text"]
+        file_path = "files/hgnc_genes.tsv"
+
+        total_genes_set = hypo_text.split(' ')
+        validator = GeneValidator(file_path)
+        result = validator.validate_human_genes(total_genes_set)
+        
+        processed_properties['gene_symbols'] = result['official_genes']
                         
     return {"object_type": object_type, 
             "object": processed_properties,

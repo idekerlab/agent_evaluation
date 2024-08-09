@@ -174,8 +174,8 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
         ranks.sort((a,b) => b.stars - a.stars)
         return (
             <ul>
-                {ranks.map(rank => (
-                    <li>Hypothesis {rank.order}, stars {rank.stars ? '*'.repeat(rank.stars) + ` (${rank.stars})` : "-"}</li>
+                {ranks.map((rank, index) => (
+                    <li key={`${index}-rank`}>Hypothesis {rank.order}, stars {rank.stars ? '*'.repeat(rank.stars) + ` (${rank.stars})` : "-"}</li>
                 ))}
             </ul>
         )
