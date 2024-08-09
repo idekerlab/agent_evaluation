@@ -409,8 +409,11 @@ async def execute_object(request: Request, object_type: str, object_id: str):
     
     if object_type == "analysis_plan":
         analysis_plan = AnalysisPlan.load(db, object_id)
-        analysis_run = analysis_plan.generate_analysis_run()
         
+        try:
+            analysis_run = analysis_plan.generate_analysis_run()
+        except Exception as e:
+            return {"error": f"{e}"}
         
         def execute_analysis_plan(analysis_run_id):
             _, uri, _, _ = load_database_config()
@@ -427,8 +430,11 @@ async def execute_object(request: Request, object_type: str, object_id: str):
     
     elif object_type == "review_plan":
         review_plan = ReviewPlan.load(db, object_id)
-        review_set = review_plan.generate_review_set()
         
+        try:
+            review_set = review_plan.generate_review_set()
+        except Exception as e:
+            return {"error": f"{e}"}
         
         def execute_review_plan(review_set_id):
             _, uri, _, _ = load_database_config()

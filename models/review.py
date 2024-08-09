@@ -21,7 +21,7 @@ class Review:
         self.created = created
 
     @classmethod
-    def create(cls, db, data, hypotheses_text, review_text, ranking_data, summary_review, agent_id, analysis_run_id, description, review_set_id):
+    def create(cls, db, data, hypotheses_text, review_text, ranking_data, summary_review, agent_id, analysis_run_id, description, review_set_id, name=None):
         properties = {
             "data": data,
             "hypotheses_text": hypotheses_text,

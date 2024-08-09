@@ -108,7 +108,8 @@ class ReviewGenerator:
             agent_id=agent_id,
             analysis_run_id=analysis_run_id,
             description=None, # Not sure why this is here
-            review_set_id=review_set_id     
+            review_set_id=review_set_id,
+            name=f"{review_set.name} - {agent.name}"  
         )
 
         return review.object_id

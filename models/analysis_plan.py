@@ -42,7 +42,7 @@ class AnalysisPlan:
     def delete(self):
         self.db.remove(self.object_id)
 
-    def generate_analysis_run(self, biological_context=None, analysis_run_name = None):
+    def generate_analysis_run(self, biological_context=None, analysis_run_name=None):
             """ Generate a new AnalysisRun instance based on this AnalysisPlan. """
             if not self.agent_ids or not self.dataset_id:
                 raise ValueError("AnalysisPlan is not properly configured.")
@@ -54,5 +54,13 @@ class AnalysisPlan:
                 n_hypotheses_per_agent=self.n_hypotheses_per_agent,
                 biological_context=self.biological_context if biological_context == None else biological_context,
                 description=self.description,
-                name=analysis_run_name if analysis_run_name else "none"
+                name=analysis_run_name if analysis_run_name else f"{self.name} - Run {self.number_of_runs()}"
             )
+    
+    def number_of_runs(self):
+        analysis_runs = self.db.find("analysis_run")
+        num_runs = 0
+        for run in analysis_runs:
+            if run["properties"]["analysis_plan_id"] == self.object_id:
+                num_runs += 1
+        return num_runs + 1

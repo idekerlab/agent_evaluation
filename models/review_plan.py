@@ -47,5 +47,13 @@ class ReviewPlan:
                 agent_ids=self.agent_ids,
                 analysis_run_id=self.analysis_run_id,
                 description=self.description,
-                name=review_set_name
+                name=review_set_name if review_set_name else f"{self.name} - Set {self.number_of_sets()}"
             )
+    
+    def number_of_sets(self):
+        review_sets = self.db.find("review_set")
+        num_sets = 0
+        for review_set in review_sets:
+            if review_set["properties"]["review_plan_id"] == self.object_id:
+                num_sets += 1
+        return num_sets + 1

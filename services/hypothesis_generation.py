@@ -46,7 +46,7 @@ class HypothesisGenerator:
         if (n_hypotheses_per_agent > 1):
             ids = []
             hypothesis_arr = hypothesis_text.split(separation_symbol)
-            for hypothesis_text in hypothesis_arr:
+            for (index, hypothesis_text) in enumerate(hypothesis_arr):
                 # Strip leading and trailing whitespace
                 cleaned_text = hypothesis_text.strip()
         
@@ -67,7 +67,8 @@ class HypothesisGenerator:
                         dataset_id=dataset.object_id,
                         description=description, 
                         analysis_run_id=analysis_run_id, 
-                        full_prompt = prompt
+                        full_prompt = prompt,
+                        name=f"{analysis_run.name} - h{index+1}"
                     )
                     ids.append(hypothesis.object_id)
             return ids
@@ -84,7 +85,8 @@ class HypothesisGenerator:
                 dataset_id=dataset.object_id,
                 description=description, 
                 analysis_run_id=analysis_run_id, 
-                full_prompt = prompt
+                full_prompt = prompt,
+                name=f"{analysis_run.name} - h1"
             )
 
             return [hypothesis.object_id]
