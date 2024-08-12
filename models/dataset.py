@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class Dataset:
     def __init__(self, db, 
                  name=None, data=None, 
@@ -37,4 +40,18 @@ class Dataset:
 
     def delete(self):
         self.db.remove(self.object_id)
+
+def update_column_names(dataset_df, column_mapping):
+    # Create a copy of the DataFrame to avoid modifying the original
+    updated_dataset = dataset_df.copy()
+    
+    # Validate that all keys in column_mapping exist in the DataFrame
+    invalid_columns = set(column_mapping.keys()) - set(updated_dataset.columns)
+    if invalid_columns:
+        raise ValueError(f"The following columns are not present in the DataFrame: {invalid_columns}")
+    
+    # Update the column names
+    updated_dataset.rename(columns=column_mapping, inplace=True)
+    
+    return updated_dataset
 

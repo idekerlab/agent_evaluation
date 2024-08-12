@@ -1,36 +1,42 @@
-import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
 import HypothesisReviewForm from './HumanReviewForm'
-
+import DataViewer from './DataViewer'
+import React, { useState } from 'react'
+import FriendlyIFrame from './FriendlyIFrame'
 
 const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {
+    const [iframeSrc, setIframeSrc] = useState('')
 
-
-    let colDefs = []
-    let rowData = []
-
-
-    try {
-        if (hypothesis.data.length > 0) {
-            hypothesis.data.map((row, index) => {
-                if (index == 0) {
-                    row.map(label => {
-                        colDefs.push({ field: label })
-                    })
-                } else {
-                    let newRow = {}
-                    row.map((value, index) => {
-                        newRow[`${colDefs[index]["field"]}`] =  value
-                    })
-                    rowData.push(newRow)
-                }
-            })
+    const addLinksToHypothesis = (text, symbols) => {
+        if (!text || !symbols || !Array.isArray(symbols)) {
+            return text
         }
         
-    } catch (error) {
-        console.log("Error with dataset");
+        let regexPattern = symbols.map(symbol => `\\${symbol}`).join('|')
+        let regex = new RegExp(`(${regexPattern})`, 'g')
+        
+        return text.split(regex).map((part, index) => 
+            symbols.includes(part) ? (
+                <span 
+                    key={`${part}-${index}`}
+                    style={{ color: 'blue', cursor: 'pointer' }}
+                    onClick={() => setIframeSrc(`https://www.ncbi.nlm.nih.gov/gene/?term=${part}`)}
+                >
+                    {part}
+                </span>
+            ) : part
+        )
     }
-    
 
+    const hypothesisTextDisplay = (text) => {
+        let geneSymbols = hypothesis.gene_symbols
+        let enhancedHypothesisText = addLinksToHypothesis(text, geneSymbols)
+
+        return (
+            <p className='highlight'>
+                <b>hypothesis:</b> {enhancedHypothesisText}
+            </p>
+        )
+    }
 
     return (
         <div>
@@ -51,20 +57,10 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
             <p>
                 <b>biological context:</b> {hypothesis.biological_context}
             </p>
-            <p className='highlight'>
-                <b>hypothesis:</b> {hypothesis.hypothesis_text}
-            </p>
 
-            { colDefs.length > 0 && rowData.length > 0 ?
-                <div className="ag-theme-quartz ag-theme-quartz-red" style={{ height: 500 }} >
-                    <AgGridReact
-                        rowData={rowData}
-                        columnDefs={colDefs}
-                    />
-                </div>
-                :
-                <p style={{color: "red"}}><b>Error displaying table data</b></p>
-            }
+            {hypothesisTextDisplay(hypothesis.hypothesis_text)}
+            
+            <DataViewer data={hypothesis.data} />
 
             <p>
                 <b>data description:</b> {dataset.description}
@@ -72,6 +68,9 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
             <p>
                 <b>experiment description:</b> {dataset.experiment_description}
             </p>
+            {iframeSrc && (
+                <FriendlyIFrame iframeSrc={iframeSrc} closeIframe={() => setIframeSrc("")} />
+            )}
         </div>
     )
 }

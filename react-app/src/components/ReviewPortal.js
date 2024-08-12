@@ -14,7 +14,19 @@ const ReviewPortal = () => {
     const [analysisRuns, setAnalysisRuns] = useState([])
     const [rankings, setRankings] = useState([])
 
-    const [user, setUser] = useState(sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null)
+    const [user, setUser] = useState(null)
+
+    const getUserFromLocalStorage = () => {
+        try {
+            return JSON.parse(sessionStorage.getItem('user'))
+        } catch (error) {
+            return null
+        }
+    }
+    useEffect(()=>{
+        if (sessionStorage.getItem('user'))
+            setUser(getUserFromLocalStorage())  
+    }, [])
 
     useEffect(() => {
         getAnalysisRuns()

@@ -67,7 +67,7 @@ const App = () => {
           <div className={inReviewPortal ? "content" : "content"}>
             <Routes>
               {objectTypes.map((type, index) => (
-                <>
+                <React.Fragment key={`${index}-routes`}>
                   <Route 
                     exact 
                     path={`/${type}`} 
@@ -89,7 +89,7 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
-                </>
+                </React.Fragment>
                 
               ))}
               <Route path={`/my_reviews/*`} element={<ReviewPortal />} />
@@ -108,13 +108,27 @@ const Welcome = () => {
 
   return (
     <div className='content'>
-      <h1>Welcome to Deckard, Your LLM Companion to Scientific Discovery</h1>
+      <h1>Welcome to Deckard, </h1>
+      <h3>where hypotheses are evaluated.</h3>
+      <div >
+
+
       <h2>
         Select a resource on the side to get started.
-      </h2>
+      </h2 >
+      </div >
       <button className='button' onClick={() => navigate("/my_reviews/home")}>
-        Go to Review Portal
+        Go to the Review Portal
       </button>
+      <p></p>
+      <div>
+        <img
+          src="/static/images/voight-kampff.png"
+           style={{width: "500px",
+          //   //  textAlign: "center"
+             }}
+        />
+      </div>
     </div>
   )
 }

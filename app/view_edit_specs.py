@@ -23,10 +23,30 @@ object_specifications = {
                 "input_type": "dropdown",
                 "label": "model name",
                 "conditional_on": "type",
-                "options": {"OpenAI": ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4-turbo-2024-04-09","gpt-4o-2024-05-13"],
-                            "Anthropic": ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229", "claude-3-5-sonnet-20240620"],
-                            "Groq": ["llama3-8b-8192", "llama3-70b-8192", "llama-3.1-70b-versatile","llama-3.1-405b-reasoning"],
-                            "GoogleAI": ["gemini-1.5-pro-latest", "gemini-1.5-pro-001",  "gemini-1.5-flash-latest", "gemini-1.5-flash-001", "gemini-1.0-pro-latest", "gemini-1.0-pro-001"], 
+                "options": {"OpenAI": ["gpt-4o-mini-2024-07-18",
+                                       "gpt-4o-2024-05-13",
+                                       "gpt-4-turbo", 
+                                       "gpt-4-turbo-2024-04-09",
+                                       "gpt-3.5-turbo"
+                                       ],
+                            "Anthropic": ["claude-3-haiku-20240307", 
+                                          "claude-3-sonnet-20240229", 
+                                          "claude-3-opus-20240229", 
+                                          "claude-3-5-sonnet-20240620"],
+                            "Groq": ["llama-3.1-8b-instant",
+                                     "llama-3.1-70b-versatile",
+                                     "llama-3.1-405b-reasoning",
+                                     "mixtral-8x7b-32768",
+                                     "gemma-7b-it",
+                                     "gemma2-9b-it",
+                                     "llama3-8b-8192", 
+                                     "llama3-70b-8192"],                                    
+                            "GoogleAI": ["gemini-1.5-pro-latest", 
+                                         "gemini-1.5-pro-001",  
+                                         "gemini-1.5-flash-latest", 
+                                         "gemini-1.5-flash-001", 
+                                         "gemini-1.0-pro-latest", 
+                                         "gemini-1.0-pro-001"], 
                             "LocalModel": [ 'mixtral:latest', 'mixtral:instruct', 'llama2:latest']},
                 "view": "text",
                 "default": "llama3-8b-8192",
@@ -71,8 +91,8 @@ object_specifications = {
             }
         },
     },
-    # MARK:analyst
-    "analyst": {
+    # MARK:agent
+    "agent": {
         "properties": {
             "name": {
                 "type": "string",
@@ -151,11 +171,11 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
+                "label": "agents",
                 "input_type": "select_multiple_objects",
-                "object_type": "analyst",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "editable": True
             },
@@ -167,9 +187,9 @@ object_specifications = {
                 "view": "object_link",
                 "editable": True
             },
-            "n_hypotheses_per_analyst": {
+            "n_hypotheses_per_agent": {
                 "type": "int",
-                "label": "hypotheses\nper analyst",
+                "label": "hypotheses\nper agent",
                 "input_type": "number",
                 "view": "text",
                 "editable": True,
@@ -202,10 +222,10 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
-                "object_type": "analyst",
+                "label": "agents",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "input_type": "select_multiple_objects",
                 "editable": False,
@@ -217,12 +237,12 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
-            "n_hypotheses_per_analyst": {
+            "n_hypotheses_per_agent": {
                 "type": "int",
                 "editable": False,
                 "input_type": "number",
                 "view": "text",
-                "label": "hypotheses\nper analyst",
+                "label": "hypotheses\nper agent",
             },
             "biological_context": {
                 "type": "string",
@@ -246,6 +266,14 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
+            "user_ids": {
+                "type": "list_of_object_ids",
+                "label": "user reviewers",
+                "input_type": "select_multiple_objects",
+                "object_type": "user",
+                "view": "list_of_object_links",
+                "editable": True
+            },
             "description": {
                 "type": "string",
                 "editable": True,
@@ -257,15 +285,8 @@ object_specifications = {
                 "label": "run log",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
-            },
-            "user_ids": {
-                "type": "list_of_object_ids",
-                "label": "user reviewers",
-                "input_type": "select_multiple_objects",
-                "object_type": "user",
-                "view": "list_of_object_links",
-                "editable": True
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -298,10 +319,10 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text"
             },
-            "analyst_id": {
+            "agent_id": {
                 "type": "object_id",
-                "object_type": "analyst",
-                "label": "analyst",
+                "object_type": "agent",
+                "label": "agent",
                 "view": "object_link",
                 "editable": False
             },
@@ -329,7 +350,8 @@ object_specifications = {
                 "label": "prompt",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -343,11 +365,11 @@ object_specifications = {
                 "input_type": "text",
                 "view": "text"
             },
-            "analyst_ids": {
+            "agent_ids": {
                 "type": "list_of_object_ids",
-                "label": "analysts",
+                "label": "agents",
                 "input_type": "select_multiple_objects",
-                "object_type": "analyst",
+                "object_type": "agent",
                 "view": "list_of_object_links",
                 "editable": True
             },
@@ -401,7 +423,8 @@ object_specifications = {
                 "label": "run log",
                 "editable": False,
                 "input_type": "textarea",
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             }
         }
     },
@@ -436,14 +459,15 @@ object_specifications = {
                 "type": "string",
                 "label": "hypotheses list",
                 "editable": False,
-                "view": "text"
+                "view": "text",
+                "collapsible": True
             },
-            "analyst_id": {
+            "agent_id": {
                 "type": "object_id",
-                "label": "analyst",
+                "label": "agent",
                 "editable": False,
                 "view": "object_link",
-                "object_type": "analyst"
+                "object_type": "agent"
             },
             "description": {
                 "type": "string",

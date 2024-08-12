@@ -1,5 +1,5 @@
 from models.dataset import Dataset
-from models.analyst import Analyst
+from models.agent import Agent
 from models.llm import LLM
 from models.hypothesis import Hypothesis
 from models.analysis_run import AnalysisRun
@@ -9,16 +9,16 @@ class HypothesisGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_hypothesis(self, analyst_id, analysis_run_id, n_hypotheses_per_analyst, description=""):
-        # Load the dataset and analyst using the newly created classes
+    def generate_hypothesis(self, agent_id, analysis_run_id, n_hypotheses_per_agent, description=""):
+        # Load the dataset and agent using the newly created classes
         analysis_run = AnalysisRun.load(self.db, analysis_run_id)
         if not analysis_run:
             raise ValueError("AnalysisRun to which to add the hypothesis was provided but not found in generate_hypothesis")
         
         dataset = Dataset.load(self.db, analysis_run.dataset_id)
-        analyst = Analyst.load(self.db, analyst_id)
-        if not dataset or not analyst:
-            raise ValueError("Dataset or Analyst not found in generate_hypothesis")
+        agent = Agent.load(self.db, agent_id)
+        if not dataset or not agent:
+            raise ValueError("Dataset or Agent not found in generate_hypothesis")
        
         separation_symbol = "&&&&&"
 
@@ -30,23 +30,23 @@ class HypothesisGenerator:
             'biological_context': analysis_run.biological_context
         })
         
-        prompt = analyst.prompt_template.format_map(safe_dict)
+        prompt = agent.prompt_template.format_map(safe_dict)
         
-        if (n_hypotheses_per_analyst > 1):
-            prompt += f"\n\nGenerate {n_hypotheses_per_analyst} hypotheses without explicitly mention the number of hypotheses in the response text. Separate the text between each hypothesis with the following symbols: {separation_symbol}."
+        if (n_hypotheses_per_agent > 1):
+            prompt += f"\n\nGenerate {n_hypotheses_per_agent} hypotheses without explicitly mention the number of hypotheses in the response text. Separate the text between each hypothesis with the following symbols: {separation_symbol}."
 
-        # Load the LLM associated with the analyst
-        llm = LLM.load(self.db, analyst.llm_id)
+        # Load the LLM associated with the agent
+        llm = LLM.load(self.db, agent.llm_id)
         if not llm:
             raise ValueError("LLM not found")
 
         # Generate hypothesis text using the LLM
-        hypothesis_text = llm.query(analyst.context, prompt)
+        hypothesis_text = llm.query(agent.context, prompt)
         
-        if (n_hypotheses_per_analyst > 1):
+        if (n_hypotheses_per_agent > 1):
             ids = []
             hypothesis_arr = hypothesis_text.split(separation_symbol)
-            for hypothesis_text in hypothesis_arr:
+            for (index, hypothesis_text) in enumerate(hypothesis_arr):
                 # Strip leading and trailing whitespace
                 cleaned_text = hypothesis_text.strip()
         
@@ -63,11 +63,12 @@ class HypothesisGenerator:
                         hypothesis_text=cleaned_text.strip(),
                         data=data,
                         biological_context=analysis_run.biological_context,
-                        analyst_id=analyst_id,
+                        agent_id=agent_id,
                         dataset_id=dataset.object_id,
                         description=description, 
                         analysis_run_id=analysis_run_id, 
-                        full_prompt = prompt
+                        full_prompt = prompt,
+                        name=f"{analysis_run.name} - h{index+1}"
                     )
                     ids.append(hypothesis.object_id)
             return ids
@@ -80,15 +81,16 @@ class HypothesisGenerator:
                 hypothesis_text=hypothesis_text,
                 data=data,
                 biological_context=analysis_run.biological_context,
-                analyst_id=analyst_id,
+                agent_id=agent_id,
                 dataset_id=dataset.object_id,
                 description=description, 
                 analysis_run_id=analysis_run_id, 
-                full_prompt = prompt
+                full_prompt = prompt,
+                name=f"{analysis_run.name} - h1"
             )
 
             return [hypothesis.object_id]
 
 # Example usage:
 # generator = HypothesisGenerator(db)
-# hypothesis_id = generator.generate_hypothesis(analyst_id, dataset_id)
+# hypothesis_id = generator.generate_hypothesis(agent_id, dataset_id)

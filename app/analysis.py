@@ -6,9 +6,9 @@ from scipy.spatial.distance import pdist, squareform
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import umap
-from typing import List, Tuple
+from typing import Dict, Tuple
 from itertools import combinations
-from models import Review
+from models.review import Review
 import json
 
 # {
@@ -38,14 +38,14 @@ import json
 #   }
 # }
 
-def get_review(review_set, reviewer_id):
-    for review_id in review_set.reviews:
-        review = Review.load(review_id)
-        if review.analyst == reviewer_id:
+def get_review(db, review_set, reviewer_id):
+    for review_id in review_set.review_ids:
+        review = Review.load(db, review_id)
+        if review.agent_id == reviewer_id:
             return review
     raise ValueError("Reviewer not in ReviewSet")
 
-def create_review_judgment_vector(review_set, reviewer_id):
+def create_review_judgment_vector(db, review_set=None, reviewer_id=None):
     """
     Create a judgment vector for the Review 
     belonging to the Reviewer in the ReviewSet
@@ -71,17 +71,17 @@ def create_review_judgment_vector(review_set, reviewer_id):
     :param review_set: ReviewSet object
     :return: NumPy array representing the judgment vector
     """
-    review = get_review(review_set, reviewer_id)
+    review = get_review(db, review_set, reviewer_id)
 
-    result = json.load(review.result)
+    ranking_data = json.loads(review.ranking_data)
 
-    N = len(result.rankings)  # Number of Hypothesis objects in the ReviewSet
+    N = len(ranking_data["rankings"])  # Number of Hypothesis objects in the ReviewSet
 
-    rankings = np.zeros(N+1, dtype=int) # it's N+1 because the reviewer might give from N to zero stars
-    for hypothesis_id, ranking in result.rankings.items():
+    rankings = np.zeros(N, dtype=int) 
+    for hypothesis_id, ranking in ranking_data["rankings"].items():
         order = int(ranking["order"])
         stars = int(ranking["stars"])
-        rankings[order] = stars
+        rankings[order - 1] = stars
     
     # Create a vector long enough to hold the unique A-B comparisons,
     # not including self comparisons
@@ -115,7 +115,7 @@ def create_review_judgment_vector(review_set, reviewer_id):
 # print(f"Judge's ranking vector: {judge_vector}")
 # print(f"Vector length: {len(judge_vector)}")
 
-def create_judgment_vector(review_sets, reviewer):
+def create_judgment_vector(db, review_sets=None, reviewer_id=None):
     # For a each ReviewSet, create a judgment
     # vector for the specified Reviewer
     #
@@ -134,27 +134,45 @@ def create_judgment_vector(review_sets, reviewer):
     # for different reviewers and the A-B
     # comparisons will not align.
     judgment_vector_list = []
+    review_jvecs = {}
     for review_set in review_sets:
-        judgment_vector_list.append(create_review_judgment_vector(review_set, reviewer))
-    return np.concatenate(judgment_vector_list)
+        review_jvec = create_review_judgment_vector(db, review_set=review_set, reviewer_id=reviewer_id)
+        judgment_vector_list.append(review_jvec)
+        review_jvecs[reviewer_id] = review_jvec
+    return np.concatenate(judgment_vector_list), review_jvecs
 
-
-def visualize_judgment_vectors(judge_sets: List[Tuple[np.ndarray, str]], 
-                     plot_type: str = 'PCA', 
-                     n_components: int = 2,
-                     random_state: int = 42,
-                     figsize: Tuple[int, int] = (10, 8)):
+def visualize_judgment_vectors(reviewer_data: Dict[str, Dict], 
+                               plot_type: str = 'PCA', 
+                               n_components: int = 2,
+                               random_state: int = 42,
+                               figsize: Tuple[int, int] = (10, 8)):
     """
-    Visualize multiple judges in judgment space.
+    Visualize multiple reviewers in judgment space.
     
-    :param judge_sets: List of tuples, each containing (judge_vectors, set_label)
+    :param reviewer_data: Dictionary of reviewer data
     :param plot_type: Type of plot ('PCA', 'UMAP', or 'TSNE')
     :param n_components: Number of components for dimensionality reduction
     :param random_state: Random state for reproducibility
     :param figsize: Figure size
     """
-    # Combine all judge vectors
-    all_judges = np.vstack([judges for judges, _ in judge_sets])
+    # Extract judgment vectors and labels
+    judgment_vectors = []
+    labels = []
+    n = 1
+    for reviewer_id, data in reviewer_data.items():
+        judgment_vectors.append(data['judgment_vector'])
+        if "label" in data and data['label'] is not None:
+            labels.append(data['label'])
+        else:
+            labels.append(f'label#{str(n)}')
+            n += 1
+
+    # Convert to numpy array
+    all_reviewers = np.vstack(judgment_vectors)
+
+    # Determine the number of components
+    n_samples, n_features = all_reviewers.shape
+    n_components = min(n_components, n_samples, n_features)
     
     # Perform dimensionality reduction
     if plot_type == 'PCA':
@@ -166,48 +184,36 @@ def visualize_judgment_vectors(judge_sets: List[Tuple[np.ndarray, str]],
     else:
         raise ValueError("Invalid plot_type. Choose 'PCA', 'UMAP', or 'TSNE'.")
     
-    reduced_data = reducer.fit_transform(all_judges)
+    try:
+        reduced_data = reducer.fit_transform(all_reviewers)
+    except ValueError as e:
+        print(f"Error in dimensionality reduction: {e}")
+        print(f"Number of reviewers: {n_samples}, Number of features: {n_features}")
+        return
     
     # Plotting
     plt.figure(figsize=figsize)
-    colors = plt.cm.rainbow(np.linspace(0, 1, len(judge_sets)))
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(set(labels))))
+    color_dict = {label: color for label, color in zip(set(labels), colors)}
     markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h', 'H', '+', 'x', 'd', '|', '_']
+    marker_dict = {label: marker for label, marker in zip(set(labels), markers)}
     
-    start_idx = 0
-    for (judges, label), color, marker in zip(judge_sets, colors, markers):
-        end_idx = start_idx + len(judges)
-        plt.scatter(reduced_data[start_idx:end_idx, 0], 
-                    reduced_data[start_idx:end_idx, 1], 
-                    c=[color], 
-                    marker=marker, 
-                    label=label,
+    for i, (x, y) in enumerate(reduced_data):
+        label = labels[i]
+        plt.scatter(x, y, 
+                    c=[color_dict[label]], 
+                    marker=marker_dict[label], 
+                    label=label if label not in plt.gca().get_legend_handles_labels()[1] else "",
                     alpha=0.7)
-        start_idx = end_idx
     
-    plt.title(f"Judges in {plot_type} Space")
+    plt.title(f"Reviewers in {plot_type} Space")
     plt.xlabel(f"{plot_type}1")
     plt.ylabel(f"{plot_type}2")
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.show()
 
-# Example usage
-# M, N = 3, 4  # 3 trials, 4 hypotheses per trial
 
-# # Generate random ranking vectors for demonstration
-# np.random.seed(42)
-# human_judges = np.random.randint(-1, 2, size=(10, M * (N * (N - 1) // 2)))
-# ai_judges = np.random.randint(-1, 2, size=(5, M * (N * (N - 1) // 2)))
-
-# # Visualize
-# judge_sets = [
-#     (human_judges, "Human Judges"),
-#     (ai_judges, "AI Judges")
-# ]
-
-# visualize_judges(judge_sets, plot_type='PCA')
-# visualize_judges(judge_sets, plot_type='UMAP')
-# visualize_judges(judge_sets, plot_type='TSNE')
 
 def reviewer_similarity_heatmap(reviewer_judgment_vectors, metric='cosine', method='average', figsize=(12, 10)):
     """
