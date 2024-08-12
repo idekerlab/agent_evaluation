@@ -301,7 +301,7 @@ from fastapi import HTTPException
 async def update_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
-    print(form_data)
+    # print(form_data)
     # Ensure the object_type exists in the specifications
     if object_type not in object_specifications:
         print(f"Error: '{object_type}' is not a valid object type in specifications.")

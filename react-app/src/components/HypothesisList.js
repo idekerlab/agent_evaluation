@@ -119,7 +119,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
         let review_str =  JSON.stringify({user_id: user.object_id, status: statusStr, ranking: ranking})
 
         let submitPath = api_base + `/objects/review/blank/new`
-        let submitObj = {ranking_data: review_str, analysis_run_id: analysisRun.object_id}
+        let submitObj = {ranking_data: review_str, analysis_run_id: analysisRun.object_id, name: `${user.properties.name}'s review of ${analysisRun.name}`}
 
         if (hasSavedReview) {
             submitPath = api_base + `/objects/review/${alreadySavedData.object_id}/edit`
@@ -133,7 +133,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
                 }
             })
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 setReload(prev => !prev)
                 if (hasUndone)
                     navigate(`/my_reviews/${statusStr}/${objectId}`)
