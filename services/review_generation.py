@@ -15,28 +15,48 @@ def extract_summary_review(long_string):
         return match.group(1).strip()
     else:
         return ""
-    
+
 def extract_final_rankings(long_string):
     # Extract the Final Rankings section
-    pattern = r'Final Rankings:(.*?)(?=\n\nSummary Review:)'
-    match = re.search(pattern, long_string, re.DOTALL)
+    pattern = r'Final Rankings:(.+?)(?=\n\s*\n|$)'
+    match = re.search(pattern, long_string, re.DOTALL | re.IGNORECASE)
     
     if not match:
         return None
     
     rankings_text = match.group(1).strip()
-    print("Extracted ranking text:", rankings_text)  # Debugging print
     
     # Parse the ranking into tuples
-    ranking_pattern = r'Hypothesis#(\d+):\s*(\d+)'
-    ranking = re.findall(ranking_pattern, rankings_text)
-    print("Parsed ranking:", ranking)  # Debugging print
+    ranking_pattern = r'Hypothesis\s*#?\s*(\d+)\s*:\s*(\d+)'
+    ranking = re.findall(ranking_pattern, rankings_text, re.IGNORECASE)
     
     # Convert strings to integers and sort by hypothesis number
     ranking = [(int(hyp), int(rank)) for hyp, rank in ranking]
     ranking.sort(key=lambda x: x[0])
     
     return ranking
+    
+# def extract_final_rankings(long_string):
+#     # Extract the Final Rankings section
+#     pattern = r'Final Rankings:(.*?)(?=\n\nSummary Review:)'
+#     match = re.search(pattern, long_string, re.DOTALL)
+    
+#     if not match:
+#         return None
+    
+#     rankings_text = match.group(1).strip()
+#     print("Extracted ranking text:", rankings_text)  # Debugging print
+    
+#     # Parse the ranking into tuples
+#     ranking_pattern = r'Hypothesis#(\d+):\s*(\d+)'
+#     ranking = re.findall(ranking_pattern, rankings_text)
+#     print("Parsed ranking:", ranking)  # Debugging print
+    
+#     # Convert strings to integers and sort by hypothesis number
+#     ranking = [(int(hyp), int(rank)) for hyp, rank in ranking]
+#     ranking.sort(key=lambda x: x[0])
+    
+#     return ranking
         
 class ReviewGenerator:
     def __init__(self, db):
