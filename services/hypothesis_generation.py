@@ -42,6 +42,7 @@ class HypothesisGenerator:
 
         # Generate hypothesis text using the LLM
         hypothesis_text = llm.query(agent.context, prompt)
+        num_hypotheses = len(analysis_run.hypothesis_ids)
         
         if (n_hypotheses_per_agent > 1):
             ids = []
@@ -68,7 +69,10 @@ class HypothesisGenerator:
                         description=description, 
                         analysis_run_id=analysis_run_id, 
                         full_prompt = prompt,
-                        name=f"{analysis_run.name} - h{index+1}"
+                        name=f"{analysis_run.name} - h{num_hypotheses + index + 1}",
+                        agent_copy=agent.to_json(),
+                        llm_copy=llm.to_json(),
+                        dataset_copy=dataset.to_json()
                     )
                     ids.append(hypothesis.object_id)
             return ids
@@ -86,7 +90,10 @@ class HypothesisGenerator:
                 description=description, 
                 analysis_run_id=analysis_run_id, 
                 full_prompt = prompt,
-                name=f"{analysis_run.name} - h1"
+                name=f"{analysis_run.name} - h{num_hypotheses + 1}",
+                agent_copy=agent.to_json(),
+                llm_copy=llm.to_json(),
+                dataset_copy=dataset.to_json()
             )
 
             return [hypothesis.object_id]

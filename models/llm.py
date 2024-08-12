@@ -6,7 +6,7 @@ import google.generativeai as genai
 import requests
 from app.config import load_api_key, load_local_server_url
 import anthropic
-
+import json
 
 class LLM:
     def __init__(self, db, type=None, model_name=None,
@@ -20,6 +20,8 @@ class LLM:
         self.temperature = temperature
         self.object_id = object_id
         self.created = created
+        self.name = name
+        self.description = description
 
     @classmethod
     def create(cls, db, type, model_name, max_tokens=2048, seed=None, temperature=0.5, name=None, description=None):
@@ -68,6 +70,19 @@ class LLM:
             return self.query_local_model(context, prompt)
         else:
             raise ValueError(f"Unsupported llm type: {self.type}")
+        
+    def to_json(self):
+        return json.dumps({
+            "type": self.type,
+            "model_name": self.model_name,
+            "max_tokens": self.max_tokens,
+            "seed": self.seed,
+            "temperature": self.temperature,
+            "object_id": self.object_id,
+            "created": self.created,
+            "name": self.name,
+            "description": self.description
+        })
     
     
     def query_openai(self, context, prompt):

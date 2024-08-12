@@ -1,5 +1,5 @@
 import pandas as pd
-
+import json
 
 class Dataset:
     def __init__(self, db, 
@@ -40,6 +40,15 @@ class Dataset:
 
     def delete(self):
         self.db.remove(self.object_id)
+        
+    def to_json(self):
+        return json.dumps({
+            "name": self.name,
+            "experiment_description": self.experiment_description,
+            "description": self.description,
+            "object_id": self.object_id,
+            "created": self.created
+        })
 
 def update_column_names(dataset_df, column_mapping):
     # Create a copy of the DataFrame to avoid modifying the original

@@ -3,7 +3,7 @@
 class Hypothesis:
     def __init__(self, db, name=None, hypothesis_text=None, data=None, biological_context=None, agent_id=None, 
                  dataset_id=None, description=None, analysis_run_id=None, 
-                 object_id=None, full_prompt = None, created=None):
+                 object_id=None, full_prompt=None, agent_copy=None, llm_copy=None, dataset_copy=None, created=None):
         self.db = db
         self.hypothesis_text = hypothesis_text
         self.data = data
@@ -16,9 +16,12 @@ class Hypothesis:
         self.created = created
         self.name = name
         self.full_prompt = full_prompt
+        self.agent_copy = agent_copy
+        self.llm_copy = llm_copy
+        self.dataset_copy = dataset_copy
 
     @classmethod
-    def create(cls, db, hypothesis_text, data, biological_context, agent_id, dataset_id, description, analysis_run_id, name=None, full_prompt = None):
+    def create(cls, db, hypothesis_text, data, biological_context, agent_id, dataset_id, description, analysis_run_id, name=None, full_prompt=None, agent_copy=None, llm_copy=None, dataset_copy=None):
         properties = {
             "name": name,
             "hypothesis_text": hypothesis_text,
@@ -28,7 +31,10 @@ class Hypothesis:
             "dataset_id": dataset_id,
             "description": description,
             "analysis_run_id": analysis_run_id,
-            "full_prompt": full_prompt
+            "full_prompt": full_prompt,
+            "agent_copy": agent_copy,
+            "llm_copy": llm_copy,
+            "dataset_copy": dataset_copy
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="hypothesis")
         hypothesis = cls(db, name, hypothesis_text, data, biological_context, agent_id, dataset_id, 
