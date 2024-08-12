@@ -243,13 +243,13 @@ const ObjectView = ({objectType, ...props}) => {
                                                         <button className="button" style={{backgroundColor: "grey"}} onClick={()=>handleToggleExpand(propName)}>
                                                             {expanded[propName] ? <><i className="fa-solid fa-minus"></i>  Collapse</> : <><i className="fa-solid fa-arrows-up-down"></i>  Expand</>}
                                                         </button>
-                                                        <pre style={{ maxWidth: "800px" }}>
+                                                        <pre className='pre-format' style={{ maxWidth: "800px" }}>
                                                             {expanded[propName] ? object[propName] : truncateString(object[propName])}
                                                         </pre>
                                                     </div>
                                                     
                                                 ) : (
-                                                    <pre style={{ maxWidth: "800px" }}>
+                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
                                                         {object[propName]}
                                                     </pre>
                                                 )}

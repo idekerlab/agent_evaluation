@@ -32,9 +32,9 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
         let enhancedHypothesisText = addLinksToHypothesis(text, geneSymbols)
 
         return (
-            <p className='highlight'>
+            <pre className='highlight pre-format2'>
                 <b>hypothesis:</b> {enhancedHypothesisText}
-            </p>
+            </pre>
         )
     }
 
@@ -54,20 +54,20 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
 
             <HypothesisReviewForm rank={rank} disableForm={disableForm} handleRankingChange={handleRankingChange} />
 
-            <p>
+            <pre className='pre-format2'>
                 <b>biological context:</b> {hypothesis.biological_context}
-            </p>
+            </pre>
 
             {hypothesisTextDisplay(hypothesis.hypothesis_text)}
             
             <DataViewer data={hypothesis.data} />
 
-            <p>
+            <pre className='pre-format2'>
                 <b>data description:</b> {dataset.description}
-            </p>
-            <p>
+            </pre>
+            <pre className='pre-format2'>
                 <b>experiment description:</b> {dataset.experiment_description}
-            </p>
+            </pre>
             {iframeSrc && (
                 <FriendlyIFrame iframeSrc={iframeSrc} closeIframe={() => setIframeSrc("")} />
             )}

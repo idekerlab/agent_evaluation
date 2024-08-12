@@ -64,7 +64,7 @@ const App = () => {
       { !loading &&
         <div className="container">
           {!inReviewPortal && <Sidebar objectTypes={objectTypes} />}
-          <div className={inReviewPortal ? "content" : "content"}>
+          <div className={inReviewPortal ? "content" : "content2"}>
             <Routes>
               {objectTypes.map((type, index) => (
                 <React.Fragment key={`${index}-routes`}>
