@@ -25,18 +25,18 @@ def extract_final_rankings(long_string):
         return None
     
     rankings_text = match.group(1).strip()
-    print("Extracted rankings text:", rankings_text)  # Debugging print
+    print("Extracted ranking text:", rankings_text)  # Debugging print
     
-    # Parse the rankings into tuples
+    # Parse the ranking into tuples
     ranking_pattern = r'Hypothesis#(\d+):\s*(\d+)'
-    rankings = re.findall(ranking_pattern, rankings_text)
-    print("Parsed rankings:", rankings)  # Debugging print
+    ranking = re.findall(ranking_pattern, rankings_text)
+    print("Parsed ranking:", ranking)  # Debugging print
     
     # Convert strings to integers and sort by hypothesis number
-    rankings = [(int(hyp), int(rank)) for hyp, rank in rankings]
-    rankings.sort(key=lambda x: x[0])
+    ranking = [(int(hyp), int(rank)) for hyp, rank in ranking]
+    ranking.sort(key=lambda x: x[0])
     
-    return rankings
+    return ranking
         
 class ReviewGenerator:
     def __init__(self, db):
@@ -86,16 +86,16 @@ class ReviewGenerator:
 
         if ranking_tuples is not None:
             # Combine the tuples with the agent_id and the hypothesis_ids in the AnalysisRun 
-            # to generate the rankings datastructure
-            rankings = {"user_id": agent_id, "status": "done"}
+            # to generate the ranking datastructure
+            ranking = {"user_id": agent_id, "status": "done"}
             analysis_run = AnalysisRun.load(self.db, analysis_run_id)
             r = {}
             for order, rank in ranking_tuples:
                 hypothesis_id = analysis_run.hypothesis_ids[order - 1]
                 r[hypothesis_id] = {"stars": rank, "order": order, "comments": ""}
 
-            rankings["rankings"]=r
-            ranking_data = json.dumps(rankings)
+            ranking["ranking"]=r
+            ranking_data = json.dumps(ranking)
 
         # Create and save the hypothesis
         review = Review.create(

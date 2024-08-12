@@ -13,6 +13,8 @@ import yaml
 from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom import minidom
 from models.dataset import Dataset
+import csv
+from io import StringIO
 
 class Hierarchy():
     def __init__(self, hierarchy_cx, derived_from_cx=None):
@@ -74,7 +76,8 @@ class Hierarchy():
         return assemblies
 
 
-    def add_data_from_file(self, file_path, key_column='name', columns=None, filter=None, sheet_name=0, delimiter=None, decimal_places=None):
+    def add_data_from_file(self, file_path, key_column='name', columns=None, 
+                           filter=None, sheet_name=0, delimiter=None):
         # Determine file type from extension
         _, file_extension = os.path.splitext(file_path)
         file_extension = file_extension.lower()
@@ -89,22 +92,55 @@ class Hierarchy():
         else:
             raise ValueError(f"Unsupported file type: {file_extension}. Supported types are .xlsx, .csv, and .tsv")
         
-        if decimal_places is not None:
-            df = reduce_float_precision(df, decimal_places)
 
-        # Ensure the key column exists in the input file/dataframe
+        # # Ensure the key column exists in the input file/dataframe
+        # if key_column not in df.columns:
+        #     raise ValueError(f"Key column '{key_column}' not found in the file")
+
+        # # Move the key_column to the first position if it's not already there
+        # if df.columns[0] != key_column:
+        #     df = df[[key_column] + [col for col in df.columns if col != key_column]]
+
+        # # Select columns
+        # if columns:
+        #     df = df[[col for col in columns if col in df.columns]]
+
+        # # Ensure key_column is still present after column selection
+        # if key_column not in df.columns:
+        #     df.insert(0, key_column, df.index)
+
+# Ensure the key column exists in the input file/dataframe
         if key_column not in df.columns:
             raise ValueError(f"Key column '{key_column}' not found in the file")
 
-        # Handle column selection and renaming
-        if columns is not None:
-            # Ensure key_column is included
-            if key_column not in columns:
-                columns[key_column] = key_column
+        # Prepare the list of columns to keep, ensuring key_column is first
+        if columns:
+            # Create a mapping of old column names to new column names
+            column_mapping = {old: new for old, new in columns.items() if old in df.columns}
             
-            # Select and rename columns
-            df = df[[col for col in columns.keys() if col in df.columns]]
-            df.rename(columns=columns, inplace=True)
+            # Ensure key_column is in the mapping
+            if key_column not in column_mapping:
+                column_mapping[key_column] = key_column
+            
+            # Create ordered list of columns to keep
+            columns_to_keep = [col for col in df.columns if col in column_mapping]
+            
+            # Ensure key_column is first
+            if key_column in columns_to_keep and columns_to_keep[0] != key_column:
+                columns_to_keep.remove(key_column)
+                columns_to_keep.insert(0, key_column)
+        else:
+            columns_to_keep = df.columns.tolist()
+            if columns_to_keep[0] != key_column:
+                columns_to_keep.remove(key_column)
+                columns_to_keep.insert(0, key_column)
+            column_mapping = {col: col for col in columns_to_keep}
+
+        # Select and reorder columns
+        df = df[columns_to_keep]
+
+        # Rename columns while maintaining order
+        df.columns = [column_mapping[col] for col in df.columns]
 
         # Convert DataFrame to list of dictionaries
         data_dict_list = df.to_dict('records')
@@ -167,7 +203,7 @@ def get_assembly_names(assembly):
 def any_element_in(list1, list2):
     return bool(set(list1) & set(list2))
 
-def dataset_from_assembly(db, assembly, type="yaml", columns=None, experiment_description=""):
+def dataset_from_assembly(db, assembly, type="csv", columns=None, decimal_places=None, experiment_description=""):
     data_dict = json.loads(assembly["v"]["data"])
 
     # Filter the data dict on columns
@@ -181,20 +217,52 @@ def dataset_from_assembly(db, assembly, type="yaml", columns=None, experiment_de
         datastring = yaml.dump(data_dict, default_flow_style=False, sort_keys=False)
     elif type == "xml":
         datastring = format_as_xml(data_dict)
-    elif type in ["csv", "tsv"]:
-        data_table = pd.DataFrame(data_dict).T  # Transpose to get correct orientation
-        separator = "," if type == "csv" else "\t"
-        datastring = data_table.to_csv(sep=separator)
+    elif type == "csv":
+        datastring = data_dict_to_csv(data_dict, columns=None, decimal_places=decimal_places)
     else:
         raise ValueError(f"Unsupported data format type: {type}")
     
-    assembly_names = json.dumps(get_assembly_names(assembly),indent=4)
+    assembly_names = json.dumps(get_assembly_names(assembly), indent=4)
     if len(assembly_names) == 0:
         dataset_name = assembly["v"]["name"]
     else:
-        dataset_name = json.dumps(get_assembly_names(assembly)[0])
+        dataset_name = json.loads(assembly_names)[0]  # Assuming we want the first name
     dataset = Dataset.create(db, dataset_name, datastring, experiment_description, description=assembly_names)
     return dataset
+
+def data_dict_to_csv(data_dict, columns=None, decimal_places=None):
+    if isinstance(data_dict, str):
+        data_dict = json.loads(data_dict)
+    
+    # Scan the data_dict for all properties if columns is not specified
+    if columns is None:
+        columns = set()
+        for item in data_dict.values():
+            columns.update(item.keys())
+        columns = sorted(columns)
+    
+    # Prepare the CSV data
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(['GeneSymbol'] + columns)
+    
+    # Write data rows
+    for gene_symbol, gene_data in data_dict.items():
+        row = [gene_symbol]
+        for col in columns:
+            value = gene_data.get(col, '')
+            # Preserve the format, especially for numbers
+            if isinstance(value, (int, float)):
+                if isinstance(value, float) and decimal_places is not None:
+                    value = f"{value:.{decimal_places}f}"
+                else:
+                    value = f"{value}"
+            row.append(value)
+        writer.writerow(row)
+    
+    return output.getvalue()
 
 def format_as_xml(data_dict):
     root = Element('dataset')
@@ -213,7 +281,7 @@ def format_as_xml(data_dict):
     
     return xml_string
 
-def reduce_float_precision(dataset_df, decimal_places=2):
+def reduce_float_precision(dataset_df, decimal_places, round_columns=None):
     # Create a copy of the DataFrame to avoid modifying the original
     rounded_df = dataset_df.copy()
     
@@ -222,6 +290,8 @@ def reduce_float_precision(dataset_df, decimal_places=2):
     
     # Round float columns to specified decimal places
     for col in float_columns:
-        rounded_df[col] = rounded_df[col].round(decimal_places)
-    
+        if round_columns is None:
+            rounded_df[col] = rounded_df[col].round(decimal_places)
+        if col in round_columns:
+            rounded_df[col] = rounded_df[col].round(decimal_places)
     return rounded_df
