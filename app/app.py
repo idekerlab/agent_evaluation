@@ -152,7 +152,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
                         
     if (object_type == "hypothesis"):
         hypo_text = processed_properties["hypothesis_text"]
-        file_path = "files/hgnc_genes.tsv"
+        file_path = "data/hgnc_genes.tsv"
 
         total_genes_set = hypo_text.split(' ')
         validator = GeneValidator(file_path)
