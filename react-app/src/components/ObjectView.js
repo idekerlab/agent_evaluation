@@ -82,9 +82,12 @@ const ObjectView = ({objectType, ...props}) => {
         setShowFriendly(prev => !prev)
     }
 
-    const isValidJSON = (jsonString) => {
+    const isValidRankingData = (jsonString) => {
         try {
-            JSON.parse(jsonString);
+            let obj = JSON.parse(jsonString);
+            let attr = Object.keys(obj)
+            if (!(attr.includes("ranking") && attr.includes("status") && attr.includes("user_id")))
+                return false
             return true;
         } catch (e) {
             return false;
@@ -166,7 +169,7 @@ const ObjectView = ({objectType, ...props}) => {
                         <>
                             {showFriendly ? (
                                 <>
-                                    { isValidJSON(object["ranking_data"]) ?
+                                    { isValidRankingData(object["ranking_data"]) ?
                                         <HypothesisList
                                             viewOnly
                                             runId={object["analysis_run_id"]}
@@ -240,13 +243,13 @@ const ObjectView = ({objectType, ...props}) => {
                                                         <button className="button" style={{backgroundColor: "grey"}} onClick={()=>handleToggleExpand(propName)}>
                                                             {expanded[propName] ? <><i className="fa-solid fa-minus"></i>  Collapse</> : <><i className="fa-solid fa-arrows-up-down"></i>  Expand</>}
                                                         </button>
-                                                        <pre style={{ maxWidth: "800px" }}>
+                                                        <pre className='pre-format' style={{ maxWidth: "800px" }}>
                                                             {expanded[propName] ? object[propName] : truncateString(object[propName])}
                                                         </pre>
                                                     </div>
                                                     
                                                 ) : (
-                                                    <pre style={{ maxWidth: "800px" }}>
+                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
                                                         {object[propName]}
                                                     </pre>
                                                 )}
