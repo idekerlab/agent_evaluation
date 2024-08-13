@@ -473,24 +473,25 @@ async def handle_form_submission(form_data, object_type, db):
         csv_file = form_data.pop('data', None) if object_type == "dataset" else None
         if csv_file:
             print("File:", csv_file)
-            # Read the contents of the CSV file as text
-            csv_content = (await csv_file.read()).decode('utf-8')
-            print("Content", csv_content)
-            # # Include the CSV text data in form_data
-            # form_data['data'] = csv_content
-            # Process the CSV content
-            csv_data = StringIO(csv_content)
-            reader = csv.reader(csv_data)
-            rows = list(reader)
+            if (csv_file != "undefined"):
+                # Read the contents of the CSV file as text
+                csv_content = (await csv_file.read()).decode('utf-8')
+                print("Content", csv_content)
+                # # Include the CSV text data in form_data
+                # form_data['data'] = csv_content
+                # Process the CSV content
+                csv_data = StringIO(csv_content)
+                reader = csv.reader(csv_data)
+                rows = list(reader)
 
-            # Format numeric values in CSV content
-            formatted_rows = format_numeric_values(rows)
+                # Format numeric values in CSV content
+                formatted_rows = format_numeric_values(rows)
 
-            # Convert back to CSV string
-            output = StringIO()
-            writer = csv.writer(output)
-            writer.writerows(formatted_rows)
-            form_data['data'] = output.getvalue()
+                # Convert back to CSV string
+                output = StringIO()
+                writer = csv.writer(output)
+                writer.writerows(formatted_rows)
+                form_data['data'] = output.getvalue()
         
         if form_data.get("object_id"):
             db.update(form_data["object_id"], form_data)

@@ -212,9 +212,8 @@ const ObjectForm = ({ objectType, formType }) => {
             case 'upload_table':
                 return (
                     <div>
-                        <label htmlFor={field.name}>Upload CSV: </label>
+                        <label htmlFor={field.name}>Upload {formType == "edit" && "to change"} CSV: </label>
                         <input type="file" id={field.name} name={field.name} accept=".csv" />
-                        {/* <pre>{field.value}</pre> */}
                     </div>
                 )
             case 'dropdown':
@@ -266,7 +265,7 @@ const ObjectForm = ({ objectType, formType }) => {
                     <div className="header">
                         <img src={`/static/images/${objectType}.png`} alt={`${objectType} Logo`} />
                         <div>
-                            <h1>Edit {objectType} : {object.name || "unnamed"}</h1>
+                            <h1>{formType == "new" ? "New" : "Edit"} {objectType} : {object.name || "unnamed"}</h1>
                             {object.object_id ? (
                                 <>
                                     <p>ID: {object.object_id}</p>
