@@ -1,3 +1,4 @@
+import json
 
 class Agent:
     def __init__(self, db, llm_id=None, context=None, 
@@ -35,3 +36,14 @@ class Agent:
         for key, value in kwargs.items():
             setattr(self, key, value)
         self.db.update(self.object_id, kwargs)
+        
+    def to_json(self):
+        return json.dumps({
+            "llm_id": self.llm_id,
+            "context": self.context,
+            "prompt_template": self.prompt_template,
+            "name": self.name,
+            "description": self.description,
+            "object_id": self.object_id,
+            "created": self.created
+        })

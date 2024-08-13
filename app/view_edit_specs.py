@@ -342,6 +342,7 @@ object_specifications = {
             "analysis_run_id": {
                 "type": "object_id",
                 "view": "object_link",
+                "object_type": "analysis_run",
                 "label": "analysis run",
                 "editable": False
             },
@@ -352,7 +353,28 @@ object_specifications = {
                 "input_type": "textarea",
                 "view": "text",
                 "collapsible": True
-            }
+            },
+            "agent_copy": {
+                "type": "string",
+                "label": "agent data copy",
+                "editable": False,
+                "view": "text",
+                "collapsible": True
+            },
+            "llm_copy": {
+                "type": "string",
+                "label": "llm data copy",
+                "editable": False,
+                "view": "text",
+                "collapsible": True
+            },
+            "dataset_copy": {
+                "type": "string",
+                "label": "dataset data copy",
+                "editable": False,
+                "view": "text",
+                "collapsible": True
+            },
         }
     },
     # MARK:reviewplan
