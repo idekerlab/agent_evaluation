@@ -69,7 +69,7 @@ class HypothesisGenerator:
                         description=description, 
                         analysis_run_id=analysis_run_id, 
                         full_prompt = prompt,
-                        name=f"{analysis_run.name} - h{num_hypotheses + index + 1}",
+                        name=f"{analysis_run.name}-{agent.name}-h{num_hypotheses + index + 1}",
                         agent_copy=agent.to_json(),
                         llm_copy=llm.to_json(),
                         dataset_copy=dataset.to_json()
@@ -90,10 +90,11 @@ class HypothesisGenerator:
                 description=description, 
                 analysis_run_id=analysis_run_id, 
                 full_prompt = prompt,
-                name=f"{analysis_run.name} - h{num_hypotheses + 1}",
+                name=f"{analysis_run.name}-{agent.name}-h{num_hypotheses + 1}",
                 agent_copy=agent.to_json(),
                 llm_copy=llm.to_json(),
                 dataset_copy=dataset.to_json()
+
             )
 
             return [hypothesis.object_id]
