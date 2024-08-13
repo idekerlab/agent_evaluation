@@ -68,7 +68,7 @@ class HypothesisGenerator:
                         description=description, 
                         analysis_run_id=analysis_run_id, 
                         full_prompt = prompt,
-                        name=f"{analysis_run.name} - h{index+1}"
+                        name=f"{analysis_run.name}-{agent.name}-h{index+1}"
                     )
                     ids.append(hypothesis.object_id)
             return ids
@@ -86,7 +86,7 @@ class HypothesisGenerator:
                 description=description, 
                 analysis_run_id=analysis_run_id, 
                 full_prompt = prompt,
-                name=f"{analysis_run.name} - h1"
+                name=f"{analysis_run.name}-{agent.name}-h1"
             )
 
             return [hypothesis.object_id]
