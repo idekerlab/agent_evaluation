@@ -105,7 +105,7 @@ const ObjectForm = ({ objectType, formType }) => {
     }
 
     const handleFormSubmit = (formDataObj) => {
-        console.log("Submitting the following data:", formDataObj);
+        // console.log("Submitting the following data:", formDataObj);
         let submitPath = api_base
         if (formType == "edit")
             submitPath += `/objects/${objectType}/${objectId}/edit`

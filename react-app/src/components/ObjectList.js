@@ -145,17 +145,24 @@ const ObjectList = ({objectType, ...props}) => {
       <h1>{objectType === 'hypothesis' ? 'hypotheses' : `${objectType}s`}</h1>
       
       <button
-        className="button spaced-button"
+        className="button spaced-button button-success"
         onClick={() => navigate(`/${objectType}/new`)}
       >
-        New {objectType}
+        <i className="fa-solid fa-plus"></i> New {objectType}
       </button>
+      { objectType == "hypothesis" && 
+        <button
+          className="button spaced-button button-secondary"
+          onClick={() => navigate(`/${objectType}/import`)}
+        >
+          <i className="fa-solid fa-file-import"></i> Import {objectType}
+        </button>
+      }
       <button
-        className="button spaced-button"
-        style={{ backgroundColor: 'crimson'}}
+        className="button spaced-button button-danger"
         onClick={deleteCheckedObjects}
       >
-        Delete
+        <i className="fa-solid fa-trash-can"></i> Delete
       </button>
       { loading ? 
         <p>Loading...</p>
