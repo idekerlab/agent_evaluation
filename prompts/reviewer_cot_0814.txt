@@ -41,26 +41,27 @@ Hypothesis#2
 (and so on)
 </example>
 
-2. Rank hypotheses (minimum 1, maximum = number of hypotheses). Use same rank for equal preference. 
-Unacceptable hypotheses get rank 1. You must output your rankings in EXACTLY format in the following example:
+1. Rank hypotheses. Ranks range from 1 to N where N = number of hypotheses. Rank 1 is best. Rank N is worst, an unacceptable hypothesis.
+Use same rank for equal preference. You must output your rankings in EXACTLY format in the following example:
 
 <example>
 Final Rankings:
-Hypothesis#1: 3
-Hypothesis#2: 2
-...and so on
+Hypothesis#1: 5
+Hypothesis#2: 3
+...and so on.
 </example>
 
-3. Provide a summary review explaining your rankings. You must output the Summary Review exactly as in the following example.
+
+2. Provide a summary review explaining your rankings. You must output the Summary Review exactly as in the following example.
 
 <example>
 Summary Review:
-After careful review, I ranked Hypothesis #1 as best (rank=1), while hypotheses #2 and #3 are tied (rank=3).
+After careful review, I ranked Hypothesis #3 as best (rank=1), hypothesis #1 as the worst (rank = 5) while hypotheses #2 and #4 are tied (rank=3).
 
-Hypothesis X is best because:
+Hypothesis #3 is best because:
 [Brief explanation of strengths]
 
-In comparison, Hypotheses Y and Q [Brief comparison]
+In comparison, hypotheses #2 and #4 [Brief comparison]. ...and so on.
 </example>
 
 </review_process>
