@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { api_base } from '../helpers/constants'
-import { AgGridReact } from 'ag-grid-react' // React Data Grid Component
+import { AgGridReact } from 'ag-grid-react'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ObjectList = ({objectType, ...props}) => {
   const navigate = useNavigate()

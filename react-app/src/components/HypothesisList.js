@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { api_base } from '../helpers/constants'
 import HypothesisView from './HypothesisView'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, viewOnly, ...props}) => {
 

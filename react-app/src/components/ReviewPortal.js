@@ -4,7 +4,8 @@ import ReviewerLogin from './ReviewerLogin'
 import ReviewList from './ReviewList'
 import HypothesisList from './HypothesisList'
 import axios from 'axios'
-import { api_base } from '../helpers/constants'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ReviewPortal = () => {
     const navigate = useNavigate()

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { api_base } from "../helpers/constants"
 import axios from 'axios'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ImportForm = ({objectType, specs, ...props}) => {
     const navigate = useNavigate()

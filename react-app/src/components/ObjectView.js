@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
-import { api_base } from '../helpers/constants'
 import DataViewer from './DataViewer'
 import HypothesisList from './HypothesisList'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ObjectView = ({objectType, ...props}) => {
     const { objectId } = useParams()

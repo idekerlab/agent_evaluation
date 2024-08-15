@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { api_base } from '../helpers/constants'
+
+const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ObjectForm = ({ objectType, formType }) => {
     const { objectId } = useParams() 
