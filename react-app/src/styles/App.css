@@ -98,6 +98,7 @@
   border: none;
   cursor: pointer;
   text-decoration: none;
+  font-size: 14px;
 }
 
 .button:hover {
@@ -120,6 +121,22 @@
 .spaced-button {
   margin-right: 5px;
   margin-bottom: 5px;
+}
+
+.button-secondary {
+  background-color: #007bff;
+}
+
+.button-tertiary {
+  background-color: grey;
+}
+
+.button-danger {
+  background-color: crimson;
+}
+
+.button-success {
+  background-color: green;
 }
 
 .property-container {

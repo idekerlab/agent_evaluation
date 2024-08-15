@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'
 import ObjectList from './ObjectList'
 import ObjectView from './ObjectView'
 import ObjectForm from './ObjectForm'
+import ImportForm from './ImportForm'
 import ReviewPortal from './ReviewPortal'
 import { api_base } from '../helpers/constants'
 
@@ -89,6 +90,13 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
+                  { type == "hypothesis" && 
+                    <Route 
+                      path={`/${type}/import`} 
+                      element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
+                      key={`${index}-r6`} 
+                    />
+                  }
                 </React.Fragment>
                 
               ))}

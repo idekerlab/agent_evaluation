@@ -76,7 +76,8 @@ async def list_objects(request: Request, object_type: str):
             if ("agent_id" in obj['properties']):
                 agent_id = obj['properties']['agent_id']
                 agent_properties, agent_type = db.load(agent_id)
-                objects[index]['properties']['agent_id'] = f"({agent_properties['name']}) {agent_id}"
+                if agent_properties:
+                    objects[index]['properties']['agent_id'] = f"({agent_properties['name']}) {agent_id}"
             
             
     objects.reverse()
@@ -103,7 +104,7 @@ def format_numeric_values(data):
 def preprocess_properties(properties, object_type):
     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
         if prop_spec.get('type') == 'csv' and properties.get(prop_name):
-            csv_data = StringIO(properties[prop_name])
+            csv_data = StringIO(str(properties[prop_name]))
             reader = csv.reader(csv_data)
             rows = list(reader)
 
@@ -448,6 +449,53 @@ async def execute_object(request: Request, object_type: str, object_id: str):
         result = await loop.run_in_executor(None, runner_func)
         return {"url": f"/review_set/{review_set.object_id}"}
         return RedirectResponse(url=f"/objects/{object_type}/{review_set.object_id}", status_code=303)
+  
+@app.post("/objects/{object_type}/import")
+async def import_object(request: Request, object_type: str):
+    form_data = await request.form()
+    form_data = dict(form_data)
+    
+    db = request.app.state.db
+    
+    json_file = form_data.pop('json', None)
+    if json_file:
+        json_content = (await json_file.read()).decode('utf-8')
+        json_obj = json.loads(json_content)
+        # print("Import Content", json_obj)
+        
+        default_properties = get_default_properties(object_type, object_specifications)
+        new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
+        json_obj["object_id"] = new_object_id
+        json_obj["data"] = convert_to_csv(json_obj['data'])
+        
+        try:
+            await handle_form_submission(json_obj, object_type, db)
+            return {"object_id": new_object_id}
+        except FormSubmissionError as e:
+            # Return an error response to the web app
+            print("ERROR:", e)
+            return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
+        except Exception as e:
+            print("Exception:", e)
+            # Return a generic error response
+            return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
+        
+    return {"error": "Something went wrong"}
+
+def convert_to_csv(data):
+    # Create a StringIO object to hold the CSV data as a string
+    output = StringIO()
+
+    csv_writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
+
+    # Write each row from the list of lists to the CSV
+    for row in data:
+        csv_writer.writerow(row)
+
+    csv_content = output.getvalue()
+    output.close()
+
+    return csv_content
     
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def serve_react_app(full_path: str, request: Request):

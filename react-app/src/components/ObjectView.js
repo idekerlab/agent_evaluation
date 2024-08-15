@@ -78,6 +78,30 @@ const ObjectView = ({objectType, ...props}) => {
             })
     }
 
+    const exportObject = () => {
+        try {
+            const jsonString = JSON.stringify(object)
+            const blob = new Blob([jsonString], { type: 'application/json' })
+            const link = document.createElement('a')
+            
+            const url = URL.createObjectURL(blob)
+            link.href = url
+            link.download = `${object.object_id}.json`
+            
+            document.body.appendChild(link)
+            
+            link.click()
+            
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+
+        } catch (error) {
+            // Handle errors
+            alert(alert)
+        }
+        
+    }
+
     const toggleFriendlyVersion = () => {
         setShowFriendly(prev => !prev)
     }
@@ -149,18 +173,23 @@ const ObjectView = ({objectType, ...props}) => {
                                 </button>
                             }
                             { objectType === "review" &&
-                                <button className="button spaced-button" style={{ backgroundColor: "#007bff" }} onClick={toggleFriendlyVersion}> 
+                                <button className="button spaced-button button-tertiary" onClick={toggleFriendlyVersion}> 
                                     { showFriendly ? "Back to Normal Display" : "See Friendly Version"}
                                 </button>
                             }
                             <Link className="button spaced-button" to={`/${objectType}/${objectId}/edit`}  >
-                                Edit
+                                <i className="fa-solid fa-pen-to-square"></i> Edit
                             </Link>
-                            <button className="button spaced-button" onClick={cloneObject} >
-                                Clone
+                            <button className="button spaced-button button-secondary" onClick={cloneObject} >
+                                <i className="fa-solid fa-clone"></i> Clone
                             </button>
-                            <button className="button spaced-button" style={{ backgroundColor: "crimson" }} onClick={deleteObject} >
-                                Delete
+                            { objectType === "hypothesis" &&
+                                <button className="button spaced-button button-tertiary" onClick={exportObject} >
+                                    <i className="fa-solid fa-file-export"></i> Export
+                                </button>
+                            }
+                            <button className="button spaced-button button-danger" onClick={deleteObject} >
+                                <i className="fa-solid fa-trash-can"></i> Delete
                             </button>
                         </div>
                     </div>
