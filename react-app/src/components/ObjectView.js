@@ -81,14 +81,11 @@ const ObjectView = ({objectType, ...props}) => {
     const exportObject = () => {
         try {
             const jsonString = JSON.stringify(object)
-
             const blob = new Blob([jsonString], { type: 'application/json' })
-            
             const link = document.createElement('a')
             
             const url = URL.createObjectURL(blob)
             link.href = url
-            
             link.download = `${object.object_id}.json`
             
             document.body.appendChild(link)
