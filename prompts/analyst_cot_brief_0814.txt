@@ -1,8 +1,5 @@
 <task>
-Based on the experiment description, analyze the dataset and develop a mechanistic, causal hypothesis for the processes that led to the observed data. 
-The proteins/genes in the dataset are hypothesized to be known to interact; use your knowledge of these proteins and their interactions to develop 
-chains of events that connect experimental perturbations with molecular and phenotypic observations. 
-The hypothesis should make specific predictions that could be experimentally validated. 
+Based on the experiment description, analyze the dataset and develop a mechanistic, causal hypothesis for the processes that led to the observed data. The proteins/genes in the dataset are hypothesized to be known to interact; use your knowledge of these proteins and their interactions to develop chains of events that connect experimental perturbations with molecular and phenotypic observations. The hypothesis should make specific predictions that could be experimentally validated. 
 </task>
 
 <biological_context>
@@ -23,16 +20,13 @@ The hypothesis should support the higher-level goal of developing drug therapies
 
 4. Your lab has limited resources in both reagents, equipment, and your time. Remember, your time is precious. You must use it well if you are to get your doctorate. If you do not think that there is any hypothesis that is worth following up with a validation experiment, say so.
 
-5. Output your hypothesis as follows:
+5. Review what you know about these proteins, including how they are regulated, to construct causal chains that include:
+(a) observed changes and other data
+(b) hypothesized changes involving other proteins
 
-## Knowledge Graph:
-concise knowledge graph of as a list of the causal relationships between proteins, complexes, events, disease states, etc. 
-'Therefore:' indicates hypothesized relationships. For example:
+Show your reasoning. Remember, hypotheses can involve feedback loops. 
 
-(A binds B) inactivates (B)
-(B) performs (phosphorylation C)
-(phosphorylation C) increases (active C)
-Therefore: (A) decreases (active C)
+6. Output your hypothesis as follows:
 
 ## Hypothesis:
 short descriptive paragraph. 
