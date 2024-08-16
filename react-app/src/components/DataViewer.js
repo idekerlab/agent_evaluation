@@ -1,6 +1,7 @@
 import { AgGridReact } from 'ag-grid-react'
 import React, { useState } from 'react'
 import FriendlyIFrame from './FriendlyIFrame'
+import { fetchIframeSrc } from '../helpers/iFrameHelpers'
 
 const DataViewer = ({data, ...props}) => {
     const [iframeSrc, setIframeSrc] = useState('')
@@ -42,7 +43,7 @@ const DataViewer = ({data, ...props}) => {
                             newCol["cellRenderer"] = (props) => (
                                     <span 
                                         style={{ color: 'blue', cursor: 'pointer' }}
-                                        onClick={() => setIframeSrc(`https://www.ncbi.nlm.nih.gov/gene/?term=${props.value}`)}
+                                        onClick={() => fetchIframeSrc(props.value, setIframeSrc)}
                                     >
                                         {props.value}
                                     </span>

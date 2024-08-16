@@ -2,6 +2,7 @@ import HypothesisReviewForm from './HumanReviewForm'
 import DataViewer from './DataViewer'
 import React, { useState } from 'react'
 import FriendlyIFrame from './FriendlyIFrame'
+import { fetchIframeSrc } from '../helpers/iFrameHelpers'
 
 const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handleRankingChange, handleNextHypothesis, disableForm, ...props}) => {
     const [iframeSrc, setIframeSrc] = useState('')
@@ -19,7 +20,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
                 <span 
                     key={`${part}-${index}`}
                     style={{ color: 'blue', cursor: 'pointer' }}
-                    onClick={() => setIframeSrc(`https://www.ncbi.nlm.nih.gov/gene/?term=${part}`)}
+                    onClick={() => fetchIframeSrc(part, setIframeSrc)}
                 >
                     {part}
                 </span>

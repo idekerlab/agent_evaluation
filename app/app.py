@@ -14,6 +14,7 @@ from app.config import load_database_config
 import csv
 from io import StringIO
 import os
+import re
 import json
 from models.analysis_plan import AnalysisPlan
 from models.review_plan import ReviewPlan
@@ -155,11 +156,17 @@ async def view_object(request: Request, object_type: str, object_id: str):
         hypo_text = processed_properties["hypothesis_text"]
         file_path = "data/hgnc_genes.tsv"
 
-        total_genes_set = hypo_text.split(' ')
+        # Remove punctuation and parentheses, but keep hyphens
+        cleaned_text = re.sub(r'[^\w\s-]', '', hypo_text)
+        # Split into words
+        words = re.split(r'\s+', cleaned_text)
+
         validator = GeneValidator(file_path)
-        result = validator.validate_human_genes(total_genes_set)
+        result = validator.validate_human_genes(words)
         
-        processed_properties['gene_symbols'] = result['official_genes']
+        official_genes = result['official_genes']
+        
+        processed_properties['gene_symbols'] = official_genes
                         
     return {"object_type": object_type, 
             "object": processed_properties,
