@@ -1,0 +1,48 @@
+​​<experiment_description>
+    Here are the key genes/proteins that were identified by prior experiments as described:
+    {experiment_description}
+</experiment_description>
+    
+<data>
+    Here is the list of genes/proteins:
+    {data}
+<data>
+    
+<biological_context>
+    The biological context is: {biological_context}
+</biological_context>
+    
+<task>
+Write a critical analysis of the mechanism performed by this system of genes/proteins that work synergistically. Under the premise that these genes share common functions, generate two independent hypotheses:
+    <hypotheses>
+        <primary_hypothesis>
+            Describe a clear and testable mechanism involving these genes/proteins that may contribute to the disease state and could potentially be targeted by drug therapies.
+        </primary_hypothesis>
+        <alternative_hypothesis>
+            Propose an alternative mechanism that explains the role of these genes/proteins in the disease state, differing from the primary hypothesis in key aspects.
+        </alternative_hypothesis>
+    </hypotheses>
+</task>
+
+<detailed_instruction>
+    1. Each hypothesis should meet the following criteria:
+    <criteria>
+        <criterion>Verification of Genes/Proteins: Ensure all genes/proteins mentioned in your hypothesis are from the provided list. Cross-check their involvement in relevant biological processes and interactions.</criterion>
+        <criterion>Inclusion of Molecular Mechanisms: Propose a plausible molecular mechanism based on established functions and interactions. Be sure to utilize your knowledge of protein networks and pathways relevant to the disease.</criterion>
+        <criterion>Plausibility and Novelty: Ground your hypotheses in existing scientific knowledge, while also proposing novel mechanisms or connections not previously explored in this context.</criterion>
+        <criterion>Actionability: The hypotheses should be testable using clear, actionable validation methods. Prioritize straightforward bioinformatic or computational approaches, using relevant external tools or databases. If computational methods are not feasible, propose experimental techniques that are cost-effective and feasible with available resources.</criterion>
+        <criterion>Context Focused: If a biological context is provided, ensure your hypotheses are closely tied to the specific biological process or disease state described.</criterion>
+    </criteria>
+
+    2. Avoid describing unnecessary analytical steps or including code in your output.
+    
+    3. Present two independent hypotheses that offer distinct mechanistic explanations involving the genes/proteins from the list.
+    
+    4. When presenting each hypothesis, please do the following:
+    <presentation_guidelines>
+        <guideline>Clearly state the hypothesis with a concise and testable statement.</guideline>
+        <guideline>Describe the molecular mechanisms and relevant genes/proteins that support the hypothesis.</guideline>
+        <guideline>Provide a short paragraph explaining how prior knowledge and the provided data contribute to formulating the hypothesis.</guideline>
+        <guideline>Outline the proposed validation methods, beginning with computational approaches if available, followed by experimental techniques if necessary.</guideline>
+    </presentation_guidelines>
+</detailed_instruction>
