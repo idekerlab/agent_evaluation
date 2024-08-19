@@ -123,8 +123,8 @@ const Welcome = () => {
       <h2>
         Select a resource on the side to get started.
       </h2 >
-      <button className='button' onClick={() => navigate("/my_reviews/home")}>
-        Go to the Review Portal
+      <button className='button button-success' onClick={() => navigate("/my_reviews/home")}>
+        <i class="fa-solid fa-door-closed fa-lg"></i> Enter Review Portal
       </button>
       <p></p>
 

@@ -6,12 +6,6 @@ const TopBar = () => {
     return (
         <div className="top-bar">
             UC San Diego - Ideker Lab
-            <button
-                className="home-button"
-                onClick={() => navigate(`/`)}
-            >
-                <i className="fa-solid fa-house-chimney"></i> Home
-            </button>
         </div>
     )
 }

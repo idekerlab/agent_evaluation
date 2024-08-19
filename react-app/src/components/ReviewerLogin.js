@@ -74,7 +74,11 @@ const ReviewerLogin = ({user, setUser, ...props}) => {
                     </button>
                 </div>
             )}
-            
+            <div style={{ marginTop: "16px"}}>
+                <button className='button button-danger' onClick={() => navigate("/")}>
+                    <i className="fa-solid fa-door-open fa-lg"></i> Leave Review Portal
+                </button>
+            </div>
         </div>
     )
 }
