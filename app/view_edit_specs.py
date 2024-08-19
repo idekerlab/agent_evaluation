@@ -3,6 +3,7 @@ from jsonschema import validate, ValidationError
 object_specifications = {
     # MARK:llm
     "llm": {
+        "documentation": "The llm object represents a specific Large Language Model such as ChatGPT 4o or Claude 3.5 and  associated query properties such as temperature or seed.",
         "properties": {
             "name": {
                 "type": "string",
@@ -93,6 +94,7 @@ object_specifications = {
     },
     # MARK:agent
     "agent": {
+        "documentation": "An agent object serves as a scaffold to build queries for a linked llm object. Agent objects are referenced throughout the application whenever text generation occurs.",
         "properties": {
             "name": {
                 "type": "string",
@@ -111,9 +113,7 @@ object_specifications = {
                 "editable": True,
                 "label": "prompt\ntemplate",
                 "input_type": "textarea",
-                "view": "text",
-                # "regex": ".*\{experiment_description\}[^]*\{data\}.*|.*\{data\}[^]*\{experiment_description\}.*",
-                # "regex_description": "The text must include \{data\} and \{experiment_description\} in any order. Valid keywords are: \{data\}, \{experiment_description\}, \{biological_context\}, \{hypotheses_text\}. Do not add open curly braces."
+                "view": "text"
             },
             "description": {
                 "type": "string",
@@ -133,6 +133,7 @@ object_specifications = {
     },
     # MARK:dataset
     "dataset": {
+        "documentation": "The dataset object holds information regarding a specific CSV file and its experimental context.",
         "properties": {
             "name": {
                 "type": "string",
@@ -163,6 +164,7 @@ object_specifications = {
     },
     # MARK:analysis_plan
     "analysis_plan": {
+        "documentation": "The analysis process generates hypotheses. The analysis_plan object provides a framework to automate hypothesis creation. Here agents are linked to a dataset, a biological context, and a number of hypotheses to generate. Upon executing an analysis_plan, LLMs will be queried, and an analysis_run and hypotheses will be automatically created.",
         "actions": ["create_analysis_run"],
         "properties": {
             "name": {
@@ -215,6 +217,7 @@ object_specifications = {
     },
     # MARK: analysis_run
     "analysis_run": {
+        "documentation": "An analysis_run represents an instance of an analysis_plan being executed. Each analysis_run connects a group of hypotheses together that have similar attributes.",
         "properties": {
             "name": {
                 "type": "string",
@@ -292,6 +295,7 @@ object_specifications = {
     },
     # MARK:hypothesis
     "hypothesis": {
+        "documentation": "Hypotheses are the product of the analysis process. Each hypothesis object is self-contained meaning that all the information necessary to reproduce the hypothesis is stored within it. Hypotheses are importable and exportable as a JSON file.",
         "properties": {
             "name": {
                 "type": "string",
@@ -379,6 +383,7 @@ object_specifications = {
     },
     # MARK:reviewplan
     "review_plan": {
+        "documentation": "The review_plan object provides a framework to automate review creation. Here, agents are linked to set of hypotheses. Upon executing a review_plan, LLMs will be queried, and a review_set and reviews will be automatically created.",
         "actions": ["create_review"],
         "properties": {
             "name": {
@@ -413,6 +418,7 @@ object_specifications = {
     },
     # MARK:reviewset
     "review_set": {
+        "documentation": "An review_set represents an instance of an review_plan being executed. Each review_set connects a group of reviews together that were generated at the same time.",
         "properties": {
             "name": {
                 "type": "string",
@@ -452,6 +458,7 @@ object_specifications = {
     },
     # MARK:review
     "review": {
+        "documentation": "Review objects are generated either by automated queries to LLMs or by human reviewers through the review portal. Reviews rank hypotheses by assigning each hypothesis a star rating. In addition to stars, comments justifying the rating for each hypothesis is provided. Reviews have a human friendly viewing mode to replicate the review portal.",
         "properties": {
             "name": {
                 "type": "string",
@@ -514,6 +521,7 @@ object_specifications = {
         }
     },
     "user": {
+        "documentation": "Users allow human reviewers to claim an identity before reviewing hypothesis.",
         "properties": {
             "name": {
                 "type": "string",

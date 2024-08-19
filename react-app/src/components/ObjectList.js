@@ -14,8 +14,7 @@ const ObjectList = ({objectType, ...props}) => {
   const [rowData, setRowData] = useState([])
   const gridRef = useRef()
   
-
-  const colKeys = Object.keys(objectSpec)
+  const colKeys = Object.keys(objectSpec).length> 0 ? Object.keys(objectSpec.properties) : []
   colKeys.splice(1, 0, "created")
   colKeys.splice(2, 0, "id")
 
@@ -64,7 +63,7 @@ const ObjectList = ({objectType, ...props}) => {
         const objects = response.data.objects
         // console.log("Get Objects output", response.data);
         setObjects(objects)
-        setObjectSpec(response.data.object_spec.properties)
+        setObjectSpec(response.data.object_spec)
         updateRowData(objects)
         setLoading(false)
       })
@@ -140,10 +139,12 @@ const ObjectList = ({objectType, ...props}) => {
     [window],
   );
 
-
   return (
     <div className='main-content'>
       <h1>{objectType === 'hypothesis' ? 'hypotheses' : `${objectType}s`}</h1>
+      { "documentation" in objectSpec &&
+        <p>{objectSpec.documentation}</p>
+      }
       
       <button
         className="button spaced-button button-success"
