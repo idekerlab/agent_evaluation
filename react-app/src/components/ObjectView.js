@@ -166,9 +166,13 @@ const ObjectView = ({objectType, ...props}) => {
                                     onClick={executePlan}
                                 >
                                     { !executing ? 
-                                        "Execute"
+                                        <>
+                                            <i className="fa-solid fa-play"></i> Execute
+                                        </>
                                     :
-                                        <i className="fa-solid fa-spinner fa-spin-pulse fa-lg"></i>
+                                        <>
+                                            <i className="fa-solid fa-spinner fa-spin-pulse fa-lg"></i> Executing
+                                        </>
                                     }
                                     
                                 </button>

@@ -173,6 +173,7 @@ const ObjectForm = ({ objectType, formType }) => {
                         onChange={handleInputChange}
                         disabled={!field.editable}
                     >
+                        <option key="blank_field" value=""></option>
                         {field.options.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}

@@ -3,6 +3,7 @@ from models.review_plan import ReviewPlan
 from models.analysis_run import AnalysisRun
 from models.hypothesis import Hypothesis
 from services.review_generation import ReviewGenerator
+import json
 
 class ReviewRunner:
     def __init__(self, db, review_set_id):
@@ -20,12 +21,16 @@ class ReviewRunner:
             raise ValueError("AnalysisRun not found with the given ID.")
         
         self.hypotheses_text = ""
+        self.dataset_csv_data = ""
+        self.experiment_description = ""
         
         for index, hypothesis_id in enumerate(self.analysis_run.hypothesis_ids):
             hypothesis = Hypothesis.load(db, hypothesis_id)
             if not hypothesis:
                 raise ValueError("Hypothesis not found with the given ID.")
             self.hypotheses_text += f"Hypothesis #{index+1}:\n\n" + hypothesis.hypothesis_text + "\n\n\n"
+            self.dataset_csv_data = hypothesis.data
+            self.experiment_description = json.loads(hypothesis.dataset_copy)["experiment_description"]
 
     def next_review(self):
         if self.review_set.status == 'done':
@@ -35,7 +40,7 @@ class ReviewRunner:
             if len(self.review_set.attempts.get(agent_id, [])) < 1:
                 try:
                     generator = ReviewGenerator(self.db)
-                    review_id = generator.generate_review(agent_id, self.analysis_run.dataset_id, self.hypotheses_text, self.analysis_run.object_id, self.review_set.object_id)
+                    review_id = generator.generate_review(agent_id, self.dataset_csv_data, self.experiment_description, self.hypotheses_text, self.analysis_run.object_id, self.review_set.object_id)
                     self.review_set.review_ids.append(review_id)
                     self.review_set.attempts[agent_id].append('success')
                     self.review_set.update()

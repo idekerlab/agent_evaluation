@@ -62,11 +62,10 @@ class ReviewGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_review(self, agent_id, dataset_id, hypotheses_text, analysis_run_id, review_set_id):
+    def generate_review(self, agent_id, dataset_data_csv, experiment_description, hypotheses_text, analysis_run_id, review_set_id):
         # Load the dataset and agent using the newly created classes
-        dataset = Dataset.load(self.db, dataset_id)
         agent = Agent.load(self.db, agent_id)
-        if not dataset or not agent:
+        if not agent:
             raise ValueError("Dataset or Agent not found in generate_hypothesis")
         
         if review_set_id:
@@ -76,7 +75,7 @@ class ReviewGenerator:
                 raise ValueError("ReviewSet to which to add the hypothesis was provided but not found in generate_hypothesis")
 
         # Use properties directly from the loaded objects
-        data = dataset.data
+        data = dataset_data_csv
 
         # check the number of hypotheses loaded 
         analysis_run = AnalysisRun.load(self.db, analysis_run_id)
@@ -87,7 +86,7 @@ class ReviewGenerator:
         safe_dict = SafeDict({
             'n': n_hypotheses, 
             'data': data,
-            'experiment_description': dataset.experiment_description,
+            'experiment_description': experiment_description,
             'hypotheses_text': hypotheses_text
         })
         
