@@ -39,7 +39,7 @@ const DataViewer = ({data, ...props}) => {
                             }
                         }
 
-                        if (label.includes("HGNC")) {
+                        if (label.includes("HGNC") || (label.includes("Gene") && label.includes("Symbol"))) {
                             newCol["cellRenderer"] = (props) => (
                                     <span 
                                         style={{ color: 'blue', cursor: 'pointer' }}
