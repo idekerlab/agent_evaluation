@@ -2,7 +2,7 @@
 
 class Hypothesis:
     def __init__(self, db, name=None, hypothesis_text=None, data=None, biological_context=None, agent_id=None, 
-                 dataset_id=None, description=None, analysis_run_id=None, 
+                 dataset_id=None, description=None, analysis_run_id=None, gene_symbols=None,
                  object_id=None, full_prompt=None, agent_copy=None, llm_copy=None, dataset_copy=None, created=None):
         self.db = db
         self.hypothesis_text = hypothesis_text

@@ -553,13 +553,13 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
-            "analysis_run_id": {
-                "type": "object_id",
-                "label": "analysis run",
-                "object_type": "analysis_run",
-                "view": "object_link",
-                "editable": False
-            }
+            # "analysis_run_id": {
+            #     "type": "object_id",
+            #     "label": "analysis run",
+            #     "object_type": "analysis_run",
+            #     "view": "object_link",
+            #     "editable": False
+            # }
         }
     },
     "user": {

@@ -62,7 +62,7 @@ class ReviewGenerator:
     def __init__(self, db):
         self.db = db
 
-    def generate_review(self, agent_id, dataset_data_csv, experiment_description, hypotheses_text, analysis_run_id, review_set_id):
+    def generate_review(self, agent_id, dataset_data_csv, experiment_description, hypotheses_text, hypothesis_ids, review_set_id):
         # Load the dataset and agent using the newly created classes
         agent = Agent.load(self.db, agent_id)
         if not agent:
@@ -78,8 +78,7 @@ class ReviewGenerator:
         data = dataset_data_csv
 
         # check the number of hypotheses loaded 
-        analysis_run = AnalysisRun.load(self.db, analysis_run_id)
-        n_hypotheses = len(analysis_run.hypothesis_ids)
+        n_hypotheses = len(hypothesis_ids)
         if n_hypotheses == 0:
             raise ValueError("No hypotheses found in AnalysisRun")
 
@@ -107,10 +106,9 @@ class ReviewGenerator:
             # Combine the tuples with the agent_id and the hypothesis_ids in the AnalysisRun 
             # to generate the ranking datastructure
             ranking = {"user_id": agent_id, "status": "done"}
-            analysis_run = AnalysisRun.load(self.db, analysis_run_id)
             r = {}
             for order, rank in ranking_tuples:
-                hypothesis_id = analysis_run.hypothesis_ids[order - 1]
+                hypothesis_id = hypothesis_ids[order - 1]
                 r[hypothesis_id] = {"stars": rank, "order": order, "comments": ""}
 
             ranking["ranking"]=r
@@ -125,7 +123,7 @@ class ReviewGenerator:
             ranking_data=ranking_data,
             summary_review=summary_review,
             agent_id=agent_id,
-            analysis_run_id=analysis_run_id,
+            # analysis_run_id=analysis_run_id,
             description=None, # Not sure why this is here
             review_set_id=review_set_id,
             name=f"{review_set.name} - {agent.name}"  

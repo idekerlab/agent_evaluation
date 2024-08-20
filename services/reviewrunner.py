@@ -1,6 +1,7 @@
 from models.review_set import ReviewSet
 from models.review_plan import ReviewPlan
 from models.analysis_run import AnalysisRun
+from models.hypothesis_set import HypothesisSet
 from models.hypothesis import Hypothesis
 from services.review_generation import ReviewGenerator
 import json
@@ -17,14 +18,24 @@ class ReviewRunner:
             raise ValueError("ReviewPlan not found with the given ID.")
         
         self.analysis_run = AnalysisRun.load(db, self.review_plan.analysis_run_id)
+        self.hypothesis_set = HypothesisSet.load(db, self.review_plan.hypothesis_set_id)
+        
+        self.hypothesis_ids = []
         if not self.analysis_run:
-            raise ValueError("AnalysisRun not found with the given ID.")
+            if not self.hypothesis_set:
+                raise ValueError("HypothesisSet and AnalysisRun not found with the given ID.")
+            else:
+                self.hypothesis_ids = self.hypothesis_set.hypothesis_ids
+        else:
+            self.hypothesis_ids = self.analysis_run.hypothesis_ids
+        
+        
         
         self.hypotheses_text = ""
         self.dataset_csv_data = ""
         self.experiment_description = ""
-        
-        for index, hypothesis_id in enumerate(self.analysis_run.hypothesis_ids):
+        print(self.hypothesis_ids)
+        for index, hypothesis_id in enumerate(self.hypothesis_ids):
             hypothesis = Hypothesis.load(db, hypothesis_id)
             if not hypothesis:
                 raise ValueError("Hypothesis not found with the given ID.")
@@ -40,7 +51,7 @@ class ReviewRunner:
             if len(self.review_set.attempts.get(agent_id, [])) < 1:
                 try:
                     generator = ReviewGenerator(self.db)
-                    review_id = generator.generate_review(agent_id, self.dataset_csv_data, self.experiment_description, self.hypotheses_text, self.analysis_run.object_id, self.review_set.object_id)
+                    review_id = generator.generate_review(agent_id, self.dataset_csv_data, self.experiment_description, self.hypotheses_text, self.hypothesis_ids, self.review_set.object_id)
                     self.review_set.review_ids.append(review_id)
                     self.review_set.attempts[agent_id].append('success')
                     self.review_set.update()
