@@ -57,22 +57,37 @@ class Hierarchy():
 
     # Adds the data from the interactome to the assemblies selected by the filter.
     # returns those assemblies
-    def add_data_from_interactome(self, filter=None, member_attributes=None):
+    def add_data_from_interactome(self, filter=None, columns=None):
         assemblies = self.get_assemblies(filter)
-        # print(f'number of assemblies = {len(assemblies)}')        
+        name_column = columns.get("name") if columns is not None else None
+        if name_column is None:
+            raise ValueError("The 'name' column must be specified in the columns mapping")
         interactome_nodes = self.derived_from_cx.get_nodes().values()
         interactome_data =[]
         for interactome_node in interactome_nodes:
             interactome_node_attributes = interactome_node.get("v")
-            if member_attributes is not None:
-                interactome_data.append( {key: value for key, value in interactome_node_attributes.items() if key in member_attributes})
+            if columns is not None:
+                node_data = {}
+                for key, value in interactome_node_attributes.items(): 
+                    # if key == "name":
+                    #     if value == "BST2":
+                    #         print(f'key = {key}, value = {value} data = {interactome_node_attributes}')
+                    # if key == "Inhibits_SARS":
+                    #     print(f'key = {key}, value = {value} data = {interactome_node_attributes}')
+                    if key in columns:
+                        mapped_key = columns[key]
+                        node_data[mapped_key] = value
+                interactome_data.append(node_data)
             else:
                 interactome_data.append(interactome_node_attributes)
         for assembly in assemblies:
             attributes = assembly.get("v")
             members = attributes.get("CD_MemberList").split(" ")
-            filtered_interactome_data = [data for data in interactome_data if data['name'] in members]
-            self.hierarchy_cx.set_node_attribute(assembly["id"], "data", json.dumps(filtered_interactome_data))
+            assembly_data = {}
+            for data in interactome_data:
+                if data[name_column] in members:
+                    assembly_data[data[name_column]] = data
+            self.hierarchy_cx.set_node_attribute(assembly["id"], "data", json.dumps(assembly_data))
         return assemblies
 
 
@@ -190,14 +205,15 @@ def remove_number_suffix(text):
 def get_assembly_names(assembly):
     names = []
     attributes = assembly.get("v")
+    size = attributes.get("CD_MemberList_Size")
     if "LLM Name" in attributes and attributes.get("LLM Name") is not None:
         llm_name = remove_number_suffix(attributes.get("LLM Name"))
         if llm_name != "skipped":
             names.append(llm_name)
-    if "CD_CommunityName" in attributes and attributes.get("CD_CommunityName") is not None:
-        names.append(attributes.get("CD_CommunityName"))
+    if "CD_CommunityName" in attributes and attributes.get("CD_CommunityName") is not None and attributes.get("CD_CommunityName") != "(none)":
+        names.append(f'({size}) {attributes.get("CD_CommunityName")}')
     if "name" in attributes and attributes.get("name") is not None:
-        names.append(attributes.get("name"))
+        names.append(f'({size}) {attributes.get("name")}')
     return names
         
 def any_element_in(list1, list2):
@@ -205,6 +221,9 @@ def any_element_in(list1, list2):
 
 def dataset_from_assembly(db, assembly, type="csv", columns=None, decimal_places=None, experiment_description=""):
     data_dict = json.loads(assembly["v"]["data"])
+    name_column = columns.get("name") if columns is not None else None
+    if name_column is None:
+        raise ValueError("The 'name' column must be specified in the columns mapping")
 
     # Filter the data dict on columns
     if columns is not None:
@@ -224,7 +243,7 @@ def dataset_from_assembly(db, assembly, type="csv", columns=None, decimal_places
     
     assembly_names = json.dumps(get_assembly_names(assembly), indent=4)
     if len(assembly_names) == 0:
-        dataset_name = assembly["v"]["name"]
+        dataset_name = assembly["v"][name_column]
     else:
         dataset_name = json.loads(assembly_names)[0]  # Assuming we want the first name
     dataset = Dataset.create(db, dataset_name, datastring, experiment_description, description=assembly_names)
