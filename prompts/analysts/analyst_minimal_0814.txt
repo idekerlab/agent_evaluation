@@ -1,3 +1,11 @@
+<experiment_description>
+{experiment_description}
+</experiment_description>
+
+<dataset>
+{data}
+</data>
+
 <task>
 Based on the experiment description, analyze the dataset and develop a mechanistic, causal hypothesis 
 for the processes that led to the observed data.
@@ -11,10 +19,3 @@ short descriptive paragraph.
 
 </output_format>
 
-<experiment_description>
-{experiment_description}
-</experiment_description>
-
-<dataset>
-{data}
-</data>
