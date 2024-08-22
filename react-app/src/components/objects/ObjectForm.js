@@ -312,7 +312,10 @@ const ObjectForm = ({ objectType, formType }) => {
                                     ))}
                                 </tbody>
                             </table>
-                            <button type="submit" className="button">Save</button>
+                            <div style={{ marginLeft: "50px"}}>
+                                <button type="button" className="button button-tertiary spaced-button" onClick={()=>navigate(-1)}>Cancel</button>
+                                <button type="submit" className="button spaced-button">Save</button>
+                            </div>
                         </form>
                     </div>
                 </>

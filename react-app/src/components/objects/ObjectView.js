@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
-import DataViewer from './DataViewer'
-import HypothesisList from './HypothesisList'
+import DataViewer from '../friendly_hypotheses_display/DataViewer'
+import HypothesisList from '../friendly_hypotheses_display/HypothesisList'
 
 const api_base = process.env.REACT_APP_API_BASE_URL
 
@@ -60,13 +60,15 @@ const ObjectView = ({objectType, ...props}) => {
     }
 
     const deleteObject = () => {
-        axios.post(`${api_base}/objects/${objectType}/${objectId}/delete`)
-            .then(response=> {
-                navigate(`/${objectType}`)
-            })
-            .catch(error => {
-                alert(error)
-            })
+        if (window.confirm(`Are you sure you want to delete this object?`)) {
+            axios.post(`${api_base}/objects/${objectType}/${objectId}/delete`)
+                .then(response=> {
+                    navigate(`/${objectType}`)
+                })
+                .catch(error => {
+                    alert(error)
+                })
+        }
     }
 
     const cloneObject = () => {

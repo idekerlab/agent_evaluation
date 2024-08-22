@@ -1,4 +1,4 @@
-import StarRating from './StarRating'
+import StarRating from '../friendly_hypotheses_display/StarRating'
 import React, { useCallback } from 'react';
 
 const HumanReviewForm = React.memo(({rank, handleRankingChange, disableForm, ...props}) => {
