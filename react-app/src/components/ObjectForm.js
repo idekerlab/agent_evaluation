@@ -42,12 +42,25 @@ const ObjectForm = ({ objectType, formType }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-    
+
         let newFormFields = [...formFields]
         let updatedField = newFormFields.find(field => field.name === name)
         
         if (updatedField)
             updatedField.value = value
+
+        if (objectType == "review_plan" && (name == "analysis_run_id" || name == "hypothesis_set_id")) {
+            if (name == "analysis_run_id" && value != null) {
+                let hypothesis_set_id_field = newFormFields.find(field => field.name === "hypothesis_set_id")
+                if (hypothesis_set_id_field)
+                    hypothesis_set_id_field.value = ""
+            }
+            else if (name == "hypothesis_set_id" && value != null) {
+                let analysis_run_id_field = newFormFields.find(field => field.name === "analysis_run_id")
+                if (analysis_run_id_field)
+                    analysis_run_id_field.value = ""
+            }  
+        }
     
         setFormFields(newFormFields)
     }

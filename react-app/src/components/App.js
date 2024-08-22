@@ -91,13 +91,11 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
-                  { type == "hypothesis" && 
-                    <Route 
-                      path={`/${type}/import`} 
-                      element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
-                      key={`${index}-r6`} 
-                    />
-                  }
+                  <Route 
+                    path={`/${type}/import`} 
+                    element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
+                    key={`${index}-r6`} 
+                  />
                 </React.Fragment>
                 
               ))}

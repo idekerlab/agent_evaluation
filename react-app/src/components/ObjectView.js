@@ -188,11 +188,9 @@ const ObjectView = ({objectType, ...props}) => {
                             <button className="button spaced-button button-secondary" onClick={cloneObject} >
                                 <i className="fa-solid fa-clone"></i> Clone
                             </button>
-                            { objectType === "hypothesis" &&
-                                <button className="button spaced-button button-tertiary" onClick={exportObject} >
-                                    <i className="fa-solid fa-file-export"></i> Export
-                                </button>
-                            }
+                            <button className="button spaced-button button-tertiary" onClick={exportObject} >
+                                <i className="fa-solid fa-file-export"></i> Export
+                            </button>
                             <button className="button spaced-button button-danger" onClick={deleteObject} >
                                 <i className="fa-solid fa-trash-can"></i> Delete
                             </button>

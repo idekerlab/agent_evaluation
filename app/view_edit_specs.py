@@ -383,6 +383,7 @@ object_specifications = {
     },
     # MARK: analysis_run
     "hypothesis_set": {
+        "documentation": "This is a collection of hypotheses.",
         "properties": {
             "name": {
                 "type": "string",

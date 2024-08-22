@@ -473,7 +473,8 @@ async def import_object(request: Request, object_type: str):
         default_properties = get_default_properties(object_type, object_specifications)
         new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
         json_obj["object_id"] = new_object_id
-        json_obj["data"] = convert_to_csv(json_obj['data'])
+        if "data" in json_obj:
+            json_obj["data"] = convert_to_csv(json_obj['data'])
         
         try:
             await handle_form_submission(json_obj, object_type, db)
