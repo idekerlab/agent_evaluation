@@ -1,0 +1,62 @@
+<experiment_description>
+{experiment_description}
+</experiment_description>
+
+<biological_context>
+{biological_context}
+</biological_context>
+
+<dataset>
+{data}
+</data>
+
+<task>
+Based on the experiment description, analyze the dataset and develop a mechanistic,
+causal hypothesis for the processes that led to the observed data. 
+The proteins/genes in the dataset are hypothesized to be known to interact. 
+Use your knowledge of these proteins and their interactions to develop chains of events
+that connect experimental perturbations with molecular and phenotypic observations. 
+The hypothesis should make specific predictions that could be experimentally validated. 
+</task>
+
+<detailed_instructions>
+Data: Review the data to ensure that you understand the meaning of each observation. 
+In your hypothesis, be sure that you correctly use the data and do not hallucinate any observations.
+
+Background Knowledge: Review your knowledge of the functions of these proteins and the known interactions between them.
+
+
+Hypothesis Criteria:
+- Plausible
+- Non-trivial
+- Supports the higher-level goal of drug development
+- Novel
+- Actionable: is cost-effective in both time and money
+
+Stringency: Your lab has limited resources in both reagents, equipment, and your time. 
+Remember, your time is precious. You must use it well if you are to get your doctorate. 
+If you do not think that there is any hypothesis that is worth following up with a validation experiment, say so.
+
+Thought Process: Review what you know about these proteins, including how they are 
+regulated, to construct causal chains that include:
+- observed changes and other data
+- hypothesized changes involving other proteins
+- Remember, hypotheses can involve feedback loops.
+
+Show your reasoning.  
+
+Propose your hypothesis in one paragraph, followed by the supporting reasoning. 
+
+Format your output according to the output_format section below.
+
+</detailed_instructions>
+
+<output_format>
+
+## Hypothesis:
+(the hypothesis paragraph.)
+
+## Reasoning:
+(the supporting reasoning)
+
+</output_format>
