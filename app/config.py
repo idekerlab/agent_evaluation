@@ -1,12 +1,14 @@
 import configparser
 import os
 
+CONFIG_FILEPATH = os.environ.get('NON_EXISTENT_VARIABLE', 'Not Found')
+
 def load_neo4j_config():
     # Create a ConfigParser object
     config = configparser.ConfigParser()
     
     # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    config_file_path = os.path.expanduser('~/ae_config/config.ini') if CONFIG_FILEPATH == "Not Found" else os.path.expanduser(CONFIG_FILEPATH)
     
     # Read the configuration file
     config.read(config_file_path)
@@ -23,7 +25,7 @@ def load_database_config(path='~/ae_config/config.ini'):
     config = configparser.ConfigParser()
 
     # Define the path to the configuration file
-    config_file_path = os.path.expanduser(path)
+    config_file_path = os.path.expanduser(path) if CONFIG_FILEPATH == "Not Found" else os.path.expanduser(CONFIG_FILEPATH)
 
     # Read the configuration file
     config.read(config_file_path)
@@ -52,7 +54,7 @@ def load_api_key(key_name):
     config = configparser.ConfigParser()
     
     # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    config_file_path = os.path.expanduser('~/ae_config/config.ini') if CONFIG_FILEPATH == "Not Found" else os.path.expanduser(CONFIG_FILEPATH)
     
     # Read the configuration file
     config.read(config_file_path)
@@ -66,7 +68,7 @@ def load_api_keys():
     config = configparser.ConfigParser()
     
     # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    config_file_path = os.path.expanduser('~/ae_config/config.ini') if CONFIG_FILEPATH == "Not Found" else os.path.expanduser(CONFIG_FILEPATH)
     
     # Read the configuration file
     config.read(config_file_path)
@@ -84,7 +86,7 @@ def load_local_server_url():
     config = configparser.ConfigParser()
     
     # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    config_file_path = os.path.expanduser('~/ae_config/config.ini') if CONFIG_FILEPATH == "Not Found" else os.path.expanduser(CONFIG_FILEPATH)
     
     # Read the configuration file
     config.read(config_file_path)
