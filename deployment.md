@@ -11,7 +11,7 @@
 #### Changing the Database File
 - $ scp path/to/local/file deckard@<server_name>.ideker.ucsd.edu:/opt/data/ae_database/ae_database.db.tmp
 - $ ssh deckard@<server_name>.ideker.ucsd.edu
-- $ mv /opt/data/ae_database/ae_database.db /opt/data/ae_database/ae_database.db.`date +%s`.bkup
+- $ mv /opt/data/ae_database/ae_database.db /opt/data/ae_database/ae_database.db.\`date +%s\`.bkup
 - $ mv /opt/data/ae_database/ae_database.db.tmp /opt/data/ae_database/ae_database.db
 - $ sudo systemctl restart agent_eval
 
