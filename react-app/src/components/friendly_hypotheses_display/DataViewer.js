@@ -1,7 +1,7 @@
 import { AgGridReact } from 'ag-grid-react'
 import React, { useState } from 'react'
 import FriendlyIFrame from './FriendlyIFrame'
-import { fetchIframeSrc } from '../helpers/iFrameHelpers'
+import { fetchIframeSrc } from '../../helpers/iFrameHelpers'
 
 const DataViewer = ({data, ...props}) => {
     const [iframeSrc, setIframeSrc] = useState('')

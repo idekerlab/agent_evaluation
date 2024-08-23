@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import ReviewerLogin from './ReviewerLogin'
 import ReviewList from './ReviewList'
-import HypothesisList from './HypothesisList'
+import HypothesisList from '../friendly_hypotheses_display/HypothesisList'
 import axios from 'axios'
 
 const api_base = process.env.REACT_APP_API_BASE_URL

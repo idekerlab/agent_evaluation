@@ -381,6 +381,40 @@ object_specifications = {
             },
         }
     },
+    # MARK: analysis_run
+    "hypothesis_set": {
+        "documentation": "This is a collection of hypotheses.",
+        "properties": {
+            "name": {
+                "type": "string",
+                "editable": True,
+                "input_type": "text",
+                "view": "text"
+            },
+            "hypothesis_ids": {
+                "type": "list_of_object_ids",
+                "object_type": "hypothesis",
+                "view": "list_of_object_links",
+                "input_type": "select_multiple_objects",
+                "label": "hypotheses",
+                "editable": True
+            },
+            "user_ids": {
+                "type": "list_of_object_ids",
+                "label": "user reviewers",
+                "input_type": "select_multiple_objects",
+                "object_type": "user",
+                "view": "list_of_object_links",
+                "editable": True
+            },
+            "description": {
+                "type": "string",
+                "editable": True,
+                "input_type": "textarea",
+                "view": "text"
+            }
+        }
+    },
     # MARK:reviewplan
     "review_plan": {
         "documentation": "The review_plan object provides a framework to automate review creation. Here, agents are linked to set of hypotheses. Upon executing a review_plan, LLMs will be queried, and a review_set and reviews will be automatically created.",
@@ -406,6 +440,14 @@ object_specifications = {
                 "editable": True,
                 "input_type": "select_single_object",
                 "object_type": "analysis_run",
+                "view": "object_link"
+            },
+            "hypothesis_set_id": {
+                "type": "object_id",
+                "label": "hypothesis set",
+                "editable": True,
+                "input_type": "select_single_object",
+                "object_type": "hypothesis_set",
                 "view": "object_link"
             },
             "description": {
@@ -436,9 +478,10 @@ object_specifications = {
             "review_ids": {
                 "type": "list_of_object_ids",
                 "label": "reviews",
-                "editable": False,
+                "editable": True,
                 "view": "list_of_object_links",
-                "object_type": "review"
+                "object_type": "review",
+                "input_type": "select_multiple_objects",
             },
             "description": {
                 "type": "string",
@@ -511,13 +554,13 @@ object_specifications = {
                 "view": "object_link",
                 "editable": False
             },
-            "analysis_run_id": {
-                "type": "object_id",
-                "label": "analysis run",
-                "object_type": "analysis_run",
-                "view": "object_link",
-                "editable": False
-            }
+            # "analysis_run_id": {
+            #     "type": "object_id",
+            #     "label": "analysis run",
+            #     "object_type": "analysis_run",
+            #     "view": "object_link",
+            #     "editable": False
+            # }
         }
     },
     "user": {

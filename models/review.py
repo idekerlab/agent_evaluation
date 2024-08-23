@@ -4,7 +4,7 @@ class Review:
     def __init__(self, db, data=None, hypotheses_text=None, review_text=None, 
                  ranking_data=None, summary_review=None,
                  agent_id=None,  ##### May have to add a hypotheses section
-                 analysis_run_id=None, description=None, review_set_id=None, 
+                description=None, review_set_id=None, 
                  object_id=None, name="unnamed", created=None):
         self.db = db
         self.data = data
@@ -13,7 +13,7 @@ class Review:
         self.ranking_data = ranking_data
         self.summary_review = summary_review
         self.agent_id = agent_id
-        self.analysis_run_id = analysis_run_id
+        # self.analysis_run_id = analysis_run_id
         self.description = description
         self.review_set_id = review_set_id
         self.object_id = object_id
@@ -21,7 +21,7 @@ class Review:
         self.created = created
 
     @classmethod
-    def create(cls, db, data, hypotheses_text, review_text, ranking_data, summary_review, agent_id, analysis_run_id, description, review_set_id, name=None):
+    def create(cls, db, data, hypotheses_text, review_text, ranking_data, summary_review, agent_id, description, review_set_id, name=None):
         properties = {
             "data": data,
             "hypotheses_text": hypotheses_text,
@@ -29,13 +29,13 @@ class Review:
             "ranking_data": ranking_data,
             "summary_review": summary_review,
             "agent_id": agent_id,
-            "analysis_run_id": analysis_run_id,
+            # "analysis_run_id": analysis_run_id,
             "description": description,
             "review_set_id": review_set_id,
             "name": name
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review")
-        return cls(db, data, review_text, ranking_data, summary_review, agent_id, analysis_run_id, 
+        return cls(db, data, review_text, ranking_data, summary_review, agent_id,
                    description, review_set_id, object_id=object_id, name=name, created=created)
 
     @classmethod

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import TopBar from './TopBar'
-import Sidebar from './Sidebar'
-import ObjectList from './ObjectList'
-import ObjectView from './ObjectView'
-import ObjectForm from './ObjectForm'
-import ImportForm from './ImportForm'
-import ReviewPortal from './ReviewPortal'
+import TopBar from './nav_bars/TopBar'
+import Sidebar from './nav_bars/Sidebar'
+import ObjectList from './objects/ObjectList'
+import ObjectView from './objects/ObjectView'
+import ObjectForm from './objects/ObjectForm'
+import ImportForm from './objects/ImportForm'
+import ReviewPortal from './review_portal/ReviewPortal'
 
 const api_base = process.env.REACT_APP_API_BASE_URL
 
@@ -91,13 +91,11 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
-                  { type == "hypothesis" && 
-                    <Route 
-                      path={`/${type}/import`} 
-                      element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
-                      key={`${index}-r6`} 
-                    />
-                  }
+                  <Route 
+                    path={`/${type}/import`} 
+                    element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
+                    key={`${index}-r6`} 
+                  />
                 </React.Fragment>
                 
               ))}
@@ -124,7 +122,7 @@ const Welcome = () => {
         Select a resource on the side to get started.
       </h2 >
       <button className='button button-success' onClick={() => navigate("/my_reviews/home")}>
-        <i class="fa-solid fa-door-closed fa-lg"></i> Enter Review Portal
+        <i className="fa-solid fa-door-closed fa-lg"></i> Enter Review Portal
       </button>
       <p></p>
 

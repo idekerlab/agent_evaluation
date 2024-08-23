@@ -10,70 +10,49 @@ pip install -r requirements.txt
 ```
 
 # Repo Structure
-
-```
-/your_project
-│
-├── app/                    # Main application code
-│   ├── __init__.py
-│   ├── main.py             # Core Flask/FastAPI application
-│   └── dependencies.py     # Database connections, etc.
-│
-├── models/                 # Data models
-│   ├── __init__.py
-│   ├── llm.py
-│   ├── dataset.py
-│   ├── test_plan.py
-│   └── review.py
-│
-├── services/               # Business logic
-│   ├── __init__.py
-│   ├── hypothesis_generation.py
-│   └── review_generation.py
-│
-├── tasks/                  # Asynchronous tasks
-│   ├── __init__.py
-│   ├── celery_config.py
-│   ├── test_plan_tasks.py
-│   ├── hypothesis_tasks.py
-│   └── review_tasks.py
-│
-├── templates/              # HTML templates for the web interface
-│   └── ...
-│
-├── static/                 # CSS, JavaScript files
-│   └── ...
-│
-└── tests/                  # Unit and integration tests
-    ├── __init__.py
-    ├── test_services.py
-    └── test_tasks.py
-
-
 ```
 
 Given your preference for simplicity and keeping the business logic in a single `ae.py` file, here's a proposed repository structure:
 
 ```
-your_project/
+agent_evaluation/
 │
 ├── app/
 │   ├── __init__.py
-│   ├── main.py
-│   ├── dependencies.py
-│   ├── routers/
-│   │   ├── __init__.py
-│   │   ├── tests.py
-│   │   └── hypotheses.py
-│   ├── ae.py
-│   ├── database.py
+│   ├── analysis.py
+│   ├── app.py
+│   ├── chat_app.py
+│   ├── config.py
+│   ├── sqlite_database.py
 │   ├── temporary_database.py
-│   └── templates/
-│       ├── home.html
-│       └── test_details.html
+│   └── view_edit_specs.py
+│
+├── data/               # Holds many dataset files originally provided by Laura, now refactored by us
+│
+├── helpers/            # Has helper python files used throughout the backend
+│   ├── csv_helpers.py
+│   └── safe_dict.py
+│
+├── models/             # Contains python classes for each object type
+│   ├── agent.py
+│   ├── analysis_plan.py
+│   └── ...
+│
+├── notebooks/          # Contains Jupyter notebooks that interact with the data programmatically
+│
+├── prompts/            # Stores LLM prompts in text files
+│
+├── react-app/          # Contains the react UI
+│   ├── public/
+│   ├── src/
+│   ├── .env.development
+│   ├── .env.production
+│   ├── package-lock.json
+│   └── package.json
+│
+├── results/            # Stores LLM prompts in text files
 │
 ├── tests/
-│   ├── __init__.py
 │   ├── conftest.py
 │   ├── test_main.py
 │   ├── test_ae.py
@@ -87,10 +66,12 @@ your_project/
 │   └── images/
 │       └── logo.png
 │
-├── .gitignore
+├── .gitignore 
+├── deployment.md      # Contains documentation for deploying the app
+├── LICENSE            # MIT License file
+├── main.py            # The entry point of the application
 ├── README.md
-├── requirements.txt
-└── pytest.ini
+└── requirements.txt   # Lists the project dependencies
 ```
 
 In this structure:

@@ -1,29 +1,21 @@
 
-class ReviewSet:
-    def __init__(self, db, review_plan_id, agent_ids=None, analysis_run_id=None, hypothesis_set_id=None, 
-                 review_ids=None, description=None, run_log=None, attempts=None,
-                 status='pending', object_id=None, name=None, created=None):
+class HypothesisSet:
+    def __init__(self, db, hypothesis_ids=None, user_ids=None, 
+                 description=None, object_id=None, name=None, created=None):
         self.db = db
-        self.review_plan_id = review_plan_id
-        self.agent_ids = agent_ids if agent_ids else []
-        self.analysis_run_id = analysis_run_id
-        self.hypothesis_set_id = hypothesis_set_id
-        self.review_ids = review_ids if review_ids else []
+        self.hypothesis_ids = hypothesis_ids if hypothesis_ids else []
+        self.user_ids = user_ids if user_ids else []
         self.description = description
-        self.run_log = run_log
-        self.attempts = attempts if attempts is not None else {agent: [] for agent in agent_ids}
-        self.status = status
         self.object_id = object_id
         self.name = name if name else "none"
         self.created = created
 
     @classmethod
-    def create(cls, db, review_plan_id, agent_ids, analysis_run_id, hypothesis_set_id, description, name):
+    def create(cls, db, review_plan_id, agent_ids, analysis_run_id, description, name):
         properties = {
             "review_plan_id": review_plan_id,
             "agent_ids": agent_ids,
             "analysis_run_id": analysis_run_id,
-            "hypothesis_set_id": hypothesis_set_id,
             "review_ids": [],
             "description": description,
             "name": name,
@@ -31,7 +23,7 @@ class ReviewSet:
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_set")
-        return cls(db, review_plan_id, agent_ids, analysis_run_id, hypothesis_set_id, [], 
+        return cls(db, review_plan_id, agent_ids, analysis_run_id, [], 
                    description, "", properties['attempts'], 'pending', object_id, name, created)
 
     @classmethod

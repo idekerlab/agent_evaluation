@@ -51,6 +51,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
             .then(response => {
                 // Handle the response data
                 const analysisRun = response.data.object
+                console.log(analysisRun);
                 setAnalysisRun(analysisRun)
                 fetchHypotheses(analysisRun.hypothesis_ids)
                 // setObjectSpec(response.data.object_spec)
@@ -76,6 +77,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
             fetchDatasets(datasetIds)
 
         } catch (error) {
+            console.log("In this error here", hypothesis_ids);
             alert(error);
         } finally {
         //   setLoading(false);
@@ -120,7 +122,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
         let review_str =  JSON.stringify({user_id: user.object_id, status: statusStr, ranking: ranking})
 
         let submitPath = api_base + `/objects/review/blank/new`
-        let submitObj = {ranking_data: review_str, analysis_run_id: analysisRun.object_id, name: `${user.properties.name}'s review of ${analysisRun.name}`}
+        let submitObj = {ranking_data: review_str, name: `${user.properties.name}'s review of ${analysisRun.name}`}
 
         if (hasSavedReview) {
             submitPath = api_base + `/objects/review/${alreadySavedData.object_id}/edit`
@@ -193,7 +195,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
                     { hypotheses && hypotheses.length > 0 ? (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <h2>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h2>
+                                <h2>Review of _____</h2>
 
                                 { !viewOnly &&
                                     <>
