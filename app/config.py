@@ -1,7 +1,7 @@
 import configparser
 import os
 
-CONFIG_FILEPATH = os.environ.get('NON_EXISTENT_VARIABLE', 'Not Found')
+CONFIG_FILEPATH = os.environ.get('DATABASE_CONFIG_PATH', 'Not Found')
 
 def load_neo4j_config():
     # Create a ConfigParser object
