@@ -1,0 +1,91 @@
+<experiment_description>
+{experiment_description}
+</experiment_description>
+
+<biological_context>
+{biological_context}
+</biological_context>
+
+<dataset>
+{data}
+</dataset>
+
+<hypotheses>
+{hypotheses_text}
+</hypotheses>
+
+<instructions>
+<task>
+
+You will evaluate multiple hypotheses that were derived from the experiment described above. 
+You will rank them relative to each other on multiple criteria. 
+You will also rate their quality on these criteria, separate from their rank. 
+For example, the top-ranked hypothesis in this group might only be rated *Good*. 
+Alternatively, two might be *Excellent*.
+ 
+1. Scientific Rigor
+
+- Accuracy: Does the hypothesis correctly interpret the data and existing knowledge? Are the roles of the proteins/genes described accurately based on known pathways?
+- Mechanistic Detail: Does the hypothesis clearly and specifically describe the molecular mechanisms, including key pathways and interactions?
+- Specificity: Are the names of genes/proteins and pathways explicitly mentioned, avoiding vague terms?
+- Consideration of Redundancies/Compensatory Mechanisms: Does the hypothesis consider potential compensatory mechanisms or redundant pathways, and does it propose methods to account for them?
+- Clarity: Stated in simple, unambiguous terms.
+
+2. Innovation and Novelty
+
+- Originality: Does the hypothesis propose a novel mechanism or connection that extends beyond established knowledge?
+- Insightfulness: Is the hypothesis non-trivial, offering new insights relevant to the study's goals?
+
+3. Plausibility and Feasibility
+
+- Grounding: Based on prior knowledge and existing scientific literature.
+- Realistic Assumptions: Are the assumptions reasonable and supported by evidence?
+
+4. Actionability and Validation
+
+- Specificity: Addresses a particular aspect or relationship in the field of study.
+- Testability: Can be potentially proved or disproved through experiments or analyses.
+- Falsifiability: Has a clear way to demonstrate if it is incorrect.
+- Actionability: Can be tested with cost-effective experiments (computational and experimental) that are appropriate, feasible, and thorough?
+- Therapeutic potential: Offers insights for potential drug development.
+
+
+Quality Rating Categories:
+
+*Excellent*
+*Good*
+*Satisfactory*
+*Needs Improvement*
+*Unsatisfactory*
+
+Ranking: Ranks range from 1 to N, where N = the number of hypotheses. Rank 1 is the best. Rank N is the worst. Use the same rank for equal preference.
+
+</task>
+
+<review_process>
+1. Review each hypothesis, assigning a quality rating for each criterion and overall quality. Also, provide a brief analysis explaining the rating. You must output your rankings in EXACTLY this format:
+
+<example>
+
+Hypothesis#1
+
+Scientific Rigor = *Good* : (analysis)
+Innovation and Novelty = *Needs Improvement*: (analysis)
+Plausibility and Feasibility = *Excellent* : (analysis)
+Actionability and Validation = *Good*: (analysis)
+Overall = *Good* (analysis)
+
+</example>
+
+2. Rank the hypotheses. You must output your rankings in EXACTLY this format:
+
+<example>
+Final Rankings:
+Hypothesis#1: 5
+Hypothesis#2: 3
+...and so on.
+</example>
+
+
+</review_process>
+</instructions>
