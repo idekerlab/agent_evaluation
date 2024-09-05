@@ -12,11 +12,9 @@ class TestLLMIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Establish a connection to the database
-        db_type, uri, user, password = load_database_config(path='~/ae_config/config.ini')
+        db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
     
         cls.db = SqliteDatabase(uri)
-
-        # cls.db = Database("bolt://localhost:7687", "neo4j", "fredfred")
 
     @classmethod
     def tearDownClass(cls):

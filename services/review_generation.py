@@ -136,4 +136,4 @@ class ReviewGenerator:
 
 # Example usage:
 # generator = ReviewGenerator(db)
-# hypothesis_id = generator.generate_hypothesis(agent_id, dataset_id)
+# review_id = generator.generate_hypothesis(agent_id, dataset_id)

@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.append(os.path.abspath('..'))
 from models.llm import LLM
-from models.analyst import Analyst
+from models.agent import Agent
 from models.dataset import Dataset
 from models.analysis_plan import AnalysisPlan
 from services.analysisrunner import AnalysisRunner
@@ -17,7 +17,7 @@ class TestAnalysisWorkflow(unittest.TestCase):
         # db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
         # self.db = Database(uri, db_type, user, password)
 
-        _, database_uri, _, _ = load_database_config()
+        _, database_uri, _, _ = load_database_config(path='~/ae_config/test_config.ini')
         self.db = SqliteDatabase(database_uri)
 
         # Load data
@@ -45,7 +45,7 @@ Choose a name for the hypothesis and put it before the main hypothesis text.
         self.llm = LLM.create(self.db, type="Groq", model_name="llama3-70b-8192") 
         
         # Create analyst
-        self.analyst = Analyst.create(self.db, self.llm.object_id, context , prompt_template)
+        self.analyst = Agent.create(self.db, self.llm.object_id, context , prompt_template)
 
         experiment_description = "Dengue virus infection in human cells"
 
