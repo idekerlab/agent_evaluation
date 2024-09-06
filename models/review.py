@@ -35,8 +35,11 @@ class Review:
             "name": name
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review")
-        return cls(db, data, review_text, ranking_data, summary_review, agent_id, analysis_run_id, 
-                   description, review_set_id, object_id=object_id, name=name, created=created)
+        
+        # Remove 'created' from properties to avoid passing it twice
+        properties.pop('created', None)
+        
+        return cls(db=db, object_id=object_id, created=created, **properties)
 
     @classmethod
     def load(cls, db, object_id):

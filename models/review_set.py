@@ -29,8 +29,12 @@ class ReviewSet:
             "status": "pending"
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="review_set")
-        return cls(db, review_plan_id, agent_ids, analysis_run_id, [], 
-                   description, "", properties['attempts'], 'pending', object_id, name, created)
+        
+        # Remove 'created' from properties to avoid passing it twice
+        properties.pop('created', None)
+        
+        return cls(db=db, object_id=object_id, created=created, **properties)
+    
 
     @classmethod
     def load(cls, db, object_id):
