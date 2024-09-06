@@ -1,19 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-:root {
-  --primary-color: #3a5a6e;
-  --secondary-color: #7ca3a6;
-  --accent-color: #a5c9ca;
-  --background-color: #f0f4f5;
-  --text-color: #2c3e50;
-  --sidebar-bg: #dbe4e6;
-  --sidebar-button-bg: #7ca3a6;
-  --header-bg: #a5c9ca;
-  --button-color: #7ca3a6;
-  --top-bar-bg: #2c3e50;
-  --default-border-radius: 4px;
-  --default-margin: 10px;
-}
 
 .top-bar {
   position: fixed;
@@ -21,14 +5,12 @@
   left: 0;
   width: 100%;
   height: 20px;
-  background-color: var(--top-bar-bg);
+  background-color: black;
   color: white;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: flex;
-  border-radius: var(--default-border-radius);
-  margin: var(--default-margin);
 }
 
 .home-button {
@@ -49,22 +31,18 @@
 .container {
   display: flex;
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
-  margin: var(--default-margin);
 }
 
 .sidebar {
   position: fixed;
-  top: 50px; /* Adjust if needed based on the height of the top-bar */
+  top: 40px; /* Adjust if needed based on the height of the top-bar */
   left: 0;
   width: 180px; /* Adjust based on your layout */
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
-  background-color: var(--sidebar-bg);
+  background-color: skyblue; /* Optional: Sidebar background color */
   overflow: hidden; /* Ensure sidebar does not scroll */
   padding: 10px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */  
-  margin: var(--default-margin);
-  border-radius: var(--default-border-radius);
-
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */
 }
 
 .sidebar button {
@@ -72,11 +50,10 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: var(--sidebar-button-bg);
+  background-color: #fc900d;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: var(--default-border-radius);
 }
 
 .content {
@@ -90,7 +67,7 @@
 
 .content2 {
   margin-left: 200px; /* Same width as sidebar */
-  padding-top: 40px;
+  padding-top: 30px;
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
   width: calc(100% - 200px); /* Ensure the content takes the remaining width */
   background-color: #fff; /* Optional: Content background color */
@@ -115,14 +92,13 @@
 } 
 
 .button {
-  background-color: var(--button-color);
+  background-color: #fc900d;
   color: white;
   padding: 10px 20px;
   border: none;
   cursor: pointer;
   text-decoration: none;
   font-size: 14px;
-  border-radius: var(--default-border-radius);
 }
 
 .button:hover {
@@ -203,25 +179,11 @@ th, td {
 }
 
 .header {
-  background-color: var(--header-bg);
+  background-color: #9D695A;
   color: white;
   padding: 20px;
   display: flex;
   align-items: center;
-  border-radius: var(--default-border-radius);
-  margin: var(--default-margin);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.object-list-header {
-  background-color: var(--header-bg);
-  color: white;
-  display: flex;
-  align-items: center;
-  border-radius: var(--default-border-radius);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
 }
 
 .review-portal-header {
@@ -238,7 +200,7 @@ th, td {
 }
 
 .main-content {
-  padding: 10px 20px 20px 20px;
+  padding: 20px;
 }
 
 .pre-format {

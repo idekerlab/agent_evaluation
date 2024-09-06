@@ -141,6 +141,7 @@ const ObjectList = ({objectType, ...props}) => {
 
   return (
     <div className='main-content'>
+      <div className="object-list-header">
       <h1>{objectType === 'hypothesis' ? 'hypotheses' : `${objectType}s`}</h1>
       { "documentation" in objectSpec &&
         <p>{objectSpec.documentation}</p>
@@ -166,6 +167,7 @@ const ObjectList = ({objectType, ...props}) => {
       >
         <i className="fa-solid fa-trash-can"></i> Delete
       </button>
+      </div>
       { loading ? 
         <p>Loading...</p>
         :
