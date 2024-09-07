@@ -33,7 +33,7 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
         let enhancedHypothesisText = addLinksToHypothesis(text, geneSymbols)
 
         return (
-            <pre className='highlight pre-format2'>
+            <pre className='focus-area pre-format2'>
                 <b>hypothesis:</b> {enhancedHypothesisText}
             </pre>
         )
@@ -41,10 +41,10 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
 
     return (
         <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3>
                     Hypothesis {index + 1}/{numHypotheses}
-                </h2>
+                </h3>
                 <button className='button' onClick={() => handleNextHypothesis("prev")}>
                     <i className="fa-solid fa-arrow-left-long fa-lg"></i> Previous
                 </button>
@@ -55,13 +55,19 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
 
             <HypothesisReviewForm rank={rank} disableForm={disableForm} handleRankingChange={handleRankingChange} />
 
+            <div className="flex flex-row min-h-screen">
+                <div className="w-[800px] min-w-[500px] p-4 overflow-auto">
+                    {hypothesisTextDisplay(hypothesis.hypothesis_text)}
+                </div>
+                <div className="flex-grow min-w-[500px] p-4 overflow-auto">
+                    <DataViewer data={hypothesis.data} />
+                </div>
+            </div>
+
             <pre className='pre-format2'>
                 <b>biological context:</b> {hypothesis.biological_context}
             </pre>
 
-            {hypothesisTextDisplay(hypothesis.hypothesis_text)}
-            
-            <DataViewer data={hypothesis.data} />
 
             <pre className='pre-format2'>
                 <b>data description:</b> {dataset.description}

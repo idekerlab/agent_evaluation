@@ -28,6 +28,7 @@ import io
 import base64
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 app = FastAPI()
 
@@ -119,6 +120,7 @@ def preprocess_properties(properties, object_type):
             properties[prop_name] = formatted_rows
 
     return properties
+
 def handle_hypothesis(properties):
     hypo_text = properties["hypothesis_text"]
     file_path = "data/hgnc_genes.tsv"
