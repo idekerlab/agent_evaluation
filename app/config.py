@@ -93,6 +93,24 @@ def load_local_server_url():
     local_server_url = config.get('API_KEYS', 'LOCAL_MODEL_HOST', fallback=None)
     return local_server_url
 
+
+def load_constant_from_config(keys):
+    '''
+    keys: list of keys to be read from the config file
+    '''
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
+    
+    # Define the path to the configuration file
+    config_file_path = os.path.expanduser('~/ae_config/config.ini')
+    
+    # Read the configuration file
+    config.read(config_file_path)
+    if len(keys) == 1:
+        return config.get('CONSTANT VAR', keys[0], fallback=None)
+    else:
+        return [config.get('CONSTANT VAR', key, fallback=None) for key in keys]
+    
 # Example usage
 # openai_key, groq_key = load_api_keys()
 # print("OpenAI API Key:", openai_key)

@@ -1,0 +1,119 @@
+<data>
+{data}
+</data>
+
+<experiment_description>
+The genes/proteins that were identified as described:
+{experiment_description}
+</experiment_description>
+
+<biological_context>
+The biological context is: {biological_context}
+</biological_context>
+
+<prior_knowledge>
+Here is the summary of biological roles performed by the provided set of genes or proteins 
+
+{prior_knowledge}
+</prior_knowledge>
+
+<task>
+Analyze the provided gene set summary and generate a knowledge graph of the known pathways and interactions between the proteins provided in the prior_knowledge section. Use the biological context provided to guide your analysis.
+</task>
+
+<interaction types>
+Please use the following terms to describe the reslationships between the proteins in the knowledge graph:
+    Biological Domain:
+    - Complex: Formation of a complex between two or more biological entities.
+    - Modification: General modifications, which can include various post-translational modifications.
+    - SelfModification: Modifications where an entity modifies itself.
+    - RegulateActivity: Regulation of the activity of a molecule (e.g., activation or inhibition).
+    - RegulateAmount: Regulation of the amount of a molecule (e.g., increase or decrease in amount).
+    - ActiveForm: A molecule being in an active form.
+    - Translocation: Movement of a molecule from one location to another within a cell.
+    - Gef: Guanine nucleotide exchange factor activity.
+    - Gap: GTPase-activating protein activity.
+    - Conversion: Conversion of one molecule to another.
+
+
+    Post-Translational Modifications (subtypes of Modification):
+    - Phosphorylation: Addition of a phosphate group.
+    - Dephosphorylation: Removal of a phosphate group.
+    - Ubiquitination: Attachment of ubiquitin.
+    - Deubiquitination: Removal of ubiquitin.
+    - Sumoylation: Attachment of SUMO (Small Ubiquitin-like Modifier).
+    - Desumoylation: Removal of SUMO.
+    - Hydroxylation: Addition of a hydroxyl group.
+    - Dehydroxylation: Removal of a hydroxyl group.
+    - Acetylation: Addition of an acetyl group.
+    - Deacetylation: Removal of an acetyl group.
+    - Glycosylation: Addition of a glycosyl group.
+    - Deglycosylation: Removal of a glycosyl group.
+    - Farnesylation: Addition of a farnesyl group.
+    - Defarnesylation: Removal of a farnesyl group.
+    - Geranylgeranylation: Addition of a geranylgeranyl group.
+    - Degeranylgeranylation: Removal of a geranylgeranyl group.
+    - Palmitoylation: Addition of a palmitoyl group.
+    - Depalmitoylation: Removal of a palmitoyl group.
+    - Myristoylation: Addition of a myristoyl group.
+    - Demyristoylation: Removal of a myristoyl group.
+    - Ribosylation: Addition of a ribosyl group.
+    - Deribosylation: Removal of a ribosyl group.
+    - Methylation: Addition of a methyl group.
+    - Demethylation: Removal of a methyl group.
+
+
+    Subtypes of SelfModification:
+    - Autophosphorylation: Self-addition of a phosphate group.
+    - Transphosphorylation: Transfer of a phosphate group between two molecules.
+
+
+    Subtypes of RegulateActivity:
+    - Activation: Increase in the activity of a molecule.
+    - Inhibition: Decrease in the activity of a molecule.
+
+
+    Subtypes of RegulateAmount:
+    - IncreaseAmount: Increase in the amount of a molecule.
+    - DecreaseAmount: Decrease in the amount of a molecule.
+</interaction_type>
+
+<output_format>
+Present your output as a JSON object. For each interaction, provide the following details:
+- subject: The first molecular entity involved in the interaction.
+- object: The second molecular entity involved in the interaction.
+- interaction_type: The type of interaction from the list above.
+- text: The statement from which this interaction was extracted.
+- direct: True if there is a direct physical relationship/interaction between the subject and object.
+</output_format>
+
+<examples>
+{{
+     {{
+        "subject": "JNK", 
+        "object": "SIRT1", 
+        "interaction_type": "Phosphorylation", 
+        "text": "Phosphorylation of SIRT1 by JNK occurs at three sites : S27, S47, and T530 in response to oxidative stress that stimulates its deacetylation activity.",
+        "direct": True
+     }},
+     {{
+        "subject": "EP300", 
+        "object": "PARP1", 
+        "interaction_type": "Acetylation", 
+        "text": "PARP1 is acetylated by p300 / CBP; this acetylation is involved in the activation of NF-\u03ba B by PARP1.", 
+        "direct": True
+     }},
+
+    {{
+        "subject": "PARP1", 
+        "object": "ATM", 
+        "interaction_type": "Complex", 
+        "text": "It has been shown that PARP1 binds to ATM, an interaction that is stimulated by DNA damage, and that the automodification of PARP1 leads to ATM activation.", 
+        "direct": True
+
+    }}
+
+
+
+    }}
+
