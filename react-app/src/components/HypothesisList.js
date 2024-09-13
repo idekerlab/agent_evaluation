@@ -174,7 +174,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
 
         ranks.sort((a,b) => b.stars - a.stars)
         return (
-            <ul>
+            <ul style={{ fontSize: '12px' }}>
                 {ranks.map((rank, index) => (
                     <li key={`${index}-rank`}>Hypothesis {rank.order}, stars {rank.stars ? '*'.repeat(rank.stars) + ` (${rank.stars})` : "-"}</li>
                 ))}
@@ -193,7 +193,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
                     { hypotheses && hypotheses.length > 0 ? (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <h2>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h2>
+                                <h3>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h3>
 
                                 { !viewOnly &&
                                     <>

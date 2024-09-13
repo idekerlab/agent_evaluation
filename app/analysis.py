@@ -119,7 +119,7 @@ def create_judgment_vector(db, review_sets=None, reviewer_id=None):
     # For a each ReviewSet, create a judgment
     # vector for the specified Reviewer
     #
-    # Each judgement_vector represents coordinates
+    # Each judgment_vector represents coordinates
     # in a separate set of dimensions in the
     # judgment space. 
     #
@@ -231,8 +231,8 @@ def reviewer_similarity_heatmap(reviewer_judgment_vectors, metric='cosine', meth
     # List of reviewer labels
     reviewer_labels = []
 
-    for reviewer, judgement_vector in reviewer_judgment_vectors:
-        judgment_vectors.append(judgement_vector)
+    for reviewer, judgment_vector in reviewer_judgment_vectors:
+        judgment_vectors.append(judgment_vector)
         reviewer_labels.append(reviewer.name)
 
     # Compute pairwise distances

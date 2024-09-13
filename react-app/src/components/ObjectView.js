@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
 import DataViewer from './DataViewer'
+import SimpleSVGViewer from './SimpleSVGViewer';
 import HypothesisList from './HypothesisList'
 
 const api_base = process.env.REACT_APP_API_BASE_URL
@@ -237,6 +238,29 @@ const ObjectView = ({objectType, ...props}) => {
                                                 <td style={{ overflowX: "scroll", border: 'none'}}>
                                                 {propSpec.view === "scrolling_table" ? (
                                                     <DataViewer data={object[propName]} />
+                                                ) : propSpec.view === "judgment_space_visualizations" ? (
+                                                    <div>
+                                                      {object[propName]?.reduced_dim_plot && (
+                                                        <div>
+                                                          <h3>Reduced Dimensionality Plot</h3>
+                                                          <SimpleSVGViewer 
+                                                            svgString={object[propName].reduced_dim_plot} 
+                                                            maxWidth="800px" 
+                                                            maxHeight="600px"
+                                                          />
+                                                        </div>
+                                                      )}
+                                                      {object[propName]?.heatmap && (
+                                                        <div>
+                                                          <h3>Heatmap</h3>
+                                                          <SimpleSVGViewer 
+                                                            svgString={object[propName].heatmap} 
+                                                            maxWidth="800px" 
+                                                            maxHeight="600px"
+                                                          />
+                                                        </div>
+                                                      )}
+                                                    </div>
                                                 ) : propSpec.view === "list_of_object_links" &&
                                                     object[propName] ? (
                                                     <p

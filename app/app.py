@@ -23,6 +23,14 @@ from services.reviewrunner import ReviewRunner
 from services.gene_validator import GeneValidator
 import decimal
 from decimal import Decimal, ROUND_HALF_UP
+from models.judgment_space import JudgmentSpace
+import io
+import base64
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import traceback
+
 
 app = FastAPI()
 
@@ -115,69 +123,197 @@ def preprocess_properties(properties, object_type):
 
     return properties
 
-# get the view page with the object and its properties
+def handle_hypothesis(properties):
+    hypo_text = properties["hypothesis_text"]
+    file_path = "data/hgnc_genes.tsv"
+
+    # Remove punctuation and parentheses, but keep hyphens
+    cleaned_text = re.sub(r'[^\w\s-]', '', hypo_text)
+    # Split into words
+    words = re.split(r'\s+', cleaned_text)
+
+    validator = GeneValidator(file_path)
+    result = validator.validate_human_genes(words)
+    
+    properties['gene_symbols'] = result['official_genes']
+    return properties
+
+def generate_judgment_space_visualization(judgment_space):
+    if not judgment_space.review_sets:
+        return None, None
+
+    try:
+        judgment_space.generate_reviewer_judgment_dict()
+        data = np.array(list(judgment_space.reviewer_judgment_dict.values()))
+        
+        plt.figure(figsize=(12, 8))
+        sns.heatmap(data, cmap='YlGnBu', cbar_kws={'label': 'Judgment Score'})
+        plt.title('Reviewer Judgment Heatmap')
+        plt.xlabel('Judgment Vector Index')
+        plt.ylabel('Reviewer Index')
+        
+        img_buffer = io.BytesIO()
+        plt.savefig(img_buffer, format='svg')
+        img_buffer.seek(0)
+        svg_string = img_buffer.getvalue().decode()
+        
+        return svg_string, "image/svg+xml"
+    except Exception as e:
+        print(f"Error generating visualization: {str(e)}")
+        return None, None
+
+def process_object_links(db, properties, object_specifications, object_type):
+    link_names = {}
+    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+        if prop_name not in ['object_id', 'created', 'name'] and prop_name in properties:
+            if prop_spec['view'] == 'object_link':
+                obj_id = properties[prop_name]
+                link_names[obj_id] = get_link_name(db, obj_id)
+            elif prop_spec['view'] == 'list_of_object_links':
+                for obj_id in properties[prop_name]:
+                    link_names[obj_id] = get_link_name(db, obj_id)
+    return link_names
+
+def get_link_name(db, obj_id):
+    try:
+        linked_object_properties, _ = db.load(obj_id)
+        return linked_object_properties.get('name', 'unnamed') or 'unnamed'
+    except Exception:
+        return "Invalid ID"
+
 @app.get("/objects/{object_type}/{object_id}")
 async def view_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
     properties, object_type = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
-    # Preprocess CSV data
+    
     processed_properties = preprocess_properties(properties, object_type)
+    
+    link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+    
+    if object_type == "hypothesis":
+        processed_properties = handle_hypothesis(processed_properties)
+    
+    visualizations = {}
+    
+    if object_type == "judgment_space":
+        judgment_space = JudgmentSpace.load(db, object_id)
+        if judgment_space:
+            try:
+                visualizations = judgment_space.generate_visualizations()
+                processed_properties['visualizations'] = visualizations
+                judgment_space.update(visualizations=visualizations)
+            except Exception as e:
+                error_message = f"Error generating visualizations: {str(e)}"
+                processed_properties['visualization_error'] = error_message
+                visualizations = {'error': error_message}
+                # Optionally, you can log the full traceback
+                traceback.print_exc()
+    
+    return {
+        "object_type": object_type, 
+        "object": processed_properties,
+        "object_spec": object_specifications[object_type],
+        "link_names": link_names,
+        "visualizations": visualizations
+    }
+
+# get the view page with the object and its properties
+# @app.get("/objects/{object_type}/{object_id}")
+# async def view_object(request: Request, object_type: str, object_id: str):
+#     db = request.app.state.db
+#     properties, object_type = db.load(object_id)
+#     if not properties:
+#         raise HTTPException(status_code=404, detail="Object not found")
+    
+#     processed_properties = preprocess_properties(properties, object_type)
+    
+#     link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+    
+#     if object_type == "hypothesis":
+#         processed_properties = handle_hypothesis(processed_properties)
+    
+#     visualizations = {}
+    
+#     if object_type == "judgment_space":
+#         judgment_space = JudgmentSpace.load(db, object_id)
+#         if judgment_space:
+#             visualizations = judgment_space.generate_visualizations()
+#             processed_properties['visualizations'] = visualizations
+#             judgment_space.update(visualizations=visualizations)
+    
+#     return {
+#         "object_type": object_type, 
+#         "object": processed_properties,
+#         "object_spec": object_specifications[object_type],
+#         "link_names": link_names,
+#         "visualizations": visualizations
+#     }
+
+# # get the view page with the object and its properties
+# @app.get("/objects/{object_type}/{object_id}")
+# async def view_object(request: Request, object_type: str, object_id: str):
+#     db = request.app.state.db
+#     properties, object_type = db.load(object_id)
+#     if not properties:
+#         raise HTTPException(status_code=404, detail="Object not found")
+#     # Preprocess CSV data
+#     processed_properties = preprocess_properties(properties, object_type)
 
 
-    # Process object links to include object names
-    link_names = {}
-    for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
-        if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and prop_name in processed_properties:
-            if prop_spec['view'] == 'object_link':
-                obj_id = processed_properties[prop_name]
-                try:
-                    linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
-                    if "name" in linked_object_properties and linked_object_properties['name'] is not None:
-                        link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
-                    else:
-                        link_names[obj_id] = "unnamed"
-                except Exception as e:
-                    link_names[obj_id] = "Invalid ID"
+#     # Process object links to include object names
+#     link_names = {}
+#     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
+#         if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and prop_name in processed_properties:
+#             if prop_spec['view'] == 'object_link':
+#                 obj_id = processed_properties[prop_name]
+#                 try:
+#                     linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
+#                     if "name" in linked_object_properties and linked_object_properties['name'] is not None:
+#                         link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
+#                     else:
+#                         link_names[obj_id] = "unnamed"
+#                 except Exception as e:
+#                     link_names[obj_id] = "Invalid ID"
                 
-            elif prop_spec['view'] == 'list_of_object_links':
-                for obj_id in processed_properties[prop_name]:
-                    try:
-                        linked_object_properties, linked_object_type = db.load(obj_id)
-                        if "name" in linked_object_properties:
-                            link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
-                        else:
-                            link_names[obj_id] = "unnamed"
-                    except Exception as e:
-                        link_names[obj_id] = "Invalid ID"
+#             elif prop_spec['view'] == 'list_of_object_links':
+#                 for obj_id in processed_properties[prop_name]:
+#                     try:
+#                         linked_object_properties, linked_object_type = db.load(obj_id)
+#                         if "name" in linked_object_properties:
+#                             link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
+#                         else:
+#                             link_names[obj_id] = "unnamed"
+#                     except Exception as e:
+#                         link_names[obj_id] = "Invalid ID"
                         
-    if (object_type == "hypothesis"):
-        hypo_text = processed_properties["hypothesis_text"]
-        file_path = "data/hgnc_genes.tsv"
+#     if (object_type == "hypothesis"):
+#         hypo_text = processed_properties["hypothesis_text"]
+#         file_path = "data/hgnc_genes.tsv"
 
-        # Remove punctuation and parentheses, but keep hyphens
-        cleaned_text = re.sub(r'[^\w\s-]', '', hypo_text)
-        # Split into words
-        words = re.split(r'\s+', cleaned_text)
+#         # Remove punctuation and parentheses, but keep hyphens
+#         cleaned_text = re.sub(r'[^\w\s-]', '', hypo_text)
+#         # Split into words
+#         words = re.split(r'\s+', cleaned_text)
 
-        validator = GeneValidator(file_path)
-        result = validator.validate_human_genes(words)
+#         validator = GeneValidator(file_path)
+#         result = validator.validate_human_genes(words)
         
-        official_genes = result['official_genes']
+#         official_genes = result['official_genes']
         
-        processed_properties['gene_symbols'] = official_genes
+#         processed_properties['gene_symbols'] = official_genes
                         
-    return {"object_type": object_type, 
-            "object": processed_properties,
-            "object_spec": object_specifications[object_type],
-            "link_names": link_names}
+#     return {"object_type": object_type, 
+#             "object": processed_properties,
+#             "object_spec": object_specifications[object_type],
+#             "link_names": link_names}
                         
-    return templates.TemplateResponse("view_object.html", {"request": request, 
-                                                           "object_type": object_type, 
-                                                           "object": processed_properties,
-                                                           "object_spec": object_specifications[object_type],
-                                                           "link_names": link_names})
+#     return templates.TemplateResponse("view_object.html", {"request": request, 
+#                                                            "object_type": object_type, 
+#                                                            "object": processed_properties,
+#                                                            "object_spec": object_specifications[object_type],
+#                                                            "link_names": link_names})
 
 # get the edit page with a new object of the same type and default properties
 @app.get("/objects/{object_type}/blank/new")

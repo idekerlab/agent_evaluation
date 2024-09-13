@@ -104,18 +104,23 @@ class LLM:
         max_retries = 5
         while retries < max_retries:
             try:
-                response = client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": context},
-                    {"role": "user", "content": prompt}],
-                max_tokens=self.max_tokens,
-                n=1,
-                stop=None,
-                seed=self.seed,
-                temperature=self.temperature)
+                if self.model_name == "o1-preview" or self.model_name == "o1-mini":
+                    response = client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "user", "content": context + "  " + prompt}])
+                else:
+                    response = client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "system", "content": context},
+                        {"role": "user", "content": prompt}],
+                    max_tokens=self.max_tokens,
+                    n=1,
+                    stop=None,
+                    seed=self.seed,
+                    temperature=self.temperature)
                 response_content = response.choices[0].message.content.strip()
-            
                 return response_content
         
             except APIConnectionError as e:
