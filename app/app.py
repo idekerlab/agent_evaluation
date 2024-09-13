@@ -29,6 +29,8 @@ import base64
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import traceback
+
 
 app = FastAPI()
 
@@ -179,7 +181,6 @@ def get_link_name(db, obj_id):
     except Exception:
         return "Invalid ID"
 
-# get the view page with the object and its properties
 @app.get("/objects/{object_type}/{object_id}")
 async def view_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
@@ -199,9 +200,16 @@ async def view_object(request: Request, object_type: str, object_id: str):
     if object_type == "judgment_space":
         judgment_space = JudgmentSpace.load(db, object_id)
         if judgment_space:
-            visualizations = judgment_space.generate_visualizations()
-            processed_properties['visualizations'] = visualizations
-            judgment_space.update(visualizations=visualizations)
+            try:
+                visualizations = judgment_space.generate_visualizations()
+                processed_properties['visualizations'] = visualizations
+                judgment_space.update(visualizations=visualizations)
+            except Exception as e:
+                error_message = f"Error generating visualizations: {str(e)}"
+                processed_properties['visualization_error'] = error_message
+                visualizations = {'error': error_message}
+                # Optionally, you can log the full traceback
+                traceback.print_exc()
     
     return {
         "object_type": object_type, 
@@ -210,6 +218,38 @@ async def view_object(request: Request, object_type: str, object_id: str):
         "link_names": link_names,
         "visualizations": visualizations
     }
+
+# get the view page with the object and its properties
+# @app.get("/objects/{object_type}/{object_id}")
+# async def view_object(request: Request, object_type: str, object_id: str):
+#     db = request.app.state.db
+#     properties, object_type = db.load(object_id)
+#     if not properties:
+#         raise HTTPException(status_code=404, detail="Object not found")
+    
+#     processed_properties = preprocess_properties(properties, object_type)
+    
+#     link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+    
+#     if object_type == "hypothesis":
+#         processed_properties = handle_hypothesis(processed_properties)
+    
+#     visualizations = {}
+    
+#     if object_type == "judgment_space":
+#         judgment_space = JudgmentSpace.load(db, object_id)
+#         if judgment_space:
+#             visualizations = judgment_space.generate_visualizations()
+#             processed_properties['visualizations'] = visualizations
+#             judgment_space.update(visualizations=visualizations)
+    
+#     return {
+#         "object_type": object_type, 
+#         "object": processed_properties,
+#         "object_spec": object_specifications[object_type],
+#         "link_names": link_names,
+#         "visualizations": visualizations
+#     }
 
 # # get the view page with the object and its properties
 # @app.get("/objects/{object_type}/{object_id}")
