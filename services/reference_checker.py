@@ -2,6 +2,7 @@ from Bio import Entrez
 import openai
 import requests
 import pandas as pd
+import urllib.request
 from urllib import request
 import urllib.parse as parse
 from models.llm import LLM
@@ -36,12 +37,22 @@ def get_functions_from_paragraph(db,  dict_value, agent_id,verbose=False):
     '''
     paragraph = dict_value['analysis']
     query = f"""
-I would like to search PubMed to find supporting evidence for the statements in a paragraph. Give me a maximum of 3 keywords related to the functions or biological processes in the statements. 
+I would like to search PubMed to find supporting evidence for the statements in a paragraph. Extract 3-5 keywords from the given paragraph, focusing specifically on gene/protein functions, biological processes, or pathways. 
 
 Example paragraph:  Involvement of pattern recognition receptors: TLR1, TLR2, and TLR3 are part of the Toll-like receptor family, which recognize pathogen-associated molecular patterns and initiate innate immune responses. NOD2 and NLRP3 are intracellular sensors that also contribute to immune activation.
-Example response: immune response,receptors,pathogen
+Example response: pattern recognition, receptors, intracellular, Toll-like receptor
 
-Please don't include gene symbols. Please order keywords by their importance in the paragraph, from high importance to low importance. Return the keywords as a comma separated list without spaces. If there are no keywords matching the criteria, return \"Unknown\" 
+Follow these guidelines:
+
+1. Prioritize high-level terms that describe the overall function or role of the genes/proteins mentioned.
+2. Include key biological processes or pathways that are central to the paragraph's theme.
+3. Consider important molecular targets or interactions mentioned (e.g., viral components).
+4. Avoid overly specific molecular mechanisms or individual protein names.
+5. Do not include gene symbols or names as keywords.
+6. Do not include the same keyword or similar concept more than once.
+7. Order keywords by their relevance to gene function, from most to least important.
+
+Return the keywords as a comma-separated list without spaces. If no suitable functional keywords are found, return \"Unknown\".
 
 Please find keywords for this paragraph:
 {paragraph}
@@ -59,11 +70,33 @@ Please find keywords for this paragraph:
             print("Result: ", result)
         if result.lower()=='unknown':
             return ['Unknown']
-        return [keyword.strip() for keyword in result.split(",")]
+        return list(set([keyword.strip() for keyword in result.split(",")]))
         
 def is_formated_gene_symbol(symbol):
     # A simple regex to check if the gene symbol is alphanumeric and may contain underscores
     return re.match(r'^\w+$', symbol)
+
+
+def get_all_gene_symbols(gene_symbol):
+    url = f"https://rest.genenames.org/fetch/symbol/{gene_symbol}"
+    headers = {"Accept": "application/json"}
+    
+    request = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(request) as response:
+            result = json.loads(response.read().decode())
+            # Extract relevant information from the response
+            if 'response' in result and 'docs' in result['response'] and len(result['response']['docs']) > 0:
+                gene_info = result['response']['docs'][0]
+                prev_symbols = gene_info.get('prev_symbol', [])
+                alias_symbols = gene_info.get('alias_symbol', [])
+                return prev_symbols, alias_symbols  # Return both previous and alias symbols
+            else:
+                return None, None  # No symbols found
+    except Exception as e:
+        print("Error detail: ", e)
+        return None, None
+
 def get_aliased_symbol(gene_symbol):
     encoded_gene_symbol = parse.quote(gene_symbol)  # URL encode the gene symbol
     if not is_formated_gene_symbol(gene_symbol):
@@ -277,6 +310,7 @@ def check_abstract_match(db, paper,  dict_value, agent_id,  n=10, verbose=False)
         raise ValueError("LLM not found")
     try:
         abstract = "\n".join(paper['MedlineCitation']['Article']['Abstract']['AbstractText'])
+        title = paper['MedlineCitation']['Article']['ArticleTitle']
     except (KeyError, IndexError) as e:
         print("Error in getting abstract from paper.")
         print("Error detail: ", e)
@@ -286,17 +320,19 @@ I have a paragraph that was separated into sentences. Each sentence is indexed.
 Paragraph:
 {indexed_sentences}
 
-and an abstract.
-Abstract:
+and the title of the paper:
+{title}
+
+The abstract associated with the paper is:
 {abstract}
 
 Please analyze whether this abstract directly supports any assertion in the paragraph. 
 Follow these steps:
 
-- For each indexed sentence, state whether it is directly supported by findings in the abstract.
-- If a sentence is supported, quote the specific part of the abstract that provides this support.
+- For each indexed sentence, state whether it is directly supported by findings in the abstract or the title.
+- If a sentence is supported, quote the specific part of the abstract or the title that provides this support.
 - If a sentence is not supported, briefly explain why.
-- After analyzing all sentences, decide whether the abstract directly supports any parts of the paragraph.
+- After analyzing all sentences, decide whether the abstract or the title directly supports any parts of the paragraph.
 - Present your findings in the following format:
     - If any sentence supports the paragraph, print "yes" at the beginning of your response. And provide a dictionary containing indexes for the supported sentences and the list of quoted sentences from the supporting abstract
     - e.g.,'Yes \n supporting sentences: {{\"1\": [\"A variety of viruses can induce the expression of IFIT3, which in turn inhibits the replication of viruses, with the underlying mechanism showing its crucial role in antiviral innate immunity.\"], \"3\": [\"<quoted abstract text>\"]}}'
@@ -339,9 +375,11 @@ def get_genes_in_abstract(paper, genes, verbose=False):
     gene_counts = 0
     genes_in_abstract = []
     for gene in genes:
-        if gene.lower() in abstract.lower():
+        prev_symbols, alias_symbols = get_all_gene_symbols(gene)
+        if any(gene.lower() in abstract.lower() or symbol.lower() in abstract.lower() for symbol in prev_symbols + alias_symbols):
             gene_counts += 1
             genes_in_abstract.append(gene)
+   
     if verbose:
         print("Title: ", title)
         print("Abstract: ", abstract)
@@ -509,6 +547,7 @@ def get_papers(keywords, n, email):
 #                             break
 #     # references = [get_mla_citation_from_pubmed_id(paper) for paper in paper_for_references]
 #     return {"paragraph": paragraph, "keyword": keywords, "references": reference_with_sentencesIDs}
+
 def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_query=20, verbose=False):
     paragraph = dict_value['analysis']
     if verbose:
@@ -573,7 +612,50 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
                         break
                 else:
                     break
+        
 
+    max_attempts = 3 # do a max of 3 re-search 
+    attempts = 0
+    while len(paper_for_references) < n and attempts < max_attempts:
+        # search the paper again with the remaining genes and the same sets of functions    
+        remaining_genes = genes_to_be_searched
+        gene_query = " OR ".join(["%s[Title/Abstract]" % gene for gene in remaining_genes])
+        function_query = " OR ".join(["%s[Title/Abstract]" % function for function in functions])
+
+        new_keywords = "(%s) AND (%s)" % (gene_query, function_query)
+        
+        new_papers = search_pubmed(new_keywords, email, retmax=papers_query)
+        print("%d references are queried" % (len(new_papers)))
+        
+        if not new_papers:  # If no papers found, increment attempts and adjust search
+            attempts += 1
+            continue  # Skip to the next iteration to try again
+
+        new_sorted_papers = sort_paper_by_n_genes_in_abstract(new_papers, remaining_genes, verbose=verbose)
+        for paper in new_sorted_papers:
+            genes_in_abstract = get_genes_in_abstract(paper, genes, verbose=False)
+        
+            if verbose:
+                print("Search matching abstract for remained genes: ", ",".join(genes_to_be_searched))
+                print("Current search containing genes: ", ",".join(genes_in_abstract))
+            # intersect the genes in the abstract and the genes to be searched
+            intersec_genes = set(genes_to_be_searched).intersection(set(genes_in_abstract))
+
+            if len(intersec_genes) == 0:  # if no gene in the abstract is in the search list, skip the paper
+                continue
+
+            abstract_match, abstract_support_evidence = check_abstract_match(db, paper, dict_value, agent_id, verbose=verbose)
+            if abstract_match:
+                paper_for_references.append(paper)
+                reference_with_sentencesIDs.append({'citation': get_mla_citation_from_pubmed_id(paper),
+                                                    'support_indexes': abstract_support_evidence})
+                
+                for gene_in_abstract in genes_in_abstract:
+                    if gene_in_abstract in genes_to_be_searched:
+                        genes_to_be_searched.remove(gene_in_abstract)
+            if len(paper_for_references) >= n:
+                break
+        attempts += 1  # Increment attempts after each search
 
     # references = [get_mla_citation_from_pubmed_id(paper) for paper in paper_for_references]
     return {"paragraph": paragraph, "keyword": keywords, "references": reference_with_sentencesIDs}
@@ -617,9 +699,29 @@ def get_references_for_paragraphs(db, hypothesis_id, agent_id, n=5, papers_query
         
         j = 1
         formated_citations = ''
+        formated_paragraph = ''
+        # sentence list 
+        paragraph = dict_value['analysis']
+        sentence_list = paragraph.split('.')
+        # Create a mapping of sentence index to citations
+        citation_map = {i: [] for i in range(len(sentence_list))}
+        # format the citations and the paragraph
+ 
         for reference in references:
-           
-            formated_citations += "[%d] %s"%(j, reference) + '\n'
+            citation = reference['citation']
+            support_indexes = reference['support_indexes']
+            for index in support_indexes:
+                citation_map[index].append(f"[{j}] {citation}")  # Map citation to the corresponding sentence index
+            j += 1
+
+        # Build the formatted paragraph
+        for i, sentence in enumerate(sentence_list):
+            sentence = sentence.strip()  # Clean up whitespace
+            if citation_map[i]:  # If there are citations for this sentence
+                citations = ' '.join(citation_map[i])  # Join all citations for this sentence
+                formated_paragraph += f"{sentence} {citations}\n"  # Append the sentence with its citations
+            else:
+                formated_paragraph += f"{sentence}\n"  # Append the sentence without citations
             j+=1
         
         # update the citation to the response_dict

@@ -17,9 +17,21 @@ Write a concise yet comprehensive overview of the biological roles performed by 
 
 <detailed_instructions>
 Review the provided list of genes/proteins and experiment description
-Review your knowledge of these proteins' functions, cellular locations, and known interactions or pathways. Base your analysis on factual information from your training data.
+Review your knowledge of these proteins' functions, cellular locations, and known interactions or pathways. 
+Base your analysis only on well-established factual information from your training data and avoid making speculative statements. 
 Think step by step to develop ideas for how they may be working together, considering the biological context provided (if any). 
-Please note which proteins are not included in common functions and mechanisms.
+Avoid vague and overly general statements such as 'the proteins are involved in various/ multiple cellular processes'.
+Please note which proteins are not included in common functions and mechanisms. Or if a protein's role in the given context is not well-established, state this explicitly.
+
+If more than one biological processes are involved, for each:
+a. Create a concise yet descriptive name that captures the specific mechanism.
+b. List the proteins involved using official HGNC gene symbols.
+c. Provide a detailed analysis of how these proteins interact and function together in this process.You may consider, but are not limited to:
+    - Specific protein-protein interactions
+    - Post-translational modifications 
+    - Regulatory relationships
+    - Upstream and downstream pathways and theircomponents
+    - Subcellular localization relevant to the process
 
 Use the output format described below to output your analysis as a JSON object that associates process names with (1) a list of official HGNC gene symbols (participating proteins) and (2) supporting analysis text. ONLY output the JSON object.
 </detailed_instructions>
@@ -41,6 +53,6 @@ Use the output format described below to output your analysis as a JSON object t
 - Stick to factual information.
 - Be specific and concise.
 - If you can't identify clear processes or relationships, state this explicitly as \'system of unrelated proteins\'.
-- Include an \'Unrelated or unclear proteins\' section if applicable.
+- Include an \'Unrelated or unclear proteins\' section if there are list of proteins or individual proteins that are not clearly related with other proteins or not clearly related to the biological context.
 - If no biological context is provided but seems necessary, add your proposed biological context in parentheses after the name, i.e. \"DNA Repair (Chemotherapy response)\".
 </guidelines>
