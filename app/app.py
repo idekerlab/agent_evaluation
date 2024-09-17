@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from app.sqlite_database import SqliteDatabase
 from jsonschema import validate, ValidationError
 from app.view_edit_specs import object_specifications
-from app.config import load_database_config
+from app.config import load_database_uri
 import csv
 from io import StringIO
 import os
@@ -37,7 +37,7 @@ app = FastAPI()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load the database connection details
-    _, uri, _, _ = load_database_config()
+    uri = load_database_uri()
     db = SqliteDatabase(uri)
     
     # Provide the database instance to the app
