@@ -407,8 +407,8 @@ def generate_form(db, object_type, specifications, obj_properties):
                 option_dicts = []
                 for field_object in field_objects:
                     field_obj_id = field_object['object_id']
-                    field_obj_name = field_object['properties']['name'] if 'name' in field_object['properties'] else "none"
-                    field_obj_name = field_obj_name if len(field_obj_name) > 0 else "none"
+                    field_obj_name = field_object['properties']['name'] if 'name' in field_object['properties'] else "unnamed"
+                    field_obj_name = field_obj_name if len(field_obj_name) > 0 else "unnamed"
                     option_label = f"({field_obj_name}) {field_obj_id}"
                     option_dicts.append({"label": option_label, "value": field_obj_id})
                     
@@ -560,7 +560,7 @@ async def execute_object(request: Request, object_type: str, object_id: str):
             return {"error": f"{e}"}
         
         def execute_analysis_plan(analysis_run_id):
-            _, uri, _, _ = load_database_config()
+            uri = load_database_uri()
             db = SqliteDatabase(uri)
             runner = AnalysisRunner(db, analysis_run_id)
             result = runner.run()
@@ -581,7 +581,7 @@ async def execute_object(request: Request, object_type: str, object_id: str):
             return {"error": f"{e}"}
         
         def execute_review_plan(review_set_id):
-            _, uri, _, _ = load_database_config()
+            uri = load_database_uri()
             db = SqliteDatabase(uri)
             runner = ReviewRunner(db, review_set_id)
             result = runner.run()

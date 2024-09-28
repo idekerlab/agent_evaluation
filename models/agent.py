@@ -1,8 +1,10 @@
 import json
+from helpers.safe_dict import SafeDict
+from models.llm import LLM
 
 class Agent:
     def __init__(self, db, llm_id=None, context=None, 
-                 prompt_template=None, name=None, description=None, 
+                 prompt_template=None, name="unnamed", description=None, 
                  object_id=None, created=None):
         self.db = db
         self.llm_id = llm_id
@@ -14,7 +16,7 @@ class Agent:
         self.created = created
 
     @classmethod
-    def create(cls, db, llm_id, context, prompt_template, name=None, description=""):
+    def create(cls, db, llm_id, context, prompt_template, name="unnamed", description=""):
         properties = {
             "llm_id": llm_id,
             "context": context,
@@ -47,3 +49,16 @@ class Agent:
             "object_id": self.object_id,
             "created": self.created
         })
+    
+    def run(self, properties=None):
+        safe_dict = SafeDict(properties)
+        prompt = self.prompt_template.format_map(safe_dict)
+        # Load the LLM associated with the agent
+        llm = LLM.load(self.db, self.llm_id)
+        if not llm:
+            raise ValueError("LLM not found")
+
+        # Generate hypothesis text using the LLM
+        output_text = llm.query(self.context, prompt)
+        return output_text
+
