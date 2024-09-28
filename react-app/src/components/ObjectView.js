@@ -174,7 +174,7 @@ const ObjectView = ({objectType, ...props}) => {
                                     
                                 </button>
                             }
-                            { objectType === "review" &&
+                            { objectType === "review"  &&
                                 <button className="button spaced-button button-tertiary" onClick={toggleFriendlyVersion}> 
                                     { showFriendly ? "Back to Normal Display" : "See Friendly Version"}
                                 </button>
@@ -185,7 +185,7 @@ const ObjectView = ({objectType, ...props}) => {
                             <button className="button spaced-button button-secondary" onClick={cloneObject} >
                                 <i className="fa-solid fa-clone"></i> Clone
                             </button>
-                            { objectType === "hypothesis" &&
+                            { (objectType === "hypothesis" || objectType === "dataset") &&
                                 <button className="button spaced-button button-tertiary" onClick={exportObject} >
                                     <i className="fa-solid fa-file-export"></i> Export
                                 </button>

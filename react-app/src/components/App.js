@@ -91,7 +91,7 @@ const App = () => {
                     element={<ObjectForm specs={objectSpecs[type]} objectType={type} formType="new" />} 
                     key={`${index}-r5`} 
                   />
-                  { type == "hypothesis" && 
+                  { (type == "hypothesis" || type == "dataset") && 
                     <Route 
                       path={`/${type}/import`} 
                       element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 

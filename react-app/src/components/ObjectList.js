@@ -153,7 +153,7 @@ const ObjectList = ({objectType, ...props}) => {
       >
         <i className="fa-solid fa-plus"></i> New {objectType}
       </button>
-      { objectType == "hypothesis" && 
+      { (objectType == "hypothesis" || objectType === "dataset") && 
         <button
           className="button spaced-button button-secondary"
           onClick={() => navigate(`/${objectType}/import`)}
