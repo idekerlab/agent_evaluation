@@ -4,6 +4,8 @@ import axios from 'axios'
 import DataViewer from './DataViewer'
 import SimpleSVGViewer from './SimpleSVGViewer';
 import HypothesisList from './HypothesisList'
+import MarkdownDisplay from './MarkdownDisplay';
+
 
 const api_base = process.env.REACT_APP_API_BASE_URL
 
@@ -303,9 +305,14 @@ const ObjectView = ({objectType, ...props}) => {
                                                     </div>
                                                     
                                                 ) : (
-                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
-                                                        {object[propName]}
-                                                    </pre>
+                                                    <MarkdownDisplay 
+                                                        content={object[propName]} 
+                                                        className="pre-format"
+                                                        style={{ maxWidth: "800px"}}
+                                                    />
+//                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
+//                                                        {object[propName]}
+//                                                    </pre>
                                                 )}
                                                 </td>
                                             </tr>

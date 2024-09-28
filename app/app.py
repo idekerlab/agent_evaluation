@@ -199,6 +199,10 @@ async def view_object(request: Request, object_type: str, object_id: str):
     
     if object_type == "judgment_space":
         judgment_space = JudgmentSpace.load(db, object_id)
+        # When viewing a JudgmentSpace, we generate the visualizations on the fly.
+        # This way, they update with any changes to the JS, such as adding more
+        # reviewers. They are updated to the database because that causes them
+        # to be loaded to the view page like any other object data.
         if judgment_space:
             try:
                 visualizations = judgment_space.generate_visualizations()
@@ -472,6 +476,11 @@ async def execute_object(request: Request, object_type: str, object_id: str):
   
 @app.post("/objects/{object_type}/import")
 async def import_object(request: Request, object_type: str):
+    # You only get to *this* method from the ImportForm.js commponent
+    # of the React app. To get to the ImportForm  requires
+    # conditional handling in the ObjectList.js and App.js components!
+    # So you must update those pages to allow any more types of
+    # objects to be imported!
     form_data = await request.form()
     form_data = dict(form_data)
     

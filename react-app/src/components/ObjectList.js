@@ -154,6 +154,8 @@ const ObjectList = ({objectType, ...props}) => {
         <i className="fa-solid fa-plus"></i> New {objectType}
       </button>
       { (objectType == "hypothesis" || objectType === "dataset") && 
+      // Only hypotheses and datasets can be exported at this time
+      // ** this also needs conditional handling in the App.js component **
         <button
           className="button spaced-button button-secondary"
           onClick={() => navigate(`/${objectType}/import`)}

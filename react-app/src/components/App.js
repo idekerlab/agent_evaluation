@@ -92,6 +92,8 @@ const App = () => {
                     key={`${index}-r5`} 
                   />
                   { (type == "hypothesis" || type == "dataset") && 
+                  // Only hypotheses and datasets can be imported
+                  // **This also requires conditional handling in the ObjectLis.js component!**
                     <Route 
                       path={`/${type}/import`} 
                       element={<ImportForm specs={objectSpecs[type]} objectType={type} />} 
