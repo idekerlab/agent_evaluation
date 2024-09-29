@@ -304,12 +304,16 @@ th, td {
 /* Target the main container of the Markdown content */
 .markdown-content {
   line-height: 1.2;
+  background-color: white;
+  padding-right: 20;
+  padding-left: 10;
+  padding-bottom: 5;
+  padding-top: 1;
 }
 
 /* Reduce spacing between paragraphs */
 .markdown-content p {
   margin: 0;
-
 }
 
 /* Reduce spacing above and below headings */

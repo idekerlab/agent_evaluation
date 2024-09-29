@@ -28,12 +28,13 @@ const MarkdownDisplay = ({ content, className, style }) => {
     <div className={`content-display ${className || 'pre-format'}`} style={style}>
 
         {isMarkdown ? (
-          <div className='markdown-content' 
-            style={{maxWidth: "800px", backgroundColor: "white", paddingRight: 10, paddingLeft: 10, paddingBottom: 5, paddingTop: 1 }}>
-            <ReactMarkdown>{content}</ReactMarkdown>
-          </div>
+         <div className='markdown-content'>
+            <ReactMarkdown>
+              {content}
+            </ReactMarkdown>
+         </div>
         ) : (
-          <pre className='pre-format' style={{ maxWidth: "800px",  backgroundColor: "white"}}>{content}</pre>
+          <pre className='pre-format' style={{ maxWidth: "800px", backgroundColor: "white"}}>{content}</pre>
         )}
 
       <div className="copy-button-container">

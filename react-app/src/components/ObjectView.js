@@ -307,7 +307,6 @@ const ObjectView = ({objectType, ...props}) => {
                                                 ) : (
                                                     <MarkdownDisplay 
                                                         content={object[propName]} 
-                                                        className="pre-format"
                                                         style={{ maxWidth: "800px"}}
                                                     />
 //                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
