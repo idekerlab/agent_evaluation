@@ -104,6 +104,12 @@
   background-color: #fff; /* Optional: Content background color */
 }
 
+.welcome {
+  justify-content: 'center';
+  align-items: 'center';
+  padding: 25px;
+}
+
 .sidebar a {
   text-decoration: none;
   color: inherit;
@@ -286,6 +292,53 @@ th, td {
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   animation: pulse 3s infinite;
 }
+
+.content-display {
+  margin-bottom: 10px;
+}
+
+.copy-button {
+  margin-top: 10px;
+}
+
+/* Target the main container of the Markdown content */
+.markdown-content {
+  line-height: 1.2;
+  background-color: white;
+  padding-right: 20;
+  padding-left: 10;
+  padding-bottom: 5;
+  padding-top: 1;
+}
+
+/* Reduce spacing between paragraphs */
+.markdown-content p {
+  margin: 0;
+}
+
+/* Reduce spacing above and below headings */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Adjust spacing for lists */
+.markdown-content ul,
+.markdown-content ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Reduce spacing between list items */
+.markdown-content li {
+  margin-bottom: 0;
+}
+
 
 /* import "ag-grid-community/styles/ag-grid.css" // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css" // Optional Theme applied to the Data Grid

@@ -199,6 +199,10 @@ async def view_object(request: Request, object_type: str, object_id: str):
     
     if object_type == "judgment_space":
         judgment_space = JudgmentSpace.load(db, object_id)
+        # When viewing a JudgmentSpace, we generate the visualizations on the fly.
+        # This way, they update with any changes to the JS, such as adding more
+        # reviewers. They are updated to the database because that causes them
+        # to be loaded to the view page like any other object data.
         if judgment_space:
             try:
                 visualizations = judgment_space.generate_visualizations()
@@ -218,102 +222,6 @@ async def view_object(request: Request, object_type: str, object_id: str):
         "link_names": link_names,
         "visualizations": visualizations
     }
-
-# get the view page with the object and its properties
-# @app.get("/objects/{object_type}/{object_id}")
-# async def view_object(request: Request, object_type: str, object_id: str):
-#     db = request.app.state.db
-#     properties, object_type = db.load(object_id)
-#     if not properties:
-#         raise HTTPException(status_code=404, detail="Object not found")
-    
-#     processed_properties = preprocess_properties(properties, object_type)
-    
-#     link_names = process_object_links(db, processed_properties, object_specifications, object_type)
-    
-#     if object_type == "hypothesis":
-#         processed_properties = handle_hypothesis(processed_properties)
-    
-#     visualizations = {}
-    
-#     if object_type == "judgment_space":
-#         judgment_space = JudgmentSpace.load(db, object_id)
-#         if judgment_space:
-#             visualizations = judgment_space.generate_visualizations()
-#             processed_properties['visualizations'] = visualizations
-#             judgment_space.update(visualizations=visualizations)
-    
-#     return {
-#         "object_type": object_type, 
-#         "object": processed_properties,
-#         "object_spec": object_specifications[object_type],
-#         "link_names": link_names,
-#         "visualizations": visualizations
-#     }
-
-# # get the view page with the object and its properties
-# @app.get("/objects/{object_type}/{object_id}")
-# async def view_object(request: Request, object_type: str, object_id: str):
-#     db = request.app.state.db
-#     properties, object_type = db.load(object_id)
-#     if not properties:
-#         raise HTTPException(status_code=404, detail="Object not found")
-#     # Preprocess CSV data
-#     processed_properties = preprocess_properties(properties, object_type)
-
-
-#     # Process object links to include object names
-#     link_names = {}
-#     for prop_name, prop_spec in object_specifications[object_type]['properties'].items():
-#         if prop_name != 'object_id' and prop_name != 'created' and prop_name != 'name' and prop_name in processed_properties:
-#             if prop_spec['view'] == 'object_link':
-#                 obj_id = processed_properties[prop_name]
-#                 try:
-#                     linked_object_properties, linked_object_type = db.load(processed_properties[prop_name])
-#                     if "name" in linked_object_properties and linked_object_properties['name'] is not None:
-#                         link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
-#                     else:
-#                         link_names[obj_id] = "unnamed"
-#                 except Exception as e:
-#                     link_names[obj_id] = "Invalid ID"
-                
-#             elif prop_spec['view'] == 'list_of_object_links':
-#                 for obj_id in processed_properties[prop_name]:
-#                     try:
-#                         linked_object_properties, linked_object_type = db.load(obj_id)
-#                         if "name" in linked_object_properties:
-#                             link_names[obj_id] = linked_object_properties['name'] if len(linked_object_properties['name']) > 0 else "unnamed"
-#                         else:
-#                             link_names[obj_id] = "unnamed"
-#                     except Exception as e:
-#                         link_names[obj_id] = "Invalid ID"
-                        
-#     if (object_type == "hypothesis"):
-#         hypo_text = processed_properties["hypothesis_text"]
-#         file_path = "data/hgnc_genes.tsv"
-
-#         # Remove punctuation and parentheses, but keep hyphens
-#         cleaned_text = re.sub(r'[^\w\s-]', '', hypo_text)
-#         # Split into words
-#         words = re.split(r'\s+', cleaned_text)
-
-#         validator = GeneValidator(file_path)
-#         result = validator.validate_human_genes(words)
-        
-#         official_genes = result['official_genes']
-        
-#         processed_properties['gene_symbols'] = official_genes
-                        
-#     return {"object_type": object_type, 
-#             "object": processed_properties,
-#             "object_spec": object_specifications[object_type],
-#             "link_names": link_names}
-                        
-#     return templates.TemplateResponse("view_object.html", {"request": request, 
-#                                                            "object_type": object_type, 
-#                                                            "object": processed_properties,
-#                                                            "object_spec": object_specifications[object_type],
-#                                                            "link_names": link_names})
 
 # get the edit page with a new object of the same type and default properties
 @app.get("/objects/{object_type}/blank/new")
@@ -504,33 +412,6 @@ async def update_object(request: Request, object_type: str, object_id: str):
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
     
-
-# receive the form data and update the object, redirect to the view page
-# @app.post("/objects/{object_type}/{object_id}/clone", response_class=HTMLResponse)
-# async def update_object(request: Request, object_type: str, object_id: str):
-#     form_data = await request.form()
-#     form_data = dict(form_data)
-    
-#     # Get the specific specifications for the given object_type
-#     object_spec = object_specifications[object_type]
-#     # Process the form data to handle list_of_object_ids
-#     for field_name, field_spec in object_spec["properties"].items():
-#         if field_spec.get("type") == "list_of_object_ids":
-#             id_list = form_data.get(field_name).replace("'", '"')
-#             id_list = json.loads(id_list) if id_list else []
-#             form_data[field_name] = id_list
-            
-#     db = request.app.state.db
-#     try:
-#         await handle_form_submission(form_data, object_type, db)
-#         object_id_from_form = form_data.get("object_id")
-#         return RedirectResponse(url=f"/objects/{object_type}/{object_id_from_form}", status_code=303)
-#     except FormSubmissionError as e:
-#         # Return an error response to the web app
-#         return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
-#     except Exception as e:
-#         # Return a generic error response
-#         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
     
 @app.post("/objects/{object_type}/{object_id}/delete", response_class=HTMLResponse)
 async def delete_object(request: Request, object_type: str, object_id: str):
@@ -595,6 +476,11 @@ async def execute_object(request: Request, object_type: str, object_id: str):
   
 @app.post("/objects/{object_type}/import")
 async def import_object(request: Request, object_type: str):
+    # You only get to *this* method from the ImportForm.js commponent
+    # of the React app. To get to the ImportForm  requires
+    # conditional handling in the ObjectList.js and App.js components!
+    # So you must update those pages to allow any more types of
+    # objects to be imported!
     form_data = await request.form()
     form_data = dict(form_data)
     
@@ -617,7 +503,7 @@ async def import_object(request: Request, object_type: str):
         except FormSubmissionError as e:
             # Return an error response to the web app
             print("ERROR:", e)
-            return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
+            return HTMLResponse(content=f"<h1>Form Submission Error</h1><p>{e.message}</p>", status_code=400)
         except Exception as e:
             print("Exception:", e)
             # Return a generic error response
@@ -665,8 +551,13 @@ async def handle_form_submission(form_data, object_type, db):
         if csv_file:
             print("File:", csv_file)
             if (csv_file != "undefined"):
-                # Read the contents of the CSV file as text
-                csv_content = (await csv_file.read()).decode('utf-8')
+                if isinstance(csv_file, io.TextIOWrapper):
+                    # This is the case when uploading a csv file into a dataset object
+                    # Read the contents of the CSV file as text
+                    csv_content = (await csv_file.read()).decode('utf-8')
+                else:
+                    # This is the case when importing a dataset object
+                    csv_content = csv_file
                 print("Content", csv_content)
                 # # Include the CSV text data in form_data
                 # form_data['data'] = csv_content
