@@ -118,23 +118,17 @@ const Welcome = () => {
   const navigate = useNavigate()
 
   return (
-    <div className='content'>
-      <h1>Welcome to Deckard, </h1>
-      <h3>where hypotheses are evaluated.</h3>
-
-      <h2>
-        Select a resource on the side to get started.
+    <div className='welcome'>
+      <h1>Deckard: an Agent management and output review framework.</h1>
+      <h2 style={{color: "grey"}}>
+        Components, such as Agents or Datasets, can be created, managed, and used via the left sidebar.
+      </h2>
+      <h2 style={{color: "grey"}}>
+        A portal where users can review Agent outputs, such as sets of Hypotheses, is accessed here:
       </h2 >
       <button className='button button-success' onClick={() => navigate("/my_reviews/home")}>
         <i class="fa-solid fa-door-closed fa-lg"></i> Enter Review Portal
       </button>
-      <p></p>
-
-      <img
-        src="/static/images/voight-kampff.png"
-        style={{width: "500px"}}
-      />
-
     </div>
   )
 }
