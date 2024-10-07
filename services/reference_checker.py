@@ -330,14 +330,14 @@ Please analyze whether this abstract directly supports any assertion in the para
 Follow these steps:
 
 - For each indexed sentence, state whether it is directly supported by findings in the abstract or the title.
-- If a sentence is supported, quote the specific part of the abstract or the title that provides this support.
+- Consider a sentence supported if the abstract or title provides evidence that aligns with the main idea or key points of the sentence, even if specific descriptors (like "key", "crucial", "important") are not exactly matched.
+- If a sentence is supported, quote the complete sentence(s) from the abstract or the title that provides this support.
 - If a sentence is not supported, briefly explain why.
-- After analyzing all sentences, decide whether the abstract or the title directly supports any parts of the paragraph.
-- Present your findings in the following format:
+- After analyzing all sentences, decide whether the abstract or the title directly supports any parts of the paragraph describing the functions or processes of certain genes or proteins.
     - If any sentence supports the paragraph, print "yes" at the beginning of your response. And provide a dictionary containing indexes for the supported sentences and the list of quoted sentences from the supporting abstract
     - e.g.,'Yes \n supporting sentences: {{\"1\": [\"A variety of viruses can induce the expression of IFIT3, which in turn inhibits the replication of viruses, with the underlying mechanism showing its crucial role in antiviral innate immunity.\"], \"3\": [\"<quoted abstract text>\"]}}'
     - If no sentences are supported at all,  print "no" at the beginning of your response.
-    - Then print your analysis.  
+    - Follow your Yes/No response and dictionary (if applicable), then you can provide your detailed analysis.  
         """
         
     try:
@@ -576,7 +576,7 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
     # prioritize the papers that have the most genes in the abstract and verify their relavence
     paper_for_references = []
     reference_with_sentencesIDs = [] # CH: added list of support along with paper
-
+    processed_papers = set()  # Initialize the set of processed papers here
     # in the list of title_matching_papers, find the abstract also matches the paragraph
     # prioritize papers that already mathching in title 
     less_important_papers = []
@@ -602,6 +602,7 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
             # supporting_sentences = list(set(abstract_support_indexes).union(set(title_support_indexes))) #no longer print index support from title
             reference_with_sentencesIDs.append({'citation': get_mla_citation_from_pubmed_id(paper),
                 'support_indexes': abstract_support_evidence }) #CH: added list of support along with paper
+            processed_papers.add(paper)  # Add the processed paper to the set
             for gene_in_abstract in genes_in_abstract:
                 if gene_in_abstract in genes_to_be_searched:
                     genes_to_be_searched.remove(gene_in_abstract)
@@ -627,14 +628,16 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
         new_papers = search_pubmed(new_keywords, email, retmax=papers_query)
         print("%d references are queried" % (len(new_papers)))
         
-        if not new_papers:  # If no papers found, increment attempts and adjust search
+        #update new paper to remove processed papers
+        new_papers = [paper for paper in new_papers if paper not in processed_papers]
+
+        if not new_papers or len(new_papers) == 0:  # If no papers found, increment attempts and adjust search
             attempts += 1
             continue  # Skip to the next iteration to try again
-
+        
         new_sorted_papers = sort_paper_by_n_genes_in_abstract(new_papers, remaining_genes, verbose=verbose)
         for paper in new_sorted_papers:
             genes_in_abstract = get_genes_in_abstract(paper, genes, verbose=False)
-        
             if verbose:
                 print("Search matching abstract for remained genes: ", ",".join(genes_to_be_searched))
                 print("Current search containing genes: ", ",".join(genes_in_abstract))
