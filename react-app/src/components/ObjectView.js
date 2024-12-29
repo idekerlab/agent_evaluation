@@ -5,6 +5,7 @@ import DataViewer from './DataViewer'
 import SimpleSVGViewer from './SimpleSVGViewer';
 import HypothesisList from './HypothesisList'
 import MarkdownDisplay from './MarkdownDisplay';
+import JsonTreeView from './JsonTreeView';
 
 
 const api_base = process.env.REACT_APP_API_BASE_URL
@@ -238,7 +239,12 @@ const ObjectView = ({objectType, ...props}) => {
                                                 {propSpec.label || propName}
                                                 </td>
                                                 <td style={{ overflowX: "scroll", border: 'none'}}>
-                                                {propSpec.view === "scrolling_table" ? (
+                                                {propSpec.view === "json_tree" ? (
+                                                    <JsonTreeView 
+                                                        data={object[propName]} 
+                                                        initialExpanded={true}
+                                                    />
+                                                ) : propSpec.view === "scrolling_table" ? (
                                                     <DataViewer data={object[propName]} />
                                                 ) : propSpec.view === "judgment_space_visualizations" ? (
                                                     <div>

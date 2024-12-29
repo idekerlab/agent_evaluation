@@ -572,6 +572,32 @@ object_specifications = {
                 "collapsible": True
             }
         }
+    },
+    "json": {
+        "properties": {
+            "name": {
+                "label": "Name",
+                "type": "string",
+                "editable": True
+            },
+            "object_id": {
+                "label": "ID",
+                "type": "string",
+                "editable": False
+            },
+            "created": {
+                "label": "Created",
+                "type": "string",
+                "editable": False
+            },
+            "json": {
+                "label": "JSON Content",
+                "type": "object",
+                "editable": False,
+                "view": "json_tree",
+                "collapsible": True
+            }
+        }
     }
 }
 

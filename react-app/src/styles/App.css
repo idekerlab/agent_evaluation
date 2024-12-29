@@ -361,3 +361,41 @@ import "ag-grid-community/styles/ag-theme-alpine.css" */
     /* Changes the hover color of the row*/
     --ag-row-hover-color: rgb(216, 226, 255);
 }
+
+.json-tree-view {
+    font-family: monospace;
+    margin-left: 20px;
+}
+
+.json-children {
+    margin-left: 20px;
+}
+
+.json-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.json-key {
+    color: #881391;
+}
+
+.json-string {
+    color: #268bd2;
+}
+
+.json-number {
+    color: #859900;
+}
+
+.json-boolean {
+    color: #b58900;
+}
+
+.json-null {
+    color: #dc322f;
+}
+
+.json-item {
+    line-height: 1.5;
+}
