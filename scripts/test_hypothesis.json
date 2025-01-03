@@ -1,0 +1,99 @@
+
+{
+    "hypothesis_1": {
+        "hypothesis_statement": "PARP9/14 form a complex that enhances STAT1/2-mediated ISG expression through direct interaction with the IFIT family proteins, creating a positive feedback loop that amplifies antiviral responses",
+        "functional_groups_or_individual_genes_involved": [
+            "Type I Interferon Response",
+            "Immune Response Amplification"
+        ],
+        "pathway_graph": [
+            {
+                "source": "Viral RNA",
+                "target": "IFIH1/RIGI",
+                "relationship": "activates",
+                "hypothesis": false,
+                "functional_group": "Type I Interferon Response"
+            },
+            {
+                "source": "IFIH1/RIGI",
+                "target": "STAT1/2",
+                "relationship": "activates",
+                "hypothesis": false,
+                "functional_group": "Type I Interferon Response"
+            },
+            {
+                "source": "STAT1/2",
+                "target": "IFIT1/2/3",
+                "relationship": "induces expression",
+                "hypothesis": false,
+                "functional_group": "Type I Interferon Response"
+            },
+            {
+                "source": "IFIT1/2/3",
+                "target": "PARP9/14 complex",
+                "relationship": "recruits and activates",
+                "hypothesis": true,
+                "functional_group": "Type I Interferon Response, Immune Response Amplification"
+            },
+            {
+                "source": "PARP9/14 complex",
+                "target": "STAT1/2",
+                "relationship": "enhances activity",
+                "hypothesis": true,
+                "functional_group": "Immune Response Amplification"
+            }
+        ],
+        "reasoning": "This hypothesis builds on the observed co-expression of PARP9/14 with IFIT family proteins and STAT1/2. While PARP9/14's role as transcriptional regulators is known, their specific interaction with IFIT proteins is novel. The hypothesis suggests that IFIT proteins, beyond their direct antiviral functions, serve as scaffolds to recruit PARP9/14, which then enhance STAT1/2 activity. This creates a positive feedback loop explaining the sustained upregulation of interferon response genes observed at both 24h and 48h. The mechanism is plausible given the known protein-protein interaction domains in these molecules."
+    },
+    "hypothesis_2": {
+        "hypothesis_statement": "GBP1/5 form a complex with OAS proteins to enhance viral RNA recognition and degradation, coordinated through NT5C3A-mediated nucleotide metabolism",
+        "functional_groups_or_individual_genes_involved": [
+            "Type I Interferon Response",
+            "Immune Response Amplification",
+            "Nucleotide Metabolism"
+        ],
+        "pathway_graph": [
+            {
+                "source": "Viral RNA",
+                "target": "OAS1/2/3",
+                "relationship": "activates",
+                "hypothesis": false,
+                "functional_group": "Type I Interferon Response"
+            },
+            {
+                "source": "GBP1/5",
+                "target": "OAS1/2/3",
+                "relationship": "forms complex and enhances activity",
+                "hypothesis": true,
+                "functional_group": "Immune Response Amplification, Type I Interferon Response"
+            },
+            {
+                "source": "OAS1/2/3",
+                "target": "2-5A synthesis",
+                "relationship": "catalyzes",
+                "hypothesis": false,
+                "functional_group": "Type I Interferon Response"
+            },
+            {
+                "source": "NT5C3A",
+                "target": "Nucleotide pool",
+                "relationship": "regulates",
+                "hypothesis": true,
+                "functional_group": "Nucleotide Metabolism"
+            },
+            {
+                "source": "Nucleotide pool",
+                "target": "2-5A synthesis",
+                "relationship": "modulates",
+                "hypothesis": true,
+                "functional_group": "Nucleotide Metabolism"
+            }
+        ],
+        "reasoning": "This hypothesis connects three functional groups through a novel mechanism. While GBP1/5 are known GTPases and OAS proteins are established antiviral factors, their direct interaction is novel. The hypothesis suggests that GBP1/5 enhance OAS activity through complex formation, while NT5C3A regulates the nucleotide pool available for 2-5A synthesis. This explains the coordinated upregulation of these proteins and suggests a mechanism for fine-tuning the antiviral response through nucleotide metabolism."
+    },
+    "contrasting_predictions": [
+        "Hypothesis 1 predicts that PARP9/14 knockdown would specifically reduce IFIT-mediated responses, while other interferon responses remain intact",
+        "Hypothesis 2 predicts that NT5C3A inhibition would specifically affect OAS-mediated viral RNA degradation but not other antiviral pathways",
+        "Hypothesis 1 suggests temporal coordination between IFIT and PARP expression, while Hypothesis 2 suggests spatial co-localization of GBP1/5 with OAS proteins"
+    ]
+}

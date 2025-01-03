@@ -1,5 +1,5 @@
 # app.py
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -31,6 +31,7 @@ import seaborn as sns
 import numpy as np
 import traceback
 from models.json_object import Json
+from typing import Optional
 
 
 app = FastAPI()
@@ -76,11 +77,17 @@ async def return_object_specs(request: Request):
     return object_specifications
 
 @app.get("/objects/{object_type}")
-async def list_objects(request: Request, object_type: str):
+async def list_objects(
+    request: Request, 
+    object_type: str,
+    limit: Optional[int] = Query(None, ge=1, description="Maximum number of objects to return")
+):
     if object_type not in object_specifications:
         raise HTTPException(status_code=404, detail="Object type not found")
+    
     db = request.app.state.db
     objects = db.find(object_type)  # Fetch all objects of the given type
+    
     if object_type == 'hypothesis':
         for index, obj in enumerate(objects):
             if ("agent_id" in obj['properties']):
@@ -88,11 +95,19 @@ async def list_objects(request: Request, object_type: str):
                 agent_properties, agent_type = db.load(agent_id)
                 if agent_properties:
                     objects[index]['properties']['agent_id'] = f"({agent_properties['name']}) {agent_id}"
-            
+    
+    # Apply limit after hypothesis processing
+    if limit:
+        objects = objects[:limit]
             
     objects.reverse()
-            
-    return {"object_type": object_type, "objects": objects, "object_spec": object_specifications[object_type]}
+    
+    return {
+        "object_type": object_type, 
+        "objects": objects, 
+        "object_spec": object_specifications[object_type],
+        "total_count": len(objects)
+    }
     
     return templates.TemplateResponse("object_list.html", {"request": request, 
                                                            "object_type": object_type, 
