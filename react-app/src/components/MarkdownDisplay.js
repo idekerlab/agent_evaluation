@@ -9,6 +9,28 @@ function isLikelyMarkdown(text) {
   return patterns.some(pattern => pattern.test(text));
 }
 
+function isLikelyMarkdown(text) {
+  const patterns = [
+    /^#{1,6}\s/m,                     // Headers (allow multiple #)
+    /\*\*(.*?)\*\*/,                  // Bold
+    /\*(.*?)\*/,                      // Italic
+    /\[.*?\]\(.*?\)/,                 // Links
+    /^\s*[-*+]\s/m,                   // Unordered lists (level 1)
+    /^\s{2,}[-*+]\s/m,               // Nested unordered lists
+    /^\s*\d+\.\s/m,                   // Ordered lists
+    /`{1,3}[^`\n]+`{1,3}/,           // Code blocks/inline
+    /^\s*>/m,                         // Blockquotes
+    /^([-*_]){3,}$/m,                // Horizontal rules
+    /!\[.*?\]\(.*?\)/                // Images
+  ];
+  
+  // Test each line separately
+  const lines = text.split('\n');
+  return lines.some(line => 
+    patterns.some(pattern => pattern.test(line))
+  );
+}
+
 const MarkdownDisplay = ({ content, className, style }) => {
   const [copySuccess, setCopySuccess] = useState('');
   const isMarkdown = isLikelyMarkdown(content);

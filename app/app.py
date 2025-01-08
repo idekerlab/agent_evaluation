@@ -1,5 +1,17 @@
 # app.py
-from fastapi import FastAPI, HTTPException, Request, Query
+import logging
+import time
+import uuid
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+from fastapi import FastAPI, HTTPException, Request, Query, Body, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -31,10 +43,29 @@ import seaborn as sns
 import numpy as np
 import traceback
 from models.json_object import Json
-from typing import Optional
+from models.agent import Agent
+from typing import Optional, Dict
+from helpers.json_to_markdown import json_to_markdown
 
 
-app = FastAPI()
+# Task tracking
+class TaskStatus(Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+@dataclass
+class TaskInfo:
+    id: str
+    status: TaskStatus
+    result: Optional[Dict] = None
+    error: Optional[str] = None
+    created_at: datetime = None
+    completed_at: datetime = None
+
+# Global task store
+tasks = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -72,6 +103,36 @@ templates = Jinja2Templates(directory=os.path.join(base_dir, "templates"))
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 # templates = Jinja2Templates(directory="templates")
 
+ALLOWED_OBJECT_TYPES = {"agent", "dataset", "llm", "json"}
+
+@app.post("/objects/{object_type}/create")
+async def create_simple_object(object_type: str, properties: Dict = Body(...)):
+    """Simple object creation endpoint that handles validation and defaults."""
+    # Validate object type
+    if object_type not in ALLOWED_OBJECT_TYPES:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid object type. Must be one of: {', '.join(ALLOWED_OBJECT_TYPES)}"
+        )
+    
+    try:
+        # Get the specification for this object type
+        spec = object_specifications[object_type]
+        
+        # Fill in defaults for missing properties
+        for prop_name, prop_spec in spec["properties"].items():
+            if prop_name not in properties and "default" in prop_spec:
+                properties[prop_name] = prop_spec["default"]
+        
+        # Add to database
+        db = app.state.db
+        object_id, created_properties, _ = db.add(object_id=None, properties=properties, object_type=object_type)
+        created_properties["object_id"] = object_id
+        
+        return created_properties
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/get_object_specs")
 async def return_object_specs(request: Request):
     return object_specifications
@@ -80,13 +141,17 @@ async def return_object_specs(request: Request):
 async def list_objects(
     request: Request, 
     object_type: str,
-    limit: Optional[int] = Query(None, ge=1, description="Maximum number of objects to return")
+    limit: Optional[int] = Query(None, ge=1, description="Maximum number of objects to return"),
+    properties_filter: Optional[Dict] = None
 ):
     if object_type not in object_specifications:
         raise HTTPException(status_code=404, detail="Object type not found")
     
     db = request.app.state.db
-    objects = db.find(object_type)  # Fetch all objects of the given type
+    try:
+        objects = db.find(object_type, properties_filter)  # Fetch filtered objects of the given type
+    except Exception as e:
+        return {"error": f"Failed to fetch objects: {str(e)}"}
     
     if object_type == 'hypothesis':
         for index, obj in enumerate(objects):
@@ -212,6 +277,10 @@ async def view_object(request: Request, object_type: str, object_id: str):
         processed_properties = handle_hypothesis(processed_properties)
     
     visualizations = {}
+    
+    if object_type == "json":
+        # Add markdown representation for Json objects
+        processed_properties["markdown"] = json_to_markdown(processed_properties["json"])
     
     if object_type == "judgment_space":
         judgment_space = JudgmentSpace.load(db, object_id)
@@ -542,23 +611,222 @@ def convert_to_csv(data):
 
     return csv_content
     
-@app.get("/{full_path:path}", response_class=HTMLResponse)
-async def serve_react_app(full_path: str, request: Request):
-    # Serve the index.html file for any route that doesn't match an API endpoint
-    index_file_path = os.path.join(os.getcwd(), "react-app", "build", "index.html")
-    with open(index_file_path, "r") as file:
-        return HTMLResponse(file.read())
 # @app.get("/", response_class=HTMLResponse)
 # async def home(request: Request):
 #     object_types = list(object_specifications.keys())
 #     return templates.TemplateResponse("home.html", {"request": request, "object_types": object_types})
-        
 
 class FormSubmissionError(Exception):
     """Custom exception for form submission errors."""
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
+
+def run_agent_task(
+    task_id: str,
+    db,
+    agent_id: str,
+    dataset_id: Optional[str] = None,
+    json_object_id: Optional[str] = None,
+    properties: Optional[Dict] = None
+):
+    """Background task to run an agent. This is a synchronous function that runs in a thread."""
+    try:
+        # Get task from global store
+        task = tasks.get(task_id)
+        if not task:
+            logger.error(f"Task {task_id} not found")
+            return
+            
+        # Update status to running
+        task.status = TaskStatus.RUNNING
+        
+        # Load the agent
+        agent = Agent.load(db, agent_id)
+        if not agent:
+            raise ValueError(f"Agent {agent_id} not found")
+            
+        # Run the agent (db connection is now managed inside agent.run())
+        result = agent.run(
+            properties=properties,
+            dataset_id=dataset_id,
+            json_object_id=json_object_id
+        )
+        
+        # Update task status
+        task.status = TaskStatus.COMPLETED
+        task.result = result
+        task.completed_at = datetime.now()
+        
+    except Exception as e:
+        logger.error(f"Error in agent task {task_id}: {str(e)}")
+        logger.error(f"Error traceback: {traceback.format_exc()}")
+        
+        # Get task again in case it changed
+        task = tasks.get(task_id)
+        if task:
+            task.status = TaskStatus.FAILED
+            task.error = str(e)
+            task.completed_at = datetime.now()
+
+# Create a thread pool for running agent tasks
+from concurrent.futures import ThreadPoolExecutor
+agent_executor = ThreadPoolExecutor(max_workers=4)
+
+from fastapi.responses import JSONResponse
+
+@app.post("/agents/{agent_id}/start_run")
+async def start_run_agent(
+    agent_id: str,
+    request: Request,
+    dataset_id: Optional[str] = None,
+    json_object_id: Optional[str] = None,
+    properties: Optional[Dict] = Body(None)
+) -> JSONResponse:
+    """Start an asynchronous agent run task.
+    
+    Args:
+        agent_id: ID of the agent to run
+        dataset_id: Optional ID of dataset to extract experiment description and data from
+        json_object_id: Optional ID of JSON object to extract properties from
+        properties: Optional dictionary of properties (highest priority)
+    
+    Returns:
+        JSONResponse containing the task ID
+    """
+    try:
+        # Create new task immediately
+        task_id = str(uuid.uuid4())
+        tasks[task_id] = TaskInfo(
+            id=task_id,
+            status=TaskStatus.PENDING,
+            created_at=datetime.now()
+        )
+        
+        # Submit task to thread pool
+        agent_executor.submit(
+            run_agent_task,
+            task_id=task_id,
+            db=SqliteDatabase(load_database_uri()),  # Create new db connection for thread
+            agent_id=agent_id,
+            dataset_id=dataset_id,
+            json_object_id=json_object_id,
+            properties=properties
+        )
+        
+        # Return task ID immediately as proper JSON
+        return JSONResponse(content={"task_id": task_id})
+        
+    except Exception as e:
+        logger.error(f"Error starting agent task: {str(e)}")
+        logger.error(f"Error traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agent_tasks/{task_id}", response_class=JSONResponse)
+async def get_task_status(task_id: str):
+    """Get the status of an agent run task.
+    
+    Args:
+        task_id: ID of the task to check
+        
+    Returns:
+        JSONResponse containing task status and result if complete
+    """
+    task = tasks.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    response = {
+        "task_id": task.id,
+        "status": task.status.value,
+        "created_at": task.created_at.isoformat() if task.created_at else None,
+        "completed_at": task.completed_at.isoformat() if task.completed_at else None
+    }
+    
+    if task.status == TaskStatus.COMPLETED:
+        response["result"] = task.result
+    elif task.status == TaskStatus.FAILED:
+        response["error"] = task.error
+        
+    # Return as proper JSON response with explicit headers
+    return JSONResponse(
+        content=response,
+        headers={"Content-Type": "application/json"}
+    )
+
+@app.post("/agents/{agent_id}/run")
+async def run_agent(
+    agent_id: str,
+    request: Request,
+    dataset_id: Optional[str] = None,
+    json_object_id: Optional[str] = None,
+    properties: Optional[Dict] = Body(None)
+) -> Dict:
+    """Run an agent synchronously (legacy endpoint).
+    
+    This endpoint is maintained for backward compatibility but using
+    start_run_agent + get_task_status is recommended for better reliability.
+    
+    Args:
+        agent_id: ID of the agent to run
+        dataset_id: Optional ID of dataset to extract experiment description and data from
+        json_object_id: Optional ID of JSON object to extract properties from
+        properties: Optional dictionary of properties (highest priority)
+    
+    Returns:
+        JSON response containing the agent's output
+    """
+    start_time = time.time()
+    db = request.app.state.db
+    
+    try:
+        # Log input parameters
+        logger.info(f"Running agent {agent_id} with parameters:")
+        logger.info(f"dataset_id: {dataset_id}")
+        logger.info(f"json_object_id: {json_object_id}")
+        logger.info(f"properties: {properties}")
+        
+        # Load the agent
+        agent = Agent.load(db, agent_id)
+        if not agent:
+            logger.error(f"Agent {agent_id} not found")
+            raise HTTPException(status_code=404, detail="Agent not found")
+        
+        logger.info(f"Agent loaded: {agent.name}")
+        logger.info(f"Prompt template: {agent.prompt_template}")
+            
+        # Run the agent (db connection is now managed inside agent.run())
+        result = agent.run(
+            properties=properties,
+            dataset_id=dataset_id,
+            json_object_id=json_object_id
+        )
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.info(f"Agent run completed successfully in {elapsed_time:.2f} seconds")
+        return result
+        
+    except ValueError as e:
+        # Handle specific ValueError exceptions (e.g. format string errors)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.error(f"ValueError in run_agent after {elapsed_time:.2f} seconds: {str(e)}")
+        logger.error(f"Error traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        # Handle any other unexpected errors
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.error(f"Unexpected error in run_agent after {elapsed_time:.2f} seconds: {str(e)}")
+        logger.error(f"Error traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Error running agent: {str(e)}")
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def serve_react_app(full_path: str, request: Request):
+    # Serve the index.html file for any route that doesn't match an API endpoint
+    index_file_path = os.path.join(os.getcwd(), "react-app", "build", "index.html")
+    with open(index_file_path, "r") as file:
+        return HTMLResponse(file.read())
 
 async def handle_form_submission(form_data, object_type, db):
     try:
@@ -600,5 +868,3 @@ async def handle_form_submission(form_data, object_type, db):
         raise FormSubmissionError(f"Form data validation failed: {e.message}")
     except Exception as e:
         raise FormSubmissionError(f"An error occurred while processing the form: {e}")
-
-

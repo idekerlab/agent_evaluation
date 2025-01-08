@@ -145,10 +145,18 @@ const ObjectView = ({objectType, ...props}) => {
                 :
                 <div>
                     <div className="header">
-                        <img
-                            src={`/static/images/${objectType}.png`}
-                            alt={`${objectType} Logo`}
-                        />
+                        {/* Only show icon if it exists */}
+                        <div className="object-icon">
+                            {objectType && (
+                                <img
+                                    src={`/static/images/${objectType}.png`}
+                                    alt={`${objectType} Logo`}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            )}
+                        </div>
                         <div>
                             <h1>
                                 {objectType} : {object.name || "unnamed"}
@@ -310,14 +318,17 @@ const ObjectView = ({objectType, ...props}) => {
                                                         </pre>
                                                     </div>
                                                     
+                                                ) : propSpec.view === "markdown" || propName === "markdown" ? (
+                                                    <MarkdownDisplay 
+                                                        content={object[propName]} 
+                                                        style={{ maxWidth: "800px"}}
+                                                        className="markdown-content"
+                                                    />
                                                 ) : (
                                                     <MarkdownDisplay 
                                                         content={object[propName]} 
                                                         style={{ maxWidth: "800px"}}
                                                     />
-//                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
-//                                                        {object[propName]}
-//                                                    </pre>
                                                 )}
                                                 </td>
                                             </tr>
