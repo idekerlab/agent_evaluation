@@ -1,11 +1,19 @@
 import logging
 import json
+import asyncio
+import functools
 from typing import Dict, Optional
 
 from fastapi import APIRouter, HTTPException, Request, Query, Body
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 
 from app.view_edit_specs import object_specifications
+from app.sqlite_database import SqliteDatabase
+from app.config import load_database_uri
+from models.analysis_plan import AnalysisPlan
+from models.review_plan import ReviewPlan
+from services.analysisrunner import AnalysisRunner
+from services.reviewrunner import ReviewRunner
 from app.handlers.form_handlers import (
     generate_form,
     handle_form_submission,
@@ -26,19 +34,11 @@ from helpers.json_to_markdown import json_to_markdown
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/objects", tags=["objects"])
+router = APIRouter(tags=["objects"])
 
-ALLOWED_OBJECT_TYPES = {"agent", "dataset", "llm", "json"}
-
-@router.post("/{object_type}/create")
+@router.post("/objects/{object_type}/create")
 async def create_simple_object(object_type: str, properties: Dict = Body(...)):
     """Simple object creation endpoint that handles validation and defaults."""
-    # Validate object type
-    if object_type not in ALLOWED_OBJECT_TYPES:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Invalid object type. Must be one of: {', '.join(ALLOWED_OBJECT_TYPES)}"
-        )
     
     try:
         # Get the specification for this object type
@@ -60,22 +60,37 @@ async def create_simple_object(object_type: str, properties: Dict = Body(...)):
 
 @router.get("/get_object_specs")
 async def return_object_specs(request: Request):
-    return object_specifications
+    logger.info("Fetching object specifications")
+    try:
+        return object_specifications
+    except Exception as e:
+        logger.error(f"Error returning object specifications: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get object specifications: {str(e)}")
 
-@router.get("/{object_type}")
+@router.get("/objects/{object_type}")
 async def list_objects(
     request: Request, 
     object_type: str,
     limit: Optional[int] = Query(None, ge=1, description="Maximum number of objects to return"),
     properties_filter: Optional[Dict] = None
 ):
-    if object_type not in object_specifications:
-        raise HTTPException(status_code=404, detail="Object type not found")
+    logger.info(f"Listing objects of type: {object_type}, filter: {properties_filter}")
     
     db = request.app.state.db
     try:
-        objects = db.find(object_type, properties_filter)  # Fetch filtered objects of the given type
+        # Handle special case for user objects
+        if object_type == "user":
+            objects = db.find("user", properties_filter)
+        else:
+            if object_type not in object_specifications:
+                raise HTTPException(status_code=404, detail="Object type not found")
+            objects = db.find(object_type, properties_filter)
+            
+        logger.info(f"Found {len(objects)} objects of type {object_type}")
+        if len(objects) == 0:
+            logger.warning(f"No objects found for type {object_type}")
     except Exception as e:
+        logger.error(f"Database error fetching {object_type} objects: {str(e)}")
         return {"error": f"Failed to fetch objects: {str(e)}"}
     
     if object_type == 'hypothesis':
@@ -99,21 +114,34 @@ async def list_objects(
         "total_count": len(objects)
     }
 
-@router.get("/{object_type}/{object_id}")
+@router.get("/objects/{object_type}/{object_id}")
 async def view_object(request: Request, object_type: str, object_id: str):
+    logger.info(f"Viewing object: {object_id} of type {object_type}")
     db = request.app.state.db
-    properties, object_type = db.load(object_id)
-    if not properties:
-        raise HTTPException(status_code=404, detail="Object not found")
+    try:
+        properties, loaded_type = db.load(object_id)
+        if not properties:
+            logger.error(f"Object not found: {object_id}")
+            raise HTTPException(status_code=404, detail="Object not found")
+        if loaded_type != object_type and object_type != "objects":
+            logger.warning(f"Type mismatch: requested {object_type}, got {loaded_type}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error loading object {object_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to load object: {str(e)}")
     
-    processed_properties = preprocess_properties(properties, object_type, object_specifications)
-    
-    link_names = process_object_links(db, processed_properties, object_specifications, object_type)
-    
-    if object_type == "hypothesis":
-        processed_properties = handle_hypothesis(processed_properties)
-    
-    visualizations = {}
+    try:
+        processed_properties = preprocess_properties(properties, object_type, object_specifications)
+        link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+        
+        if object_type == "hypothesis":
+            processed_properties = handle_hypothesis(processed_properties)
+        
+        visualizations = {}
+    except Exception as e:
+        logger.error(f"Error processing object {object_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to process object: {str(e)}")
     
     if object_type == "json":
         # Add markdown representation for Json objects
@@ -143,7 +171,7 @@ async def view_object(request: Request, object_type: str, object_id: str):
         "visualizations": visualizations
     }
 
-@router.get("/{object_type}/blank/new")
+@router.get("/objects/{object_type}/blank/new")
 async def new_object(request: Request, object_type: str):
     db = request.app.state.db
     default_properties = get_default_properties(object_type, object_specifications)
@@ -161,7 +189,7 @@ async def new_object(request: Request, object_type: str):
         "object_spec": object_specifications[object_type]
     }
 
-@router.get("/{object_type}/{object_id}/edit")
+@router.get("/objects/{object_type}/{object_id}/edit")
 async def edit_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
     properties, _ = db.load(object_id)
@@ -176,7 +204,7 @@ async def edit_object(request: Request, object_type: str, object_id: str):
         "object_spec": object_specifications[object_type]
     }
 
-@router.get("/{object_type}/{object_id}/clone")
+@router.get("/objects/{object_type}/{object_id}/clone")
 async def clone_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
     properties, _ = db.load(object_id)
@@ -188,10 +216,12 @@ async def clone_object(request: Request, object_type: str, object_id: str):
     
     return {"object_id": cloned_object_id}
 
-@router.post("/{object_type}/{object_id}/edit", response_class=HTMLResponse)
+@router.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def update_object(request: Request, object_type: str, object_id: str):
+    logger.info(f"Updating object: {object_id} of type {object_type}")
     form_data = await request.form()
     form_data = dict(form_data)
+    logger.debug(f"Received form data: {form_data}")
     
     # Ensure the object_type exists in the specifications
     if object_type not in object_specifications:
@@ -219,8 +249,8 @@ async def update_object(request: Request, object_type: str, object_id: str):
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
 
-@router.post("/{object_type}/{object_id}/new")
-async def update_object(request: Request, object_type: str, object_id: str):
+@router.post("/objects/{object_type}/{object_id}/new")
+async def create_new_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
     
@@ -250,13 +280,69 @@ async def update_object(request: Request, object_type: str, object_id: str):
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
 
-@router.post("/{object_type}/{object_id}/delete", response_class=HTMLResponse)
+@router.post("/objects/{object_type}/{object_id}/delete", response_class=HTMLResponse)
 async def delete_object(request: Request, object_type: str, object_id: str):
     db = request.app.state.db
     db.remove(object_id)
     return RedirectResponse(url=f"/objects/{object_type}", status_code=303)
 
-@router.post("/{object_type}/import")
+@router.post("/objects/{object_type}/{object_id}/execute")
+async def execute_object(request: Request, object_type: str, object_id: str):
+    """Execute a plan object (analysis_plan or review_plan)."""
+    logger.info(f"Executing {object_type} with ID: {object_id}")
+    
+    if object_type not in ["analysis_plan", "review_plan"]:
+        raise HTTPException(status_code=400, detail=f"Cannot execute object of type {object_type}")
+    
+    db = request.app.state.db
+    
+    if object_type == "analysis_plan":
+        analysis_plan = AnalysisPlan.load(db, object_id)
+        
+        try:
+            analysis_run = analysis_plan.generate_analysis_run()
+        except Exception as e:
+            return {"error": f"{e}"}
+        
+        def execute_analysis_plan(analysis_run_id):
+            uri = load_database_uri()
+            db = SqliteDatabase(uri)
+            runner = AnalysisRunner(db, analysis_run_id)
+            result = runner.run()
+            return result
+        
+        loop = asyncio.get_event_loop()
+        runner_func = functools.partial(execute_analysis_plan, analysis_run.object_id)
+        result = await loop.run_in_executor(None, runner_func)
+        return {"url": f"/objects/{object_type}/{analysis_run.object_id}"}
+    
+    elif object_type == "review_plan":
+        review_plan = ReviewPlan.load(db, object_id)
+        
+        try:
+            review_set = review_plan.generate_review_set()
+        except Exception as e:
+            return {"error": f"{e}"}
+        
+        def execute_review_plan(review_set_id):
+            uri = load_database_uri()
+            db = SqliteDatabase(uri)
+            runner = ReviewRunner(db, review_set_id)
+            result = runner.run()
+            return result
+        
+        loop = asyncio.get_event_loop()
+        runner_func = functools.partial(execute_review_plan, review_set.object_id)
+        result = await loop.run_in_executor(None, runner_func)
+        return {"url": f"/objects/{object_type}/{review_set.object_id}"}
+    
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Execution not supported for object type: {object_type}"
+        )
+
+@router.post("/objects/{object_type}/import")
 async def import_object(request: Request, object_type: str):
     form_data = await request.form()
     form_data = dict(form_data)

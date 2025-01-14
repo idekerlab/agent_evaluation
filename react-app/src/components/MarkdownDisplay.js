@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 
 
 function isLikelyMarkdown(text) {
+  if (!text) return false;
+  
   const patterns = [
     /^#{1,6}\s/m,                     // Headers (allow multiple #)
     /\*\*(.*?)\*\*/,                  // Bold
@@ -29,6 +31,7 @@ const MarkdownDisplay = ({ content, className, style }) => {
   const isMarkdown = isLikelyMarkdown(content);
 
   const handleCopy = async () => {
+    if (!content) return;
     try {
       await navigator.clipboard.writeText(content);
       setCopySuccess('Copied!');
@@ -41,24 +44,32 @@ const MarkdownDisplay = ({ content, className, style }) => {
 
   return (
     <div className={`content-display ${className || 'pre-format'}`} style={style}>
-      {isMarkdown ? (
-        <div className='markdown-content'>
-          <ReactMarkdown>
+      {content ? (
+        isMarkdown ? (
+          <div className='markdown-content'>
+            <ReactMarkdown>
+              {content}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <pre className='pre-format' style={{ maxWidth: "800px", backgroundColor: "white"}}>
             {content}
-          </ReactMarkdown>
-        </div>
+          </pre>
+        )
       ) : (
         <pre className='pre-format' style={{ maxWidth: "800px", backgroundColor: "white"}}>
-          {content}
+          No content to display
         </pre>
       )}
 
-      <div className="copy-button-container">
-        <button onClick={handleCopy} className="copy-button">
-          Copy to Clipboard
-        </button>
-        {copySuccess && <span className="copy-status">{copySuccess}</span>}
-      </div>
+      {content && (
+        <div className="copy-button-container">
+          <button onClick={handleCopy} className="copy-button">
+            Copy to Clipboard
+          </button>
+          {copySuccess && <span className="copy-status">{copySuccess}</span>}
+        </div>
+      )}
     </div>
   );
 };

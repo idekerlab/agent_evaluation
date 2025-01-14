@@ -29,6 +29,8 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
     }
 
     const hypothesisTextDisplay = (text) => {
+        if (!hypothesis || !text) return null;
+        
         let geneSymbols = hypothesis.gene_symbols
         let enhancedHypothesisText = addLinksToHypothesis(text, geneSymbols)
 
@@ -37,6 +39,10 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
                 <b>hypothesis:</b> {enhancedHypothesisText}
             </pre>
         )
+    }
+
+    if (!hypothesis) {
+        return <div>No hypothesis data available</div>
     }
 
     return (
@@ -58,18 +64,24 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
             <div style={{ display: 'flex', minHeight: '400px', margin: '20px 0' }}>
                 <div style={{ width: '800px', minWidth: '500px', padding: '16px', overflowY: 'auto', borderRight: '1px solid #ccc' }}>
                     {hypothesisTextDisplay(hypothesis.hypothesis_text)}
-                    <pre className='pre-format2'>
-                        <b>biological context:</b> {hypothesis.biological_context}
-                    </pre>
-                    <pre className='pre-format2'>
-                        <b>data description:</b> {dataset.description}
-                    </pre>
-                    <pre className='pre-format2'>
-                        <b>experiment description:</b> {dataset.experiment_description}
-                    </pre>
+                    {hypothesis.biological_context && (
+                        <pre className='pre-format2'>
+                            <b>biological context:</b> {hypothesis.biological_context}
+                        </pre>
+                    )}
+                    {dataset && (
+                        <>
+                            <pre className='pre-format2'>
+                                <b>data description:</b> {dataset.description}
+                            </pre>
+                            <pre className='pre-format2'>
+                                <b>experiment description:</b> {dataset.experiment_description}
+                            </pre>
+                        </>
+                    )}
                 </div>
                 <div style={{ flexGrow: 1, minWidth: '500px', padding: '16px', overflowY: 'auto' }}>
-                    <DataViewer data={hypothesis.data} />
+                    {hypothesis.data && <DataViewer data={hypothesis.data} />}
                 </div>
             </div>
 

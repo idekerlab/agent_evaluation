@@ -18,7 +18,7 @@ from models.json_object import Json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/agents", tags=["agents"])
+router = APIRouter(tags=["agents"])
 
 @router.post("/{agent_id}/start_run")
 async def start_run_agent(
@@ -71,7 +71,7 @@ async def start_run_agent(
         logger.error(f"Error traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/agent_tasks/{task_id}")
+@router.get("/agent_task/{task_id}")
 async def get_task_status(task_id: str):
     """Get the status of an agent run task.
     

@@ -46,9 +46,9 @@ app.mount("/static", StaticFiles(directory="react-app/build/static"), name="stat
 templates = Jinja2Templates(directory=os.path.join(base_dir, "templates"))
 
 # Include routers
-app.include_router(agent_routes.router)
-app.include_router(object_routes.router)
-app.include_router(task_routes.router)
+app.include_router(object_routes)  # First to handle all object types
+app.include_router(task_routes)    # Then task-specific routes
+app.include_router(agent_routes)   # Finally agent-specific routes
 
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def serve_react_app(full_path: str, request: Request):

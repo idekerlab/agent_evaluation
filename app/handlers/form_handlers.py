@@ -1,5 +1,6 @@
 import json
 import csv
+import logging
 from io import StringIO
 from typing import Dict, List
 import decimal
@@ -9,6 +10,9 @@ from fastapi import HTTPException
 from jsonschema import validate, ValidationError
 
 from app.sqlite_database import SqliteDatabase
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class FormSubmissionError(Exception):
     """Custom exception for form submission errors."""
@@ -31,18 +35,25 @@ def format_numeric_values(data: List[List[str]]) -> List[List[str]]:
 
 def get_default_properties(object_type: str, specifications: Dict) -> Dict:
     """Get default properties for an object type from specifications."""
-    default_properties = {}
-    for field_name, field_spec in specifications[object_type]["properties"].items():
-        default_properties[field_name] = field_spec.get("default", "")
-    return default_properties
+    logger.info(f"Getting default properties for {object_type}")
+    try:
+        default_properties = {}
+        for field_name, field_spec in specifications[object_type]["properties"].items():
+            default_properties[field_name] = field_spec.get("default", "")
+        logger.debug(f"Default properties: {default_properties}")
+        return default_properties
+    except KeyError as e:
+        logger.error(f"Failed to get default properties for {object_type}: {str(e)}")
+        raise
 
 def generate_form(db: SqliteDatabase, object_type: str, specifications: Dict, obj_properties: Dict) -> List[Dict]:
     """Generate form fields based on object type and properties."""
+    logger.info(f"Generating form for {object_type}")
     fields = []
 
     # Ensure the object_type exists in the specifications
     if object_type not in specifications:
-        print(f"Error: '{object_type}' is not a valid object type in specifications.")
+        logger.error(f"Invalid object type: {object_type} not found in specifications")
         return fields
 
     # Get the specific specifications for the given object_type
@@ -90,9 +101,14 @@ def generate_form(db: SqliteDatabase, object_type: str, specifications: Dict, ob
 
 async def handle_form_submission(form_data: Dict, object_type: str, db: SqliteDatabase):
     """Handle form submission including file uploads and validation."""
+    logger.info(f"Handling form submission for {object_type}")
+    logger.debug(f"Form data: {form_data}")
+    
     try:
         # Extract CSV file from form data
         csv_file = form_data.pop('data', None) if object_type == "dataset" else None
+        if csv_file:
+            logger.info("Processing CSV file for dataset")
         if csv_file:
             print("File:", csv_file)
             if (csv_file != "undefined"):
@@ -119,10 +135,14 @@ async def handle_form_submission(form_data: Dict, object_type: str, db: SqliteDa
                 form_data['data'] = output.getvalue()
         
         if form_data.get("object_id"):
+            logger.info(f"Updating object {form_data['object_id']}")
             db.update(form_data["object_id"], form_data)
         else:
+            logger.error("No object_id provided in form data")
             raise Exception("No object_id provided in form data")
     except ValidationError as e:
+        logger.error(f"Validation error for {object_type}: {e.message}")
         raise FormSubmissionError(f"Form data validation failed: {e.message}")
     except Exception as e:
+        logger.error(f"Error processing form for {object_type}: {str(e)}")
         raise FormSubmissionError(f"An error occurred while processing the form: {e}")
