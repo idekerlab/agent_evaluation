@@ -141,6 +141,7 @@ const ObjectList = ({objectType, ...props}) => {
 
   return (
     <div className='main-content'>
+      <div className="object-list-header">
       <h1>{objectType === 'hypothesis' ? 'hypotheses' : `${objectType}s`}</h1>
       { "documentation" in objectSpec &&
         <p>{objectSpec.documentation}</p>
@@ -152,7 +153,9 @@ const ObjectList = ({objectType, ...props}) => {
       >
         <i className="fa-solid fa-plus"></i> New {objectType}
       </button>
-      { objectType == "hypothesis" && 
+      { (objectType == "hypothesis" || objectType === "dataset") && 
+      // Only hypotheses and datasets can be exported at this time
+      // ** this also needs conditional handling in the App.js component **
         <button
           className="button spaced-button button-secondary"
           onClick={() => navigate(`/${objectType}/import`)}
@@ -166,6 +169,7 @@ const ObjectList = ({objectType, ...props}) => {
       >
         <i className="fa-solid fa-trash-can"></i> Delete
       </button>
+      </div>
       { loading ? 
         <p>Loading...</p>
         :

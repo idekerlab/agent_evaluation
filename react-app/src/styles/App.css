@@ -1,3 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+:root {
+  --primary-color: #3a5a6e;
+  --secondary-color: #7ca3a6;
+  --accent-color: #a5c9ca;
+  --background-color: #f0f4f5;
+  --text-color: #2c3e50;
+  --sidebar-bg: #dbe4e6;
+  --sidebar-button-bg: #7ca3a6;
+  --header-bg: #a5c9ca;
+  --button-color: #7ca3a6;
+  --top-bar-bg: #2c3e50;
+  --default-border-radius: 4px;
+  --default-margin: 10px;
+}
 
 .top-bar {
   position: fixed;
@@ -5,12 +21,14 @@
   left: 0;
   width: 100%;
   height: 20px;
-  background-color: black;
+  background-color: var(--top-bar-bg);
   color: white;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: flex;
+  border-radius: var(--default-border-radius);
+  margin: var(--default-margin);
 }
 
 .home-button {
@@ -31,18 +49,22 @@
 .container {
   display: flex;
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  margin: var(--default-margin);
 }
 
 .sidebar {
   position: fixed;
-  top: 40px; /* Adjust if needed based on the height of the top-bar */
+  top: 50px; /* Adjust if needed based on the height of the top-bar */
   left: 0;
   width: 180px; /* Adjust based on your layout */
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
-  background-color: skyblue; /* Optional: Sidebar background color */
+  background-color: var(--sidebar-bg);
   overflow: hidden; /* Ensure sidebar does not scroll */
   padding: 10px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Optional: Add a shadow for better visual separation */  
+  margin: var(--default-margin);
+  border-radius: var(--default-border-radius);
+
 }
 
 .sidebar button {
@@ -50,10 +72,11 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  background-color: #fc900d;
+  background-color: var(--sidebar-button-bg);
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: var(--default-border-radius);
 }
 
 .content {
@@ -67,7 +90,7 @@
 
 .content2 {
   margin-left: 200px; /* Same width as sidebar */
-  padding-top: 30px;
+  padding-top: 40px;
   height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
   width: calc(100% - 200px); /* Ensure the content takes the remaining width */
   background-color: #fff; /* Optional: Content background color */
@@ -81,6 +104,12 @@
   background-color: #fff; /* Optional: Content background color */
 }
 
+.welcome {
+  justify-content: 'center';
+  align-items: 'center';
+  padding: 25px;
+}
+
 .sidebar a {
   text-decoration: none;
   color: inherit;
@@ -92,13 +121,14 @@
 } 
 
 .button {
-  background-color: #fc900d;
+  background-color: var(--button-color);
   color: white;
   padding: 10px 20px;
   border: none;
   cursor: pointer;
   text-decoration: none;
   font-size: 14px;
+  border-radius: var(--default-border-radius);
 }
 
 .button:hover {
@@ -179,11 +209,25 @@ th, td {
 }
 
 .header {
-  background-color: #9D695A;
+  background-color: var(--header-bg);
   color: white;
   padding: 20px;
   display: flex;
   align-items: center;
+  border-radius: var(--default-border-radius);
+  margin: var(--default-margin);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.object-list-header {
+  background-color: var(--header-bg);
+  color: white;
+  display: flex;
+  align-items: center;
+  border-radius: var(--default-border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .review-portal-header {
@@ -200,7 +244,7 @@ th, td {
 }
 
 .main-content {
-  padding: 20px;
+  padding: 10px 20px 20px 20px;
 }
 
 .pre-format {
@@ -217,8 +261,8 @@ th, td {
 
 .pre-format2 {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.3;
   padding: 10px;
   background-color: #f4f4f4;
   /* border: 1px solid #ddd; */
@@ -236,6 +280,62 @@ th, td {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for emphasis */
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   animation: pulse 3s infinite;
+}
+
+.focus-area {
+  background-color: #fcfef5; /* Soft yellow background for light attention */
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.8 em; /* Slightly reduce font size */
+  line-height: 1.3; /* Improve readability */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for emphasis */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  animation: pulse 3s infinite;
+}
+
+.content-display {
+  margin-bottom: 10px;
+}
+
+.copy-button {
+  margin-top: 10px;
+}
+.markdown-content {
+  line-height: 1.2;
+  background-color: white;
+  padding-right: 20px;  /* Added 'px' units */
+  padding-left: 10px;   /* Added 'px' units */
+  padding-bottom: 5px;  /* Added 'px' units */
+  padding-top: 1px;     /* Added 'px' units */
+}
+
+/* Keep paragraphs compact */
+.markdown-content p {
+  margin: 0;
+}
+
+/* Add indentation and spacing for headers */
+.markdown-content h1 { margin-left: 0rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.markdown-content h2 { margin-left: 1rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.markdown-content h3 { margin-left: 2rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+.markdown-content h4 { margin-left: 3rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+.markdown-content h5 { margin-left: 4rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+.markdown-content h6 { margin-left: 5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+
+/* Keep list spacing compact */
+.markdown-content ul,
+.markdown-content ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-content li {
+  margin-bottom: 0;
+}
+
+/* Optional: remove top margin from first heading */
+.markdown-content > :first-child {
+  margin-top: 0;
 }
 
 /* import "ag-grid-community/styles/ag-grid.css" // Mandatory CSS required by the Data Grid
@@ -258,4 +358,42 @@ import "ag-grid-community/styles/ag-theme-alpine.css" */
     --ag-header-background-color: #ffc5b6;
     /* Changes the hover color of the row*/
     --ag-row-hover-color: rgb(216, 226, 255);
+}
+
+.json-tree-view {
+    font-family: monospace;
+    margin-left: 20px;
+}
+
+.json-children {
+    margin-left: 20px;
+}
+
+.json-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.json-key {
+    color: #881391;
+}
+
+.json-string {
+    color: #268bd2;
+}
+
+.json-number {
+    color: #859900;
+}
+
+.json-boolean {
+    color: #b58900;
+}
+
+.json-null {
+    color: #dc322f;
+}
+
+.json-item {
+    line-height: 1.5;
 }

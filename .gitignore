@@ -190,5 +190,7 @@ notebooks/*_CH*
 /react-app/yarn-error.log*
 /react-app/package-lock.json
 
+#ignore temp files 
 ._*
 data/._*
+data/~$*

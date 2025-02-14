@@ -1,6 +1,6 @@
+import React, { useState } from 'react'
 import HypothesisReviewForm from './HumanReviewForm'
 import DataViewer from './DataViewer'
-import React, { useState } from 'react'
 import FriendlyIFrame from './FriendlyIFrame'
 import { fetchIframeSrc } from '../helpers/iFrameHelpers'
 
@@ -29,22 +29,28 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
     }
 
     const hypothesisTextDisplay = (text) => {
+        if (!hypothesis || !text) return null;
+        
         let geneSymbols = hypothesis.gene_symbols
         let enhancedHypothesisText = addLinksToHypothesis(text, geneSymbols)
 
         return (
-            <pre className='highlight pre-format2'>
+            <pre className='focus-area pre-format2'>
                 <b>hypothesis:</b> {enhancedHypothesisText}
             </pre>
         )
     }
 
+    if (!hypothesis) {
+        return <div>No hypothesis data available</div>
+    }
+
     return (
         <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                <h3>
                     Hypothesis {index + 1}/{numHypotheses}
-                </h2>
+                </h3>
                 <button className='button' onClick={() => handleNextHypothesis("prev")}>
                     <i className="fa-solid fa-arrow-left-long fa-lg"></i> Previous
                 </button>
@@ -55,20 +61,30 @@ const HypothesisView = ({hypothesis, dataset, index, numHypotheses, rank, handle
 
             <HypothesisReviewForm rank={rank} disableForm={disableForm} handleRankingChange={handleRankingChange} />
 
-            <pre className='pre-format2'>
-                <b>biological context:</b> {hypothesis.biological_context}
-            </pre>
+            <div style={{ display: 'flex', minHeight: '400px', margin: '20px 0' }}>
+                <div style={{ width: '800px', minWidth: '500px', padding: '16px', overflowY: 'auto', borderRight: '1px solid #ccc' }}>
+                    {hypothesisTextDisplay(hypothesis.hypothesis_text)}
+                    {hypothesis.biological_context && (
+                        <pre className='pre-format2'>
+                            <b>biological context:</b> {hypothesis.biological_context}
+                        </pre>
+                    )}
+                    {dataset && (
+                        <>
+                            <pre className='pre-format2'>
+                                <b>data description:</b> {dataset.description}
+                            </pre>
+                            <pre className='pre-format2'>
+                                <b>experiment description:</b> {dataset.experiment_description}
+                            </pre>
+                        </>
+                    )}
+                </div>
+                <div style={{ flexGrow: 1, minWidth: '500px', padding: '16px', overflowY: 'auto' }}>
+                    {hypothesis.data && <DataViewer data={hypothesis.data} />}
+                </div>
+            </div>
 
-            {hypothesisTextDisplay(hypothesis.hypothesis_text)}
-            
-            <DataViewer data={hypothesis.data} />
-
-            <pre className='pre-format2'>
-                <b>data description:</b> {dataset.description}
-            </pre>
-            <pre className='pre-format2'>
-                <b>experiment description:</b> {dataset.experiment_description}
-            </pre>
             {iframeSrc && (
                 <FriendlyIFrame iframeSrc={iframeSrc} closeIframe={() => setIframeSrc("")} />
             )}

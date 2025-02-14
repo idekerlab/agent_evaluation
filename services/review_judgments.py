@@ -1,4 +1,5 @@
 from models.review import Review
+from models.review_set import ReviewSet
 from itertools import combinations
 import json
 import numpy as np
@@ -74,7 +75,7 @@ def create_judgment_vector_for_review_list(reviews):
     # Concatenate all judgment vectors
     return np.concatenate(judgment_vectors)
 
-def create_reviewer_judgment_dict_for_review_set(db, review_set):
+def create_reviewer_judgment_dict_for_review_set(db, review_set_id):
     """
     Create a dictionary of Reviewer IDs to judgment vectors for a ReviewSet.
 
@@ -83,6 +84,9 @@ def create_reviewer_judgment_dict_for_review_set(db, review_set):
     :return: Dict of Reviewer IDs to judgment vectors
     :raises ValueError: If any review in the set is invalid
     """
+    review_set = ReviewSet.load(db, review_set_id)
+    if not review_set:
+            raise ValueError(f"Failed to load review_set with ID {review_set_id}")
     if not hasattr(review_set, 'review_ids'):
         raise AttributeError("ReviewSet object must have a 'review_ids' attribute")
 

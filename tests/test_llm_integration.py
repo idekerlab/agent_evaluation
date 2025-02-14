@@ -4,16 +4,13 @@ import os
 sys.path.append(os.path.abspath('..'))
 from models.llm import LLM
 from app.sqlite_database import SqliteDatabase
-from app.config import load_database_config
-from app.sqlite_database import SqliteDatabase
-from app.config import load_database_config
+from app.config import load_database_uri
 
 class TestLLMIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Establish a connection to the database
-        db_type, uri, user, password = load_database_config(path='~/ae_config/test_config.ini')
-    
+        uri = load_database_uri()
         cls.db = SqliteDatabase(uri)
 
     @classmethod

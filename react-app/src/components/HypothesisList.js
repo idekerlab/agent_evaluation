@@ -15,6 +15,8 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
     const [datasets, setDatasets] = useState([])
     const [ranking, setRanking] = useState({})
     const [hypothesisIndex, setHypothesisIndex] = useState(0)
+    const [errorMessage, setErrorMessage] = useState("")
+    const [successMessage, setSuccessMessage] = useState("")
 
     const [alreadySavedData, setAlreadySavedData] = useState({})
     const navigate = useNavigate()
@@ -28,8 +30,13 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
     }, [analysisRuns])
 
     useEffect(()=> {
-        if (!loading)
+        if (!loading) {
             initializeReviewData()
+            // Reset hypothesis index if it's out of bounds
+            if (hypothesisIndex >= hypotheses.length) {
+                setHypothesisIndex(0)
+            }
+        }
     }, [loading, hypotheses])
 
     const initializeReviewData = () => {
@@ -46,51 +53,69 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
             setRanking(newRanking)
         }
     }
-    const fetchAnalysisRun = () => {
-        axios.get(api_base+`/objects/analysisRun/${analysisRunId}`)
-            .then(response => {
-                // Handle the response data
-                const analysisRun = response.data.object
-                setAnalysisRun(analysisRun)
-                fetchHypotheses(analysisRun.hypothesis_ids)
-                // setObjectSpec(response.data.object_spec)
-                // setLinkNames(response.data.link_names)
-                // setLoading(false)
-            })
-            .catch(error => {
-                // Handle any errors
-                alert(error)
-                // setLoading(false)
-            })
+    const fetchAnalysisRun = async () => {
+        try {
+            const response = await axios.get(api_base+`/objects/analysis_run/${analysisRunId}`);
+            const analysisRun = response.data.object;
+            setAnalysisRun(analysisRun);
+            if (analysisRun && analysisRun.hypothesis_ids) {
+                await fetchHypotheses(analysisRun.hypothesis_ids);
+            } else {
+                setErrorMessage('No hypotheses found in this analysis run');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error fetching analysis run:', error);
+            setErrorMessage('Failed to load analysis run. Please try again.');
+            setLoading(false);
+        }
     }
 
     const fetchHypotheses = async (hypothesis_ids) => {
         try {
-            const hypothesesResponses = await Promise.all(
-            hypothesis_ids.map(id => axios.get(`${api_base}/objects/hypothesis/${id}`))
+            const hypothesesPromises = hypothesis_ids.map(id => 
+                axios.get(`${api_base}/objects/hypothesis/${id}`)
+                    .then(response => response.data.object)
+                    .catch(error => {
+                        console.warn(`Failed to fetch hypothesis ${id}:`, error);
+                        return null;
+                    })
             );
-            const newHypotheses = hypothesesResponses.map(response => response.data.object)
+            const newHypotheses = (await Promise.all(hypothesesPromises)).filter(Boolean);
             setHypotheses(newHypotheses);
 
-            const datasetIds = newHypotheses.map(hypo => hypo.dataset_id)
-            fetchDatasets(datasetIds)
-
+            if (newHypotheses.length > 0) {
+                const datasetIds = newHypotheses.map(hypo => hypo.dataset_id).filter(Boolean);
+                await fetchDatasets(datasetIds);
+            } else {
+                setErrorMessage('No hypotheses could be loaded');
+                setLoading(false);
+            }
         } catch (error) {
-            alert(error);
-        } finally {
-        //   setLoading(false);
+            console.error('Error fetching hypotheses:', error);
+            setErrorMessage('Failed to load hypotheses. Please try again.');
+            setLoading(false);
         }
     }
 
     const fetchDatasets = async (datasetIds) => {
         try {
-            const datasetResponses = await Promise.all(
-                datasetIds.map(id => axios.get(`${api_base}/objects/dataset/${id}`))
+            const datasetPromises = datasetIds.map(id => 
+                axios.get(`${api_base}/objects/dataset/${id}`)
+                    .then(response => response.data.object)
+                    .catch(error => {
+                        console.warn(`Failed to fetch dataset ${id}:`, error);
+                        return null;
+                    })
             );
-            const newDatasets = datasetResponses.map(response => response.data.object);
+            const newDatasets = await Promise.all(datasetPromises);
             setDatasets(newDatasets);
+            if (newDatasets.some(d => d === null)) {
+                setErrorMessage('Some datasets could not be loaded');
+            }
         } catch (error) {
-            alert(error);
+            console.error('Error fetching datasets:', error);
+            setErrorMessage('Failed to load some datasets');
         } finally {
             setLoading(false);
         }
@@ -116,48 +141,62 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
         setRanking(newRankings)
     }
 
-    const handleSave = (statusStr, hasUndone=false) => {
-        let review_str =  JSON.stringify({user_id: user.object_id, status: statusStr, ranking: ranking})
+    const handleSave = async (statusStr, hasUndone=false) => {
+        try {
+            if (!user || !analysisRun) {
+                setErrorMessage('Missing user or analysis run data');
+                return;
+            }
 
-        let submitPath = api_base + `/objects/review/blank/new`
-        let submitObj = {ranking_data: review_str, analysis_run_id: analysisRun.object_id, name: `${user.properties.name}'s review of ${analysisRun.name}`}
+            const review_str = JSON.stringify({
+                user_id: user.object_id,
+                status: statusStr,
+                ranking: ranking
+            });
 
-        if (hasSavedReview) {
-            submitPath = api_base + `/objects/review/${alreadySavedData.object_id}/edit`
-            submitObj.object_id = alreadySavedData.object_id
-        }
-        
+            const submitPath = hasSavedReview 
+                ? api_base + `/objects/review/${alreadySavedData.object_id}/edit`
+                : api_base + `/objects/review/blank/new`;
 
-        axios.post(submitPath, submitObj, {
+            const submitObj = {
+                ranking_data: review_str,
+                analysis_run_id: analysisRun.object_id,
+                name: `${user.properties.name}'s review of ${analysisRun.name}`
+            };
+
+            if (hasSavedReview) {
+                submitObj.object_id = alreadySavedData.object_id;
+            }
+
+            await axios.post(submitPath, submitObj, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            })
-            .then(response => {
-                // console.log(response);
-                setReload(prev => !prev)
-                if (hasUndone)
-                    navigate(`/my_reviews/${statusStr}/${objectId}`)
-                else
-                    navigate(`/my_reviews/${statusStr}`)
-            })
-            .catch(error => {
-                console.error('Error:', error.message)
-            })
+            });
+
+            setSuccessMessage('Review saved successfully');
+            setTimeout(() => setSuccessMessage(""), 3000);
+            setReload(prev => !prev);
+            // Short delay before navigation to show success message
+            setTimeout(() => {
+                navigate(`/my_reviews/${statusStr}${hasUndone ? `/${objectId}` : ''}`);
+            }, 1000);
+        } catch (error) {
+            console.error('Error saving review:', error);
+            setErrorMessage('Failed to save review. Please try again.');
+            setTimeout(() => setErrorMessage(""), 5000);
+        }
     }
 
     const handleSubmit = () => {
-        let hasRankedAllHypotheses = true
-        Object.keys(ranking).map(key => {
-            let rank = ranking[key]
-            if (rank.stars == null)
-                hasRankedAllHypotheses = false
-        })
-
-        if (hasRankedAllHypotheses)
-            handleSave("complete")
-        else
-            alert("Please assign stars to all hypotheses to submit.")
+        const unrankedHypotheses = Object.values(ranking).filter(rank => rank.stars === null);
+        
+        if (unrankedHypotheses.length === 0) {
+            handleSave("complete");
+        } else {
+            setErrorMessage('Please assign stars to all hypotheses to submit.');
+            setTimeout(() => setErrorMessage(""), 5000);
+        }
     }
 
     const handleUndoSubmission = () => {
@@ -174,7 +213,7 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
 
         ranks.sort((a,b) => b.stars - a.stars)
         return (
-            <ul>
+            <ul style={{ fontSize: '12px' }}>
                 {ranks.map((rank, index) => (
                     <li key={`${index}-rank`}>Hypothesis {rank.order}, stars {rank.stars ? '*'.repeat(rank.stars) + ` (${rank.stars})` : "-"}</li>
                 ))}
@@ -189,11 +228,33 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
                 <p>loading</p>
             ) : (
                 <div>
+                    {errorMessage && (
+                        <div style={{ 
+                            padding: '10px', 
+                            marginBottom: '10px', 
+                            backgroundColor: '#ffebee', 
+                            color: '#c62828',
+                            borderRadius: '4px'
+                        }}>
+                            {errorMessage}
+                        </div>
+                    )}
+                    {successMessage && (
+                        <div style={{ 
+                            padding: '10px', 
+                            marginBottom: '10px', 
+                            backgroundColor: '#e8f5e9', 
+                            color: '#2e7d32',
+                            borderRadius: '4px'
+                        }}>
+                            {successMessage}
+                        </div>
+                    )}
 
                     { hypotheses && hypotheses.length > 0 ? (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <h2>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h2>
+                                <h3>Review of {analysisRun.name == "" ? "unnamed" : analysisRun.name}</h3>
 
                                 { !viewOnly &&
                                     <>
@@ -212,18 +273,18 @@ const HypothesisList = ({runId, analysisRuns, user, savedRankings, setReload, vi
                                     {getOrderedRanks()}
                                 </div>
                             </div>
-                            { Object.keys(ranking).length > 0 &&
+                            { Object.keys(ranking).length > 0 && hypotheses[hypothesisIndex] && (
                                 <HypothesisView 
                                     hypothesis={hypotheses[hypothesisIndex]} 
-                                    dataset={datasets[hypothesisIndex]} 
+                                    dataset={datasets[hypothesisIndex] || null} 
                                     index={hypothesisIndex} 
                                     numHypotheses={hypotheses.length} 
-                                    rank={ranking[hypotheses[hypothesisIndex].object_id]}
+                                    rank={ranking[hypotheses[hypothesisIndex].object_id] || {}}
                                     handleRankingChange={(newRank) => handleRankingChange(newRank, hypotheses[hypothesisIndex].object_id)}
                                     handleNextHypothesis={handleNextHypothesis}
                                     disableForm={disableForm}
                                 />
-                            }
+                            )}
 
                         </>
                         

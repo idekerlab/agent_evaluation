@@ -124,7 +124,7 @@ class Hierarchy():
         # if key_column not in df.columns:
         #     df.insert(0, key_column, df.index)
 
-# Ensure the key column exists in the input file/dataframe
+        # Ensure the key column exists in the input file/dataframe
         if key_column not in df.columns:
             raise ValueError(f"Key column '{key_column}' not found in the file")
 

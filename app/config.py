@@ -1,85 +1,56 @@
 import configparser
 import os
 
-def load_neo4j_config():
+def load_config(config_path=None):
     # Create a ConfigParser object
     config = configparser.ConfigParser()
-    
-    # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
-    
-    # Read the configuration file
-    config.read(config_file_path)
-    
-    # Access the Neo4j connection details
-    uri = config.get('NEO4J', 'URI', fallback=None)
-    user = config.get('NEO4J', 'USER', fallback=None)
-    password = config.get('NEO4J', 'PASSWORD', fallback=None)
-    
-    return uri, user, password
+    config_path = config_path
+    # we can explicitly pass in the config_path, such as in test scripts
+    if config_path is None:
+            # try to get the configuration file location from the environment variable
+        try:
+            config_path = os.environ['DATABASE_CONFIG_PATH']
+        except KeyError:
+            pass
+        # default to the home directory
+        config_path = os.path.expanduser('~/ae_config/config.ini')
 
-def load_database_config(path='~/ae_config/config.ini'):
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
+    config_files = config.read(config_path)
+    if config_files is None or len(config_files) == 0:
+        raise FileNotFoundError(f"Configuration file not found at {config_path}")
+    return config
 
-    # Define the path to the configuration file
-    config_file_path = os.path.expanduser(path)
-
-    # Read the configuration file
-    config.read(config_file_path)
-
-    # Access the database connection details
-    db_type = config.get('DATABASE', 'TYPE', fallback=None)
-
-    if db_type == 'neo4j':
-        uri = config.get('NEO4J', 'URI', fallback=None)
-        user = config.get('NEO4J', 'USER', fallback=None)
-        password = config.get('NEO4J', 'PASSWORD', fallback=None)
-        return db_type, uri, user, password
-    elif db_type == 'sqlite':
-        uri = config.get('SQLITE', 'URI', fallback=None)
-        return db_type, uri, None, None
-    elif db_type in ['postgresql', 'mysql']:
-        uri = config.get(db_type.upper(), 'URI', fallback=None)
-        user = config.get(db_type.upper(), 'USER', fallback=None)
-        password = config.get(db_type.upper(), 'PASSWORD', fallback=None)
-        return db_type, uri, user, password
-    else:
-        raise ValueError(f"Unsupported database type: {db_type}")
-    
-def load_api_key(key_name):
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
-    
-    # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
-    
-    # Read the configuration file
-    config.read(config_file_path)
-    
+def load_database_uri(config_path=None):
+    config = load_config(config_path=config_path)
+    uri = config.get('SQLITE', 'URI', fallback=None)
+    return uri
+ 
+def load_api_key(key_name, config_path=None):
+    config = load_config(config_path=config_path)
     # Access the API key
     api_key = config.get('API_KEYS', key_name, fallback=None)
     return api_key
 
-def load_api_keys():
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
-    
-    # Define the path to the configuration file
-    config_file_path = os.path.expanduser('~/ae_config/config.ini')
-    
-    # Read the configuration file
-    config.read(config_file_path)
-    
+def load_api_keys(config_path=None):
+    config = load_config(config_path=config_path)
     # Access the API keys
     openai_api_key = config.get('API_KEYS', 'OPENAI_API_KEY', fallback=None)
     groq_api_key = config.get('API_KEYS', 'GROQ_API_KEY', fallback=None)
     anthropic_api_key = config.get('API_KEYS', 'ANTHROPIC_API_KEY', fallback=None) 
-    google_api_key = config.get('API_KEYS', 'GOOGLEAI_KEY', fallback=None) 
-    
+    google_api_key = config.get('API_KEYS', 'GOOGLEAI_KEY', fallback=None)   
     return openai_api_key, groq_api_key, anthropic_api_key, google_api_key
 
-def load_local_server_url():
+def load_local_server_url(config_path=None):
+    config = load_config(config_path=config_path)
+    # Access the local server URL
+    local_server_url = config.get('API_KEYS', 'LOCAL_MODEL_HOST', fallback=None)
+    return local_server_url
+
+
+def load_constant_from_config(keys):
+    '''
+    keys: list of keys to be read from the config file
+    '''
     # Create a ConfigParser object
     config = configparser.ConfigParser()
     
@@ -88,11 +59,11 @@ def load_local_server_url():
     
     # Read the configuration file
     config.read(config_file_path)
+    if len(keys) == 1:
+        return config.get('CONSTANT VAR', keys[0], fallback=None)
+    else:
+        return [config.get('CONSTANT VAR', key, fallback=None) for key in keys]
     
-    # Access the local server URL
-    local_server_url = config.get('API_KEYS', 'LOCAL_MODEL_HOST', fallback=None)
-    return local_server_url
-
 # Example usage
 # openai_key, groq_key = load_api_keys()
 # print("OpenAI API Key:", openai_key)

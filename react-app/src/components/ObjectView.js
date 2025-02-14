@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate, NavLink } from 'react-router-dom'
 import axios from 'axios'
 import DataViewer from './DataViewer'
+import SimpleSVGViewer from './SimpleSVGViewer';
 import HypothesisList from './HypothesisList'
+import MarkdownDisplay from './MarkdownDisplay';
+import JsonTreeView from './JsonTreeView';
+
 
 const api_base = process.env.REACT_APP_API_BASE_URL
 
@@ -141,10 +145,18 @@ const ObjectView = ({objectType, ...props}) => {
                 :
                 <div>
                     <div className="header">
-                        <img
-                            src={`/static/images/${objectType}.png`}
-                            alt={`${objectType} Logo`}
-                        />
+                        {/* Only show icon if it exists */}
+                        <div className="object-icon">
+                            {objectType && (
+                                <img
+                                    src={`/static/images/${objectType}.png`}
+                                    alt={`${objectType} Logo`}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            )}
+                        </div>
                         <div>
                             <h1>
                                 {objectType} : {object.name || "unnamed"}
@@ -173,7 +185,7 @@ const ObjectView = ({objectType, ...props}) => {
                                     
                                 </button>
                             }
-                            { objectType === "review" &&
+                            { objectType === "review"  &&
                                 <button className="button spaced-button button-tertiary" onClick={toggleFriendlyVersion}> 
                                     { showFriendly ? "Back to Normal Display" : "See Friendly Version"}
                                 </button>
@@ -184,7 +196,7 @@ const ObjectView = ({objectType, ...props}) => {
                             <button className="button spaced-button button-secondary" onClick={cloneObject} >
                                 <i className="fa-solid fa-clone"></i> Clone
                             </button>
-                            { objectType === "hypothesis" &&
+                            { (objectType === "hypothesis" || objectType === "dataset") &&
                                 <button className="button spaced-button button-tertiary" onClick={exportObject} >
                                     <i className="fa-solid fa-file-export"></i> Export
                                 </button>
@@ -235,8 +247,36 @@ const ObjectView = ({objectType, ...props}) => {
                                                 {propSpec.label || propName}
                                                 </td>
                                                 <td style={{ overflowX: "scroll", border: 'none'}}>
-                                                {propSpec.view === "scrolling_table" ? (
+                                                {propSpec.view === "json_tree" ? (
+                                                    <JsonTreeView 
+                                                        data={object[propName]} 
+                                                        initialExpanded={true}
+                                                    />
+                                                ) : propSpec.view === "scrolling_table" ? (
                                                     <DataViewer data={object[propName]} />
+                                                ) : propSpec.view === "judgment_space_visualizations" ? (
+                                                    <div>
+                                                      {object[propName]?.reduced_dim_plot && (
+                                                        <div>
+                                                          <h3>Reduced Dimensionality Plot</h3>
+                                                          <SimpleSVGViewer 
+                                                            svgString={object[propName].reduced_dim_plot} 
+                                                            maxWidth="800px" 
+                                                            maxHeight="600px"
+                                                          />
+                                                        </div>
+                                                      )}
+                                                      {object[propName]?.heatmap && (
+                                                        <div>
+                                                          <h3>Heatmap</h3>
+                                                          <SimpleSVGViewer 
+                                                            svgString={object[propName].heatmap} 
+                                                            maxWidth="800px" 
+                                                            maxHeight="600px"
+                                                          />
+                                                        </div>
+                                                      )}
+                                                    </div>
                                                 ) : propSpec.view === "list_of_object_links" &&
                                                     object[propName] ? (
                                                     <p
@@ -278,10 +318,17 @@ const ObjectView = ({objectType, ...props}) => {
                                                         </pre>
                                                     </div>
                                                     
+                                                ) : propSpec.view === "markdown" || propName === "markdown" ? (
+                                                    <MarkdownDisplay 
+                                                        content={object[propName]} 
+                                                        style={{ maxWidth: "800px"}}
+                                                        className="markdown-content"
+                                                    />
                                                 ) : (
-                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
-                                                        {object[propName]}
-                                                    </pre>
+                                                    <MarkdownDisplay 
+                                                        content={object[propName]} 
+                                                        style={{ maxWidth: "800px"}}
+                                                    />
                                                 )}
                                                 </td>
                                             </tr>

@@ -1,5 +1,5 @@
 import { AgGridReact } from 'ag-grid-react'
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import FriendlyIFrame from './FriendlyIFrame'
 import { fetchIframeSrc } from '../helpers/iFrameHelpers'
 
@@ -64,14 +64,34 @@ const DataViewer = ({data, ...props}) => {
         console.log("Error with dataset");
     }
 
+    const gridRef = useRef();
+
+    const onGridReady = useCallback((params) => {
+        params.api.sizeColumnsToFit();
+    }, []);
 
     return (
         <div>
             { colDefs.length > 0 && rowData.length > 0 ?
-                <div className="ag-theme-quartz" style={{ height: 500 }} >
+                <div className="ag-theme-quartz" style={{ height: 500 }}>
+                    <style>
+                        {`
+                            .ag-theme-quartz {
+                                --ag-font-size: 12px;
+                                --ag-row-height: 22px;
+                            }
+                        `}
+                    </style>
                     <AgGridReact
+                        ref={gridRef}
                         rowData={rowData}
                         columnDefs={colDefs}
+                        onGridReady={onGridReady}
+                        defaultColDef={{
+                            sortable: true,
+                            filter: true,
+                            resizable: true,
+                        }}
                     />
                 </div>
                 :

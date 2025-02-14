@@ -9,10 +9,9 @@ import anthropic
 import json
 
 class LLM:
-    def __init__(self, db, type=None, model_name=None,
+    def __init__(self, type=None, model_name=None,
                  max_tokens=None, seed=None, temperature=None,
                  object_id=None, created=None, name=None, description=None):
-        self.db = db
         self.type = type
         self.model_name = model_name
         self.max_tokens = max_tokens
@@ -25,6 +24,10 @@ class LLM:
 
     @classmethod
     def create(cls, db, type, model_name, max_tokens=2048, seed=None, temperature=0.5, name=None, description=None):
+        """Create a new LLM instance in the database.
+        
+        Note: db parameter is used only for creation and not stored in the instance.
+        """
         # Create the LLM instance in the database
         properties = {
             "type": type,
@@ -36,23 +39,28 @@ class LLM:
             "description": description
         }
         object_id, created, _ = db.add(object_id=None, properties=properties, object_type="llm")
-        return cls(db, type, model_name, max_tokens, seed, temperature, object_id, created)
+        return cls(type, model_name, max_tokens, seed, temperature, object_id=object_id, created=created, name=name, description=description)
 
     @classmethod
     def load(cls, db, object_id):
-        # Load the LLM instance from the database
+        """Load an LLM instance from the database.
+        
+        Note: db parameter is used only for loading and not stored in the instance.
+        """
         properties, _ = db.load(object_id)
         if properties:
-            return cls(db, **properties)
+            return cls(**properties)
         else:
             return None
 
-    def update(self, **kwargs):
-        # Update attributes of the LLM instance
+    def update(self, db, **kwargs):
+        """Update LLM properties in the database.
+        
+        Note: db parameter must be provided for the update operation.
+        """
         for key, value in kwargs.items():
             setattr(self, key, value)
-        # update the record in the database
-        self.db.update(self.object_id, kwargs)
+        db.update(self.object_id, kwargs)
 
     def query(self, context, prompt):
         self.max_tokens = int(self.max_tokens)
@@ -104,18 +112,23 @@ class LLM:
         max_retries = 5
         while retries < max_retries:
             try:
-                response = client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": context},
-                    {"role": "user", "content": prompt}],
-                max_tokens=self.max_tokens,
-                n=1,
-                stop=None,
-                seed=self.seed,
-                temperature=self.temperature)
+                if self.model_name == "o1-preview" or self.model_name == "o1-mini":
+                    response = client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "user", "content": context + "  " + prompt}])
+                else:
+                    response = client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "system", "content": context},
+                        {"role": "user", "content": prompt}],
+                    max_tokens=self.max_tokens,
+                    n=1,
+                    stop=None,
+                    seed=self.seed,
+                    temperature=self.temperature)
                 response_content = response.choices[0].message.content.strip()
-            
                 return response_content
         
             except APIConnectionError as e:
