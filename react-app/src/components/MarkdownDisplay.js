@@ -21,7 +21,7 @@ function isLikelyMarkdown(text) {
   ];
   
   // Test each line separately
-  const lines = text.split('\n');
+  const lines = Array.isArray(text) ? text : text.split('\n');
   return lines.some(line => 
     patterns.some(pattern => pattern.test(line))
   );

@@ -264,6 +264,12 @@ const ObjectView = ({objectType, ...props}) => {
                                                     />
                                                 ) : propSpec.view === "scrolling_table" ? (
                                                     <DataViewer data={object[propName]} />
+                                                ) : propSpec.view === "svg" ? (
+                                                    <SimpleSVGViewer
+                                                        svgString={object[propName]}
+                                                        maxWidth="800px"
+                                                        maxHeight="600px"
+                                                    />
                                                 ) : propSpec.view === "judgment_space_visualizations" ? (
                                                     <div>
                                                       {object[propName]?.reduced_dim_plot && (
