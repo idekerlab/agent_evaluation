@@ -7,7 +7,7 @@ import HypothesisList from './HypothesisList'
 import MarkdownDisplay from './MarkdownDisplay';
 import JsonTreeView from './JsonTreeView';
 
-
+const OBJECT_SPEC_NAME = "_object_spec"
 const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ObjectView = ({objectType, ...props}) => {
@@ -31,8 +31,18 @@ const ObjectView = ({objectType, ...props}) => {
           .then(response => {
             // Handle the response data
             // console.log(response)
-            setObject(response.data.object)
-            setObjectSpec(response.data.object_spec)
+            const dataObject = response.data.object;
+            setObject(dataObject);
+            // check if the dataObject has the property 'object_spec'
+            if (
+              dataObject.hasOwnProperty(OBJECT_SPEC_NAME) &&
+              isValidObjectSpec(dataObject, dataObject[OBJECT_SPEC_NAME])
+            ) {
+              setObjectSpec(dataObject[OBJECT_SPEC_NAME]);
+            } else {
+              // if not, use default object_spec
+              setObjectSpec(response.data.object_spec);
+            }
             setLinkNames(response.data.link_names)
             setLoading(false)
           })
@@ -254,6 +264,12 @@ const ObjectView = ({objectType, ...props}) => {
                                                     />
                                                 ) : propSpec.view === "scrolling_table" ? (
                                                     <DataViewer data={object[propName]} />
+                                                ) : propSpec.view === "svg" ? (
+                                                    <SimpleSVGViewer
+                                                        svgString={object[propName]}
+                                                        maxWidth="800px"
+                                                        maxHeight="600px"
+                                                    />
                                                 ) : propSpec.view === "judgment_space_visualizations" ? (
                                                     <div>
                                                       {object[propName]?.reduced_dim_plot && (
@@ -348,5 +364,20 @@ const ObjectView = ({objectType, ...props}) => {
        
     )
 }
+
+const isValidObjectSpec = (object, objectSpec) => {
+    if (objectSpec.hasOwnProperty("properties")) {
+      Object.entries(objectSpec.properties).forEach(([propName, propSpec]) => {
+        if (!propSpec.hasOwnProperty("view")) {
+          return false;
+        }
+        if (!object.hasOwnProperty(propName)) {
+          return false;
+        }
+      });
+      return true;
+    }
+    return false;
+};
 
 export default ObjectView
