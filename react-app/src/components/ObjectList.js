@@ -4,13 +4,17 @@ import axios from 'axios'
 import { AgGridReact } from 'ag-grid-react'
 
 const api_base = process.env.REACT_APP_API_BASE_URL
+const EXAMPLE_QUERIES = [
+  { label: "object_id LIKE \'%55%\'", value: "object_id LIKE '%55%'" },
+  { label: "properties ->> \'name\' LIKE \'%RAS%\'", value: "properties ->> 'name' LIKE '%RAS%'" },
+]
 
 const ObjectList = ({objectType, ...props}) => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [objects, setObjects] = useState([]) // Replace with your actual data fetching logic
   const [objectSpec, setObjectSpec]= useState({})
   const [checkedObjects, setCheckedObjects] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
   const [rowData, setRowData] = useState([])
   const gridRef = useRef()
   
@@ -56,14 +60,14 @@ const ObjectList = ({objectType, ...props}) => {
   }, [objectType])
 
 
-  const getObjects = () => {
-    axios.get(api_base+`/objects/${objectType}`)
+  const getObjects = (query = "") => {
+    const params = {}
+    params["query"] = query
+    axios.get(api_base+`/objects/${objectType}`, {params})
       .then(response => {
         // Handle the response data
-        const objects = response.data.objects
-        // console.log("Get Objects output", response.data);
-        setObjects(objects)
-        setObjectSpec(response.data.object_spec)
+        const objects = response.data.objects ?? []
+        setObjectSpec(response.data.object_spec ?? {})
         updateRowData(objects)
         setLoading(false)
       })
@@ -96,6 +100,19 @@ const ObjectList = ({objectType, ...props}) => {
       return newRow
     })
     setRowData(newRowData)
+  }
+
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      getObjects()
+      return
+    }
+    
+    getObjects(searchQuery)
+  }
+
+  const handleExampleSelect = (e) => {
+    setSearchQuery(e.target.value)
   }
 
   const clearFilters = useCallback(() => {
@@ -170,6 +187,38 @@ const ObjectList = ({objectType, ...props}) => {
         <i className="fa-solid fa-trash-can"></i> Delete
       </button>
       </div>
+
+      {/* Search Bar */}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Enter SQL WHERE clause"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+        />
+
+        {/* Dropdown with quick example queries */}
+        <select 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="dropdown-quick-search"
+        >
+          <option disabled value="">
+            Quick Search
+          </option>
+          {EXAMPLE_QUERIES.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={handleSearch} className="button button-primary">
+          <i className="fa-solid fa-search"></i> Search
+        </button>
+      </div>
+
       { loading ? 
         <p>Loading...</p>
         :

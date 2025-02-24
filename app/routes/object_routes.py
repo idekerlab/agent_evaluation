@@ -72,9 +72,10 @@ async def list_objects(
     request: Request, 
     object_type: str,
     limit: Optional[int] = Query(None, ge=1, description="Maximum number of objects to return"),
-    properties_filter: Optional[Dict] = None
+    properties_filter: Optional[Dict] = None,
+    query: Optional[str] = None
 ):
-    logger.info(f"Listing objects of type: {object_type}, filter: {properties_filter}")
+    logger.info(f"Listing objects of type: {object_type}, filter: {properties_filter}, query: {query}")
     
     db = request.app.state.db
     try:
@@ -84,7 +85,7 @@ async def list_objects(
         else:
             if object_type not in object_specifications:
                 raise HTTPException(status_code=404, detail="Object type not found")
-            objects = db.find(object_type, properties_filter)
+            objects = db.find(object_type, properties_filter, query)
             
         logger.info(f"Found {len(objects)} objects of type {object_type}")
         if len(objects) == 0:

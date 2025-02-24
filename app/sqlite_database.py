@@ -94,7 +94,7 @@ class SqliteDatabase:
         except Exception as e:
             raise Exception(f"Database_Object: Failed to update object in the SQL database. {e}")
 
-    def find(self, object_type, properties_filter=None):
+    def find(self, object_type, properties_filter=None, raw_where_clause=None):
         """ Find all nodes of a given object type with optional property filtering
         
         Args:
@@ -108,7 +108,7 @@ class SqliteDatabase:
         """
         try:
             with self._get_connection() as conn:
-                return self._find_nodes_sql(conn, object_type, properties_filter)
+                return self._find_nodes_sql(conn, object_type, properties_filter, raw_where_clause)
         except Exception as e:
             raise Exception(f"Database_Object: Failed to find objects in the SQL database. {e}")
 
@@ -135,11 +135,13 @@ class SqliteDatabase:
         query = "UPDATE nodes SET properties = ? WHERE object_id = ?"
         conn.execute(query, (properties, object_id))
 
-    def _find_nodes_sql(self, conn, object_type, properties_filter=None):
+    def _find_nodes_sql(self, conn, object_type, properties_filter=None, raw_where_clause: str = None):
         """ Find all nodes of a given object type with property filtering """
         query = "SELECT object_id, properties FROM nodes WHERE object_type = ?"
         params = [object_type]
-        
+        if raw_where_clause:
+            query += f" AND {raw_where_clause}"
+
         if properties_filter:
             for key, value in properties_filter.items():
                 if isinstance(value, dict) and 'operator' in value and value['operator'].lower() == 'like':
