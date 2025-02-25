@@ -10,8 +10,10 @@ import JsonTreeView from './JsonTreeView';
 const OBJECT_SPEC_NAME = "_object_spec"
 const api_base = process.env.REACT_APP_API_BASE_URL
 
-const ObjectView = ({objectType, ...props}) => {
+const ObjectView = ({objectType, targetId, ...props}) => {
     const { objectId } = useParams()
+    const effectiveId = targetId || objectId
+
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
@@ -24,10 +26,10 @@ const ObjectView = ({objectType, ...props}) => {
 
     useEffect(() => {
         getObject()
-    }, [objectId])
+    }, [effectiveId])
 
     const getObject = () => {
-        axios.get(api_base+`/objects/${objectType}/${objectId}`)
+        axios.get(api_base+`/objects/${objectType}/${effectiveId}`)
           .then(response => {
             // Handle the response data
             // console.log(response)
@@ -56,7 +58,7 @@ const ObjectView = ({objectType, ...props}) => {
     const executePlan = () => {
         setExecuting(true)
         
-        axios.post(api_base+`/objects/${objectType}/${objectId}/execute`)
+        axios.post(api_base+`/objects/${objectType}/${effectiveId}/execute`)
             .then(response => {
                 // Handle the response data
                 setExecuting(false)
@@ -74,7 +76,7 @@ const ObjectView = ({objectType, ...props}) => {
     }
 
     const deleteObject = () => {
-        axios.post(`${api_base}/objects/${objectType}/${objectId}/delete`)
+        axios.post(`${api_base}/objects/${objectType}/${effectiveId}/delete`)
             .then(response=> {
                 navigate(`/${objectType}`)
             })
@@ -84,7 +86,7 @@ const ObjectView = ({objectType, ...props}) => {
     }
 
     const cloneObject = () => {
-        axios.get(`${api_base}/objects/${objectType}/${objectId}/clone`)
+        axios.get(`${api_base}/objects/${objectType}/${effectiveId}/clone`)
             .then(response=> {
                 navigate(`/${objectType}/${response.data.object_id}`)
             })
@@ -154,7 +156,7 @@ const ObjectView = ({objectType, ...props}) => {
                 <p>Loading...</p>
                 :
                 <div>
-                    <div className="header">
+                    {targetId === "" && <div className="header">
                         {/* Only show icon if it exists */}
                         <div className="object-icon">
                             {objectType && (
@@ -200,7 +202,7 @@ const ObjectView = ({objectType, ...props}) => {
                                     { showFriendly ? "Back to Normal Display" : "See Friendly Version"}
                                 </button>
                             }
-                            <Link className="button spaced-button" to={`/${objectType}/${objectId}/edit`}  >
+                            <Link className="button spaced-button" to={`/${objectType}/${effectiveId}/edit`}  >
                                 <i className="fa-solid fa-pen-to-square"></i> Edit
                             </Link>
                             <button className="button spaced-button button-secondary" onClick={cloneObject} >
@@ -215,7 +217,7 @@ const ObjectView = ({objectType, ...props}) => {
                                 <i className="fa-solid fa-trash-can"></i> Delete
                             </button>
                         </div>
-                    </div>
+                    </div>}
                     <div className="main-content">
                     {object && objectSpec && objectSpec.properties ? (
                         <>

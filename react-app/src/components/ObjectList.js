@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { AgGridReact } from 'ag-grid-react'
+import ObjectView from './ObjectView'
 
 const api_base = process.env.REACT_APP_API_BASE_URL
 const EXAMPLE_QUERIES = [
@@ -16,6 +17,8 @@ const ObjectList = ({objectType, ...props}) => {
   const [checkedObjects, setCheckedObjects] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [rowData, setRowData] = useState([])
+  const [targetId, setTargetId] = useState(""); // State to hold selected row data
+  const [panelExpanded, setPanelExpanded] = useState(false); // State to manage panel collapse
   const gridRef = useRef()
   
   const colKeys = Object.keys(objectSpec).length> 0 ? Object.keys(objectSpec.properties) : []
@@ -57,6 +60,7 @@ const ObjectList = ({objectType, ...props}) => {
   useEffect(() => {
       getObjects()
       clearFilters()
+      setPanelExpanded(false)
   }, [objectType])
 
 
@@ -156,9 +160,21 @@ const ObjectList = ({objectType, ...props}) => {
     [window],
   );
 
+  const onRowClicked = (event) => {
+    setTargetId(event.data.id)
+    setPanelExpanded(true)
+  };
+
+  const onGridSizeChanged = useCallback(
+    (params) => {
+      params.api.resetRowHeights(); // Ensures row height remains unchanged
+    },
+    []
+  );
+
   return (
-    <div className='main-content'>
-      <div className="object-list-header">
+    <div className='main-content' style={{display: 'flex',height: '90vh', flexDirection:'column'}}>
+      <div className="object-list-header" style={{ display: 'flex', height: '15vh' }}>
       <h1>{objectType === 'hypothesis' ? 'hypotheses' : `${objectType}s`}</h1>
       { "documentation" in objectSpec &&
         <p>{objectSpec.documentation}</p>
@@ -189,7 +205,7 @@ const ObjectList = ({objectType, ...props}) => {
       </div>
 
       {/* Search Bar */}
-      <div className="search-container">
+      <div className="search-container" style={{ display: 'flex', height: '5vh' ,marginBottom: '1rem'}}>
         <input
           type="text"
           placeholder="Enter SQL WHERE clause"
@@ -222,8 +238,10 @@ const ObjectList = ({objectType, ...props}) => {
       { loading ? 
         <p>Loading...</p>
         :
-        rowData.length > 0 ?
-          <div className="ag-theme-quartz" style={{ height: '75vh' }} >
+        rowData.length > 0 ? (
+          <div className="ag-theme-quartz" style={{ display: 'flex', height: '70vh' }}>
+            {/* Left Side: Ag-Grid */}
+            <div style={{ flex: 1 }}>
               <AgGridReact
                 ref={gridRef}
                 rowSelection="multiple"
@@ -231,13 +249,58 @@ const ObjectList = ({objectType, ...props}) => {
                 rowData={rowData}
                 columnDefs={colDefs}
                 paginationPageSize={50}
+                onRowClicked={onRowClicked}
                 pagination={true}
+                onGridSizeChanged={onGridSizeChanged}
+                suppressColumnVirtualisation={true} // Ensures all columns are accessible in scroll
+                gridStyle={{ width: '100%', height: '100%', overflowX: 'auto', overflowY:'auto' }} // Enables scrolling
+                getRowHeight={() => 40} // Fixes row height
               />
+            </div>
+  
+            {/* Right Side: Panel */}
+            { panelExpanded && (
+              <div 
+                className="panel" 
+                style={{ 
+                  flex: 1, 
+                  backgroundColor: '#f0f0f0', 
+                  overflowY: 'hidden',
+                  overflowX: 'hidden',
+                  maxWidth: '50%',
+                  position: 'relative'
+                }}
+              >
+                <button 
+                  onClick={() => setPanelExpanded(false)} 
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    left: '5px', 
+                    zIndex: 10,
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1.2rem'
+                  }}
+                >
+                  <i className="fa-solid fa-angle-right"></i> 
+                </button>
+
+                <div style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  overflow: 'auto'
+                }}>
+                  <ObjectView specs={{}} objectType={objectType} targetId={targetId} />
+                </div>
+              </div>
+          )}
           </div>
-          :
+        ) : (
           <p>No {objectType} objects to display. Try adding a new one.</p>
-      }
-    </div>
+        )}
+      </div>
   )
 }
 

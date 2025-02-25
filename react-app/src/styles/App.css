@@ -48,7 +48,7 @@
 
 .container {
   display: flex;
-  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  height: calc(100vh - 50px); /* Adjust if needed based on the height of the top-bar */
   margin: var(--default-margin);
 }
 
@@ -57,7 +57,7 @@
   top: 50px; /* Adjust if needed based on the height of the top-bar */
   left: 0;
   width: 180px; /* Adjust based on your layout */
-  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  height: calc(100vh - 50px); /* Adjust if needed based on the height of the top-bar */
   background-color: var(--sidebar-bg);
   overflow: hidden; /* Ensure sidebar does not scroll */
   padding: 10px;
@@ -83,7 +83,7 @@
   margin-left: 200px; /* Same width as sidebar */
   padding-top: 10px;
   overflow-y:  clip;
-  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  height: calc(100vh - 50px); /* Adjust if needed based on the height of the top-bar */
   width: calc(100% - 200px); /* Ensure the content takes the remaining width */
   background-color: #fff; /* Optional: Content background color */
 }
@@ -91,7 +91,7 @@
 .content2 {
   margin-left: 200px; /* Same width as sidebar */
   padding-top: 40px;
-  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  height: calc(100vh - 50px); /* Adjust if needed based on the height of the top-bar */
   width: calc(100% - 200px); /* Ensure the content takes the remaining width */
   background-color: #fff; /* Optional: Content background color */
 }
@@ -99,7 +99,7 @@
 .portal-content {
   padding-top: 30px;
   overflow-y: auto;
-  height: calc(100vh - 48px); /* Adjust if needed based on the height of the top-bar */
+  height: calc(100vh - 50px); /* Adjust if needed based on the height of the top-bar */
   width: 100%; /* Ensure the content takes the remaining width */
   background-color: #fff; /* Optional: Content background color */
 }

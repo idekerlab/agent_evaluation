@@ -78,7 +78,7 @@ const App = () => {
                   />
                   <Route 
                     path={`/${type}/:objectId`} 
-                    element={<ObjectView specs={objectSpecs[type]} objectType={type} />} 
+                    element={<ObjectView specs={objectSpecs[type]} objectType={type} targetId="" />} 
                     key={`${index}-r2`} 
                   />
                   <Route
