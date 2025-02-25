@@ -397,3 +397,15 @@ import "ag-grid-community/styles/ag-theme-alpine.css" */
 .json-item {
     line-height: 1.5;
 }
+
+/* Force a fixed font size for all cells in your Quartz theme: */
+.ag-theme-quartz .ag-cell, 
+.ag-theme-quartz .ag-header-cell {
+  font-size: 14px !important;
+  display: flex;
+  align-items: center;
+  height: 100%; 
+  white-space: nowrap;
+  overflow: hidden;     
+  text-overflow: ellipsis;
+}

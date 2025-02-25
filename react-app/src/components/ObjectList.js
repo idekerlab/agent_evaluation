@@ -252,9 +252,9 @@ const ObjectList = ({objectType, ...props}) => {
                 onRowClicked={onRowClicked}
                 pagination={true}
                 onGridSizeChanged={onGridSizeChanged}
-                suppressColumnVirtualisation={true} // Ensures all columns are accessible in scroll
-                gridStyle={{ width: '100%', height: '100%', overflowX: 'auto', overflowY:'auto' }} // Enables scrolling
-                getRowHeight={() => 40} // Fixes row height
+                suppressColumnVirtualisation={true} 
+                gridStyle={{ width: '100%', height: '100%', overflowX: 'auto', overflowY:'auto' }}
+                getRowHeight={() => 40}
               />
             </div>
   
