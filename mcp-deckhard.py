@@ -29,10 +29,9 @@ logger = logging.getLogger(__name__)
 mcp = FastMCP("Deckhard")
 
 # Configuration
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:3000"
 
-# Define allowed object types - must match server's ALLOWED_OBJECT_TYPES
-ALLOWED_OBJECT_TYPES = {"agent", "dataset", "llm", "json"}
+# No longer defining allowed object types - allowing all object types
 
 @mcp.tool(name="test_long_operation", description="Test a long-running operation")
 async def test_long_operation(sleep_seconds: int) -> Dict:
@@ -72,7 +71,7 @@ and result evaluation."""
 
 @mcp.tool(name="get_deckhard_object_specs", description="Get specifications for Deckhard object types")
 def get_deckhard_object_specs() -> Dict:
-    """Get specifications for the core Deckhard object types (agent, dataset, llm, json)."""
+    """Get specifications for all Deckhard object types."""
     logger.debug("get_deckhard_object_specs tool called")
     with httpx.Client() as client:
         try:
@@ -80,10 +79,9 @@ def get_deckhard_object_specs() -> Dict:
             response = client.get(f"{BASE_URL}/get_object_specs")
             response.raise_for_status()
             specs = response.json()
-            # Filter to only include allowed object types
-            filtered_specs = {k: v for k, v in specs.items() if k in ALLOWED_OBJECT_TYPES}
-            logger.debug("Successfully retrieved and filtered object specs")
-            return filtered_specs
+            # Return all specs without filtering
+            logger.debug("Successfully retrieved object specs")
+            return specs
         except httpx.RequestError as e:
             error_msg = f"Failed to get object specs: {str(e)}"
             logger.error(error_msg)
@@ -98,7 +96,7 @@ def list_deckhard_objects(object_type: str, properties_filter: Optional[Dict] = 
     """List and filter objects of a specific type in the Deckhard system.
     
     Args:
-        object_type: Type of objects to list (agent, dataset, llm, or json)
+        object_type: Type of objects to list (any valid object type in the Deckhard system)
         properties_filter: Optional dictionary of property filters. Supports exact matches and LIKE patterns.
             Examples:
             - Get object by ID: {"object_id": "agent_123"}
@@ -112,11 +110,7 @@ def list_deckhard_objects(object_type: str, properties_filter: Optional[Dict] = 
     """
     logger.debug(f"list-deckhard_objects tool called for type {object_type}")
     
-    # Validate object type
-    if object_type.lower() not in ALLOWED_OBJECT_TYPES:
-        error_msg = f"Invalid object type: {object_type}. Must be one of: {', '.join(sorted(ALLOWED_OBJECT_TYPES))}"
-        logger.error(error_msg)
-        return {"error": error_msg}
+    # No longer validating object type against a predefined list
     
     with httpx.Client(timeout=30.0) as client:
         try:
@@ -247,18 +241,14 @@ def create_deckhard_object(object_type: str, properties: Dict) -> Dict:
     """Create a new object in the Deckhard system with the given properties.
     
     Args:
-        object_type: Type of object to create (agent, dataset, llm, or json)
+        object_type: Type of object to create (any valid object type in the Deckhard system)
         properties: Dictionary of property values. Missing properties will use defaults from the object spec.
         
     The server will validate properties and apply defaults based on the object specification.
     """
     logger.debug(f"create_deckhard_object tool called for type {object_type}")
     
-    # Validate object type
-    if object_type.lower() not in ALLOWED_OBJECT_TYPES:
-        error_msg = f"Invalid object type: {object_type}. Must be one of: {', '.join(sorted(ALLOWED_OBJECT_TYPES))}"
-        logger.error(error_msg)
-        return {"error": error_msg}
+    # No longer validating object type against a predefined list
     
     with httpx.Client() as client:
         try:

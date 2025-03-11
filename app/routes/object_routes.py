@@ -37,25 +37,32 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["objects"])
 
 @router.post("/objects/{object_type}/create")
-async def create_simple_object(object_type: str, properties: Dict = Body(...)):
+async def create_simple_object(object_type: str, request: Request, properties: Dict = Body(...)):
     """Simple object creation endpoint that handles validation and defaults."""
     
     try:
-        # Get the specification for this object type
-        spec = object_specifications[object_type]
+        db = request.app.state.db
         
-        # Fill in defaults for missing properties
-        for prop_name, prop_spec in spec["properties"].items():
-            if prop_name not in properties and "default" in prop_spec:
-                properties[prop_name] = prop_spec["default"]
+        # Check if the object type is defined in view_edit_specs
+        if object_type in object_specifications:
+            # Get the specification for this object type
+            spec = object_specifications[object_type]
+            
+            # Fill in defaults for missing properties
+            for prop_name, prop_spec in spec["properties"].items():
+                if prop_name not in properties and "default" in prop_spec:
+                    properties[prop_name] = prop_spec["default"]
+        else:
+            # For object types not defined in view_edit_specs, don't add defaults
+            logger.info(f"Creating object of type '{object_type}' with flexible properties (type not in object_specifications)")
         
         # Add to database
-        db = request.app.state.db
         object_id, created_properties, _ = db.add(object_id=None, properties=properties, object_type=object_type)
         created_properties["object_id"] = object_id
         
         return created_properties
     except Exception as e:
+        logger.error(f"Error creating object of type '{object_type}': {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/get_object_specs")
@@ -82,8 +89,6 @@ async def list_objects(
         if object_type == "user":
             objects = db.find("user", properties_filter)
         else:
-            if object_type not in object_specifications:
-                raise HTTPException(status_code=404, detail="Object type not found")
             objects = db.find(object_type, properties_filter)
             
         logger.info(f"Found {len(objects)} objects of type {object_type}")
@@ -107,10 +112,13 @@ async def list_objects(
             
     objects.reverse()
     
+    # Use object specifications if available, otherwise return empty object
+    object_spec = object_specifications.get(object_type, {})
+    
     return {
         "object_type": object_type, 
         "objects": objects, 
-        "object_spec": object_specifications[object_type],
+        "object_spec": object_spec,
         "total_count": len(objects)
     }
 
@@ -132,11 +140,16 @@ async def view_object(request: Request, object_type: str, object_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to load object: {str(e)}")
     
     try:
-        processed_properties = preprocess_properties(properties, object_type, object_specifications)
-        link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+        # Only process properties if the object type is in object_specifications
+        processed_properties = properties
+        link_names = {}
         
-        if object_type == "hypothesis":
-            processed_properties = handle_hypothesis(processed_properties)
+        if object_type in object_specifications:
+            processed_properties = preprocess_properties(properties, object_type, object_specifications)
+            link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+            
+            if object_type == "hypothesis":
+                processed_properties = handle_hypothesis(processed_properties)
         
         visualizations = {}
     except Exception as e:
@@ -163,10 +176,13 @@ async def view_object(request: Request, object_type: str, object_id: str):
                 processed_properties['visualization_error'] = error_message
                 visualizations = {'error': error_message}
     
+    # Use object specifications if available, otherwise return empty object
+    object_spec = object_specifications.get(object_type, {})
+    
     return {
         "object_type": object_type, 
         "object": processed_properties,
-        "object_spec": object_specifications[object_type],
+        "object_spec": object_spec,
         "link_names": link_names,
         "visualizations": visualizations
     }
@@ -174,19 +190,32 @@ async def view_object(request: Request, object_type: str, object_id: str):
 @router.get("/objects/{object_type}/blank/new")
 async def new_object(request: Request, object_type: str):
     db = request.app.state.db
-    default_properties = get_default_properties(object_type, object_specifications)
-    new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
+    
+    # Check if the object type is defined in object_specifications
+    if object_type in object_specifications:
+        default_properties = get_default_properties(object_type, object_specifications)
+        form_fields = generate_form(db, object_type, object_specifications, default_properties)
+    else:
+        # For object types not in specifications, provide minimal defaults
+        default_properties = {}
+        form_fields = []
+    
+    new_object_id, new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
     new_properties["object_id"] = new_object_id
-    new_properties["name"] = f"{object_type} {new_properties['created']}"
-    form_fields = generate_form(db, object_type, object_specifications, new_properties)
+    
+    if "name" not in new_properties and "created" in new_properties:
+        new_properties["name"] = f"{object_type} {new_properties['created']}"
     
     db.remove(new_object_id)
+    
+    # Use object specifications if available, otherwise return empty object
+    object_spec = object_specifications.get(object_type, {})
     
     return {
         "object_type": object_type, 
         "object": new_properties, 
         "form_fields": form_fields,
-        "object_spec": object_specifications[object_type]
+        "object_spec": object_spec
     }
 
 @router.get("/objects/{object_type}/{object_id}/edit")
@@ -195,13 +224,20 @@ async def edit_object(request: Request, object_type: str, object_id: str):
     properties, _ = db.load(object_id)
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
-    form_fields = generate_form(db, object_type, object_specifications, properties)
+    
+    # Check if the object type is defined in object_specifications
+    form_fields = []
+    if object_type in object_specifications:
+        form_fields = generate_form(db, object_type, object_specifications, properties)
+    
+    # Use object specifications if available, otherwise return empty object
+    object_spec = object_specifications.get(object_type, {})
     
     return {
         "object_type": object_type, 
         "object": properties, 
         "form_fields": form_fields,
-        "object_spec": object_specifications[object_type]
+        "object_spec": object_spec
     }
 
 @router.get("/objects/{object_type}/{object_id}/clone")
@@ -211,7 +247,10 @@ async def clone_object(request: Request, object_type: str, object_id: str):
     if not properties:
         raise HTTPException(status_code=404, detail="Object not found")
     properties.pop('object_id', None)
-    properties["name"] = f"{properties['name']} - Cloned"
+    
+    if "name" in properties:
+        properties["name"] = f"{properties['name']} - Cloned"
+    
     cloned_object_id, cloned_properties, _ = db.add(object_id=None, properties=properties, object_type=object_type)
     
     return {"object_id": cloned_object_id}
@@ -219,33 +258,94 @@ async def clone_object(request: Request, object_type: str, object_id: str):
 @router.post("/objects/{object_type}/{object_id}/edit", response_class=HTMLResponse)
 async def update_object(request: Request, object_type: str, object_id: str):
     logger.info(f"Updating object: {object_id} of type {object_type}")
-    form_data = await request.form()
-    form_data = dict(form_data)
-    logger.debug(f"Received form data: {form_data}")
     
-    # Ensure the object_type exists in the specifications
-    if object_type not in object_specifications:
-        print(f"Error: '{object_type}' is not a valid object type in specifications.")
-        return form_data
-
-    # Get the specific specifications for the given object_type
-    object_spec = object_specifications[object_type]
-    # Process the form data to handle list_of_object_ids
-    for field_name, field_spec in object_spec["properties"].items():
-        if field_spec.get("type") == "list_of_object_ids" and field_name in form_data:
-            id_list = form_data[field_name].replace("'", '"')
-            id_list = json.loads(id_list) 
-            form_data[field_name] = id_list
-        if field_spec.get("editable") == False:
-            form_data.pop(field_name, None)
-    db = request.app.state.db
+    # First, attempt to get JSON data if the content type is application/json
     try:
-        await handle_form_submission(form_data, object_type, db)
-        return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+        if request.headers.get("content-type") == "application/json":
+            form_data = await request.json()
+            logger.debug(f"Received JSON data: {form_data}")
+            
+            # Ensure object_id is in the form data
+            if "object_id" not in form_data:
+                form_data["object_id"] = object_id
+                
+            db = request.app.state.db
+            
+            # For objects not in specifications, handle direct update
+            if object_type not in object_specifications:
+                # Make sure we have the object_id in the data
+                properties, _ = db.load(object_id)
+                if not properties:
+                    raise HTTPException(status_code=404, detail="Object not found")
+                
+                # Update properties
+                db.update(object_id, form_data)
+                return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+            else:
+                # Use the form handler for specified objects
+                await handle_form_submission(form_data, object_type, db)
+                return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
+        else:
+            # Process form data if not JSON
+            form_data = await request.form()
+            form_data = dict(form_data)
+            logger.debug(f"Received form data: {form_data}")
+            
+            # Ensure object_id is in the form data
+            if "object_id" not in form_data:
+                form_data["object_id"] = object_id
+            
+            db = request.app.state.db
+            
+            # Check if the object type is defined in object_specifications
+            if object_type in object_specifications:
+                # Get the specific specifications for the given object_type
+                object_spec = object_specifications[object_type]
+                # Process the form data to handle list_of_object_ids
+                for field_name, field_spec in object_spec["properties"].items():
+                    if field_spec.get("type") == "list_of_object_ids" and field_name in form_data:
+                        id_list = form_data[field_name].replace("'", '"')
+                        id_list = json.loads(id_list) 
+                        form_data[field_name] = id_list
+                    if field_spec.get("editable") == False:
+                        form_data.pop(field_name, None)
+            
+            # Process specific data types for non-specified objects
+            if object_type not in object_specifications:
+                # Handle scores as JSON if present
+                if "scores" in form_data and isinstance(form_data["scores"], str):
+                    try:
+                        form_data["scores"] = json.loads(form_data["scores"])
+                    except json.JSONDecodeError:
+                        logger.warning(f"Failed to parse scores as JSON: {form_data['scores']}")
+                
+                # Handle object_ids as JSON if present
+                if "object_ids" in form_data and isinstance(form_data["object_ids"], str):
+                    try:
+                        form_data["object_ids"] = json.loads(form_data["object_ids"])
+                    except json.JSONDecodeError:
+                        logger.warning(f"Failed to parse object_ids as JSON: {form_data['object_ids']}")
+            
+            if object_type in object_specifications:
+                await handle_form_submission(form_data, object_type, db)
+            else:
+                # For object types not in specifications, handle basic update
+                properties, _ = db.load(object_id)
+                if not properties:
+                    raise HTTPException(status_code=404, detail="Object not found")
+                
+                # Update properties with form data
+                for key, value in form_data.items():
+                    properties[key] = value
+                
+                db.update(object_id, properties)
+                
+            return RedirectResponse(url=f"/objects/{object_type}/{object_id}", status_code=303)
     except FormSubmissionError as e:
         # Return an error response to the web app
         return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
     except Exception as e:
+        logger.error(f"Error updating object: {str(e)}")
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
 
@@ -254,29 +354,49 @@ async def create_new_object(request: Request, object_type: str, object_id: str):
     form_data = await request.form()
     form_data = dict(form_data)
     
-    # Get the specific specifications for the given object_type
-    object_spec = object_specifications[object_type]
-    # Process the form data to handle list_of_object_ids
-    for field_name, field_spec in object_spec["properties"].items():
-        if field_spec.get("type") == "list_of_object_ids":
-            id_list = form_data.get(field_name).replace("'", '"')
-            id_list = json.loads(id_list) if id_list else []
-            form_data[field_name] = id_list
-            
     db = request.app.state.db
     
-    default_properties = get_default_properties(object_type, object_specifications)
-    new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
+    # Check if the object type is defined in object_specifications
+    if object_type in object_specifications:
+        # Get the specific specifications for the given object_type
+        object_spec = object_specifications[object_type]
+        # Process the form data to handle list_of_object_ids
+        for field_name, field_spec in object_spec["properties"].items():
+            if field_spec.get("type") == "list_of_object_ids":
+                id_list = form_data.get(field_name).replace("'", '"')
+                id_list = json.loads(id_list) if id_list else []
+                form_data[field_name] = id_list
+        
+        default_properties = get_default_properties(object_type, object_specifications)
+    else:
+        # For object types not in specifications, use empty defaults
+        default_properties = {}
+    
+    new_object_id, new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
     form_data["object_id"] = new_object_id
     
     try:
-        await handle_form_submission(form_data, object_type, db)
-        object_id_from_form = form_data.get("object_id")
+        if object_type in object_specifications:
+            await handle_form_submission(form_data, object_type, db)
+        else:
+            # For object types not in specifications, handle basic creation
+            for key, value in form_data.items():
+                if key != "object_id":
+                    new_properties[key] = value
+            
+            db.update(new_object_id, new_properties)
+        
+        object_id_from_form = form_data.get("object_id", new_object_id)
         return {"object_id": object_id_from_form}
     except FormSubmissionError as e:
+        # Clean up the new object if there's an error
+        db.remove(new_object_id)
         # Return an error response to the web app
         return HTMLResponse(content=f"<h1>Error</h1><p>{e.message}</p>", status_code=400)
     except Exception as e:
+        # Clean up the new object if there's an error
+        db.remove(new_object_id)
+        logger.error(f"Error creating new object: {str(e)}")
         # Return a generic error response
         return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
 
@@ -354,19 +474,42 @@ async def import_object(request: Request, object_type: str):
         json_content = (await json_file.read()).decode('utf-8')
         json_obj = json.loads(json_content)
         
-        default_properties = get_default_properties(object_type, object_specifications)
-        new_object_id , new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
+        # Check if the object type is defined in object_specifications
+        if object_type in object_specifications:
+            default_properties = get_default_properties(object_type, object_specifications)
+        else:
+            # For object types not in specifications, use empty defaults
+            default_properties = {}
+        
+        new_object_id, new_properties, _ = db.add(object_id=None, properties=default_properties, object_type=object_type)
         json_obj["object_id"] = new_object_id
-        json_obj["data"] = convert_to_csv(json_obj['data'])
+        
+        # Handle CSV data conversion if the object has it
+        if "data" in json_obj and object_type in object_specifications:
+            if object_specifications[object_type]["properties"].get("data", {}).get("type") == "csv":
+                json_obj["data"] = convert_to_csv(json_obj['data'])
         
         try:
-            await handle_form_submission(json_obj, object_type, db)
+            if object_type in object_specifications:
+                await handle_form_submission(json_obj, object_type, db)
+            else:
+                # For object types not in specifications, handle basic import
+                for key, value in json_obj.items():
+                    if key != "object_id":
+                        new_properties[key] = value
+                
+                db.update(new_object_id, new_properties)
+            
             return {"object_id": new_object_id}
         except FormSubmissionError as e:
-            print("ERROR:", e)
+            # Clean up the new object if there's an error
+            db.remove(new_object_id)
+            logger.error(f"Form submission error: {e.message}")
             return HTMLResponse(content=f"<h1>Form Submission Error</h1><p>{e.message}</p>", status_code=400)
         except Exception as e:
-            print("Exception:", e)
+            # Clean up the new object if there's an error
+            db.remove(new_object_id)
+            logger.error(f"Unexpected error during import: {str(e)}")
             return HTMLResponse(content="<h1>Unexpected Error</h1><p>Something went wrong.</p>", status_code=500)
         
     return {"error": "Something went wrong"}
