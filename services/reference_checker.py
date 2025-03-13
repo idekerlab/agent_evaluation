@@ -576,7 +576,7 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
     # prioritize the papers that have the most genes in the abstract and verify their relavence
     paper_for_references = []
     reference_with_sentencesIDs = [] # CH: added list of support along with paper
-    processed_papers = set()  # Initialize the set of processed papers here
+    processed_papers = []  
     # in the list of title_matching_papers, find the abstract also matches the paragraph
     # prioritize papers that already mathching in title 
     less_important_papers = []
@@ -602,7 +602,7 @@ def get_references_for_paragraph(db, dict_value, agent_id, email, n=5, papers_qu
             # supporting_sentences = list(set(abstract_support_indexes).union(set(title_support_indexes))) #no longer print index support from title
             reference_with_sentencesIDs.append({'citation': get_mla_citation_from_pubmed_id(paper),
                 'support_indexes': abstract_support_evidence }) #CH: added list of support along with paper
-            processed_papers.add(paper)  # Add the processed paper to the set
+            processed_papers.append(paper)  # Add the processed paper to the set
             for gene_in_abstract in genes_in_abstract:
                 if gene_in_abstract in genes_to_be_searched:
                     genes_to_be_searched.remove(gene_in_abstract)

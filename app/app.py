@@ -560,7 +560,7 @@ async def execute_object(request: Request, object_type: str, object_id: str):
             return {"error": f"{e}"}
         
         def execute_analysis_plan(analysis_run_id):
-            _, uri, _, _ = load_database_config()
+            uri= load_database_uri()
             db = SqliteDatabase(uri)
             runner = AnalysisRunner(db, analysis_run_id)
             result = runner.run()
@@ -581,7 +581,7 @@ async def execute_object(request: Request, object_type: str, object_id: str):
             return {"error": f"{e}"}
         
         def execute_review_plan(review_set_id):
-            _, uri, _, _ = load_database_config()
+            uri = load_database_uri()
             db = SqliteDatabase(uri)
             runner = ReviewRunner(db, review_set_id)
             result = runner.run()
