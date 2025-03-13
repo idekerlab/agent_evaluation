@@ -1,0 +1,124 @@
+{
+  "source_network": {
+    "uuid": "0fb9bf21-fa25-11ef-b81d-005056ae3c32",
+    "name": "Copy of dengue_x_string_network"
+  },
+  "propagation_parameters": {
+    "restart_prob": 0.4,
+    "max_score": 200.0,
+    "max_steps": 500,
+    "default_score": 1.0,
+    "allow_revisits": true,
+    "type_scores": {
+      "viral": 0.0,
+      "high_z": 1.0,
+      "med_z": 2.0,
+      "low_z": 3.0,
+      "undefined": 0.0
+    }
+  },
+  "viral_proteins": {
+    "DENV2 16681 NS4A": {
+      "node_id": "379",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 55,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0003917217254638672
+    },
+    "DENV2 16681 NS5": {
+      "node_id": "381",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 50,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0009100437164306641
+    },
+    "DENV2 16681 NS2B3": {
+      "node_id": "382",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 53,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0005078315734863281
+    },
+    "DENV2 16681 NS3": {
+      "node_id": "383",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 48,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0005850791931152344
+    },
+    "DENV2 16681 Capsid": {
+      "node_id": "385",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 59,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0013620853424072266
+    },
+    "DENV2 16681 NS4B": {
+      "node_id": "387",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 55,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0008258819580078125
+    },
+    "DENV2 16681 Capsid Anchor": {
+      "node_id": "389",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 55,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0007741451263427734
+    },
+    "DENV2 16681 NS1": {
+      "node_id": "395",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 51,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.0008099079132080078
+    },
+    "DENV2 16681 NS2A": {
+      "node_id": "398",
+      "walk_stats": {
+        "cumulative_score": 200.0,
+        "steps": 200,
+        "restarts": 53,
+        "termination_reason": "max_score_reached"
+      },
+      "execution_time": 0.00036406517028808594
+    }
+  },
+  "ndex_networks": {
+    "DENV2 16681 NS4A": "https://www.ndexbio.org/v3/networks/012de2dc-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS5": "https://www.ndexbio.org/v3/networks/0153452f-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS2B3": "https://www.ndexbio.org/v3/networks/018fb1f2-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS3": "https://www.ndexbio.org/v3/networks/01b95a05-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 Capsid": "https://www.ndexbio.org/v3/networks/01dd35b8-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS4B": "https://www.ndexbio.org/v3/networks/021b773b-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 Capsid Anchor": "https://www.ndexbio.org/v3/networks/0242ae4e-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS1": "https://www.ndexbio.org/v3/networks/026c2f51-fefd-11ef-b81d-005056ae3c32",
+    "DENV2 16681 NS2A": "https://www.ndexbio.org/v3/networks/02d1f604-fefd-11ef-b81d-005056ae3c32"
+  },
+  "total_execution_time": 2.971013069152832
+}
