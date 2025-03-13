@@ -244,13 +244,14 @@ def get_experimental_data_properties(G: nx.Graph) -> Dict[str, List[str]]:
     return property_groups
 
 
-def analyze_network(G: nx.Graph, network_attrs: Dict[str, Any]) -> Dict[str, Any]:
+def analyze_network(G: nx.Graph, network_attrs: Dict[str, Any], max_nodes = 100) -> Dict[str, Any]:
     """
     Analyze a network to extract information for hypothesis generation
     
     Args:
         G: NetworkX graph
         network_attrs: Network attributes
+        max_nodes: Maximum number of top nodes to include, sorted by propagation weight, default 100
         
     Returns:
         Dictionary with network analysis results
@@ -304,7 +305,7 @@ def analyze_network(G: nx.Graph, network_attrs: Dict[str, Any]) -> Dict[str, Any
         weighted_nodes.values(),
         key=lambda x: x['weight'],
         reverse=True
-    )[:50]  # Get top 50 nodes by weight
+    )[:max_nodes]  # Get top X nodes by weight
     
     stats['top_nodes'] = top_nodes
     
@@ -331,7 +332,7 @@ def get_top_nodes_with_experimental_data(network_stats: Dict[str, Any], max_node
     
     Args:
         network_stats: Dictionary with network analysis results
-        max_nodes: Maximum number of nodes to include
+        max_nodes: Maximum number of nodes to include in the output
         
     Returns:
         Formatted string for the prompt
@@ -341,10 +342,6 @@ def get_top_nodes_with_experimental_data(network_stats: Dict[str, Any], max_node
     
     # Select key experimental properties to display
     exp_properties = property_groups.get('experimental', [])
-    
-    # Limit to most informative properties if there are too many
-    if len(exp_properties) > 5:
-        exp_properties = exp_properties[:5]
     
     # Build the text
     lines = []
@@ -431,6 +428,7 @@ Format each hypothesis as a JSON object with the following fields:
 
 Return ONLY a valid JSON array of hypothesis objects. Do not include any explanation or other text outside the JSON.
 """
+    print(prompt)
     
     return prompt
 
@@ -478,7 +476,8 @@ Return your response in valid JSON format only.
         
         # Parse JSON
         hypotheses = json.loads(response.strip())
-        
+        print ("Generated Hypotheses:")
+        print(hypotheses)
         # Validate hypotheses
         for i, hypothesis in enumerate(hypotheses):
             # Ensure required fields exist
@@ -592,7 +591,7 @@ def create_hypothesis_network(all_hypotheses: List[Dict[str, Any]]) -> CX2Networ
             node_name = f"{viral_protein} - {hypothesis['title']}"
             
             # Add node to network
-            cx2_network.add_node(node_id, name=node_name)
+            cx2_network.add_node(node_id, {"name":node_name})
             
             # Add node attributes
             cx2_network.add_node_attribute(node_id, 'title', hypothesis['title'])
@@ -646,11 +645,11 @@ def main():
     parser = argparse.ArgumentParser(description='Generate hypotheses from viral protein propagation networks')
     
     # Required arguments
-    parser.add_argument('--uuids', type=str, nargs='+', required=True, 
+    parser.add_argument('--uuids', type=str, nargs='+', default=["faa974fc-ff5f-11ef-b81d-005056ae3c32"], 
                        help='NDEx UUIDs of propagation networks')
     
     # Optional arguments
-    parser.add_argument('--output-dir', type=str, default='.', help='Output directory for results')
+    parser.add_argument('--output-dir', type=str, default='./results', help='Output directory for results')
     parser.add_argument('--n-hypotheses', type=int, default=2, help='Number of hypotheses per viral protein')
     parser.add_argument('--llm-type', type=str, default='Anthropic', 
                         choices=['OpenAI', 'Anthropic', 'Groq', 'GoogleAI', 'LocalModel'],
