@@ -1,4 +1,4 @@
-// Deckhard Browser JavaScript
+
 
 // Store predefined queries
 const predefinedQueries = [
@@ -21,6 +21,11 @@ const predefinedQueries = [
     name: "All Hypotheses",
     query: "SELECT * FROM nodes WHERE object_type = 'hypothesis'",
     description: "Lists all hypothesis objects"
+  },
+  {
+    name: "Object Lists",
+    query: "SELECT * FROM nodes WHERE object_type = 'object_list'",
+    description: "Lists all object_list objects"
   },
   {
     name: "Recent Objects",
@@ -57,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Execute the first predefined query on load to show some initial data
   sqlInput.value = predefinedQueries[0].query;
-  executeSQL();
   
   // Handle enter key in search inputs
   sqlInput.addEventListener('keypress', (e) => {
@@ -72,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize the predefined queries list
 function initPredefinedQueries() {
   const queryList = document.getElementById('query-list');
+  queryList.innerHTML = '';
   
   predefinedQueries.forEach(query => {
     const listItem = document.createElement('li');
@@ -107,13 +112,12 @@ async function executeSQL() {
       body: JSON.stringify({ sql })
     });
     
-    const data = await response.json();
-    
-    if (data.error) {
-      showError(resultsContainer, data.error);
-      return;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Error executing query');
     }
     
+    const data = await response.json();
     displayResults(data);
   } catch (error) {
     showError(resultsContainer, `Error executing query: ${error.message}`);
@@ -148,13 +152,12 @@ async function executeTextSearch() {
       body: JSON.stringify({ sql })
     });
     
-    const data = await response.json();
-    
-    if (data.error) {
-      showError(resultsContainer, data.error);
-      return;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Error executing search');
     }
     
+    const data = await response.json();
     displayResults(data);
   } catch (error) {
     showError(resultsContainer, `Error executing search: ${error.message}`);
@@ -165,14 +168,13 @@ async function executeTextSearch() {
 function displayResults(data) {
   resultsContainer.innerHTML = '';
   
-  if (!data || !data.length) {
+  if (!data || data.length === 0) {
     resultsContainer.innerHTML = '<div class="notification">No results found</div>';
     return;
   }
   
   // Create table for results
   const table = document.createElement('table');
-  table.className = 'result-table';
   
   // Create table header
   const thead = document.createElement('thead');
@@ -198,6 +200,7 @@ function displayResults(data) {
     
     headers.forEach(header => {
       const td = document.createElement('td');
+      
       let value = row[header];
       
       // If the value is an object or array, convert it to a short string
@@ -262,13 +265,12 @@ async function fetchObjectDetails(objectId, objectType = 'objects') {
   
   try {
     const response = await fetch(`/objects/${objectType}/${objectId}`);
-    const data = await response.json();
     
-    if (data.error) {
-      showError(objectContainer, data.error);
-      return;
+    if (!response.ok) {
+      throw new Error(`Error fetching object: ${response.statusText}`);
     }
     
+    const data = await response.json();
     displayObjectDetails(data);
   } catch (error) {
     showError(objectContainer, `Error fetching object details: ${error.message}`);
@@ -350,6 +352,37 @@ function displayObjectDetails(data) {
   
   objectView.appendChild(propertiesList);
   
+  // Add action buttons based on object type
+  const actionButtons = document.createElement('div');
+  actionButtons.className = 'action-buttons';
+  
+  // Add a Review button for object_list type
+  if (data.object_type === 'object_list') {
+    const reviewButton = document.createElement('button');
+    reviewButton.className = 'search-button';
+    reviewButton.textContent = 'Review Object List';
+    reviewButton.addEventListener('click', () => {
+      openReviewInterface(data.object.object_id);
+    });
+    actionButtons.appendChild(reviewButton);
+  }
+  
+  // Handle relationships if present
+  if (data.object_type && data.object.object_id) {
+    // Add a button to load relationships
+    const relationshipsButton = document.createElement('button');
+    relationshipsButton.className = 'search-button';
+    relationshipsButton.textContent = 'Load Relationships';
+    relationshipsButton.addEventListener('click', () => {
+      fetchObjectRelationships(data.object.object_id);
+    });
+    actionButtons.appendChild(relationshipsButton);
+  }
+  
+  if (actionButtons.children.length > 0) {
+    objectView.appendChild(actionButtons);
+  }
+  
   // Handle visualizations if present
   if (data.object.visualizations) {
     const visualizationsHeader = document.createElement('h3');
@@ -364,7 +397,7 @@ function displayObjectDetails(data) {
       const visualizations = data.object.visualizations;
       Object.keys(visualizations).forEach(key => {
         const vizContainer = document.createElement('div');
-        vizContainer.className = 'visualization-item';
+        vizContainer.style.marginBottom = '20px';
         
         const vizTitle = document.createElement('h4');
         vizTitle.textContent = key;
@@ -390,22 +423,27 @@ function displayObjectDetails(data) {
     objectView.appendChild(visualizationsContainer);
   }
   
-  // Handle relationships if present
-  if (data.object_type && data.object.object_id) {
-    // Add a button to load relationships
-    const relationshipsButton = document.createElement('button');
-    relationshipsButton.className = 'search-button';
-    relationshipsButton.textContent = 'Load Relationships';
-    relationshipsButton.style.marginTop = '20px';
-    
-    relationshipsButton.addEventListener('click', () => {
-      fetchObjectRelationships(data.object.object_id);
-    });
-    
-    objectView.appendChild(relationshipsButton);
-  }
-  
   objectContainer.appendChild(objectView);
+}
+
+// Open review interface in a new tab
+function openReviewInterface(objectListId) {
+  // Create a notification to show that we're opening the review interface
+  const notification = document.createElement('div');
+  notification.className = 'notification success';
+  notification.textContent = 'Opening review interface in a new tab...';
+  
+  // Add notification above the buttons
+  const actionButtons = document.querySelector('.action-buttons');
+  actionButtons.parentNode.insertBefore(notification, actionButtons);
+  
+  // Open the review interface in a new tab
+  window.open(`/reviewer?object_list_id=${objectListId}`, '_blank');
+  
+  // Remove the notification after a few seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
 }
 
 // Fetch relationships for an object
@@ -468,7 +506,7 @@ async function fetchObjectRelationships(objectId) {
       
       sourceData.forEach(rel => {
         const listItem = document.createElement('li');
-        listItem.textContent = `→ ${rel.type} → Object ID: ${rel.target_id}`;
+        listItem.style.marginBottom = '5px';
         
         // Make the target ID clickable
         const targetLink = document.createElement('a');
@@ -504,6 +542,7 @@ async function fetchObjectRelationships(objectId) {
       
       targetData.forEach(rel => {
         const listItem = document.createElement('li');
+        listItem.style.marginBottom = '5px';
         
         // Make the source ID clickable
         const sourceLink = document.createElement('a');
