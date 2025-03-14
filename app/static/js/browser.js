@@ -168,20 +168,21 @@ async function executeTextSearch() {
 function displayResults(data) {
   resultsContainer.innerHTML = '';
   
-  if (!data || data.length === 0) {
+  if (!data || !data.length) {
     resultsContainer.innerHTML = '<div class="notification">No results found</div>';
     return;
   }
   
   // Create table for results
   const table = document.createElement('table');
+  table.className = 'result-table';
   
   // Create table header
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
   
-  // Get headers from the first result
-  const headers = Object.keys(data[0]);
+  // Hardcoded headers 
+  const headers = ['name', 'date', 'object_id',  'object_type'];
   
   headers.forEach(header => {
     const th = document.createElement('th');
@@ -197,27 +198,21 @@ function displayResults(data) {
   
   data.forEach(row => {
     const tr = document.createElement('tr');
-    
+    const properties = JSON.parse(row['properties']);
+    const date = properties['created'];
+    const name = properties['name'];
+
     headers.forEach(header => {
       const td = document.createElement('td');
-      
-      let value = row[header];
-      
-      // If the value is an object or array, convert it to a short string
-      if (typeof value === 'object' && value !== null) {
-        if (header === 'properties') {
-          // If it's a properties field, parse it and get useful info
-          try {
-            const properties = JSON.parse(value);
-            value = properties.name || properties.object_id || 'Unknown';
-          } catch (e) {
-            value = 'Invalid JSON';
-          }
-        } else {
-          value = JSON.stringify(value).substring(0, 50) + '...';
-        }
+      let value;
+      if (header === 'date') {
+        value = date;
+      }else if (header === 'name'){
+        value = name;
+      }else{
+        value = row[header];
       }
-      
+
       td.textContent = value;
       tr.appendChild(td);
     });
