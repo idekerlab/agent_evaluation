@@ -1,5 +1,3 @@
-
-
 // Store predefined queries
 const predefinedQueries = [
   {
@@ -42,6 +40,15 @@ const predefinedQueries = [
 // DOM Elements
 let sqlInput, textSearchInput, resultsContainer, objectContainer;
 let sqlSearchButton, textSearchButton;
+
+let currentData = [];
+
+let sortDirections = {
+  name: 'asc',
+  date: 'asc',
+  object_id: 'asc',
+  object_type: 'asc',
+};
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
@@ -164,66 +171,124 @@ async function executeTextSearch() {
   }
 }
 
+// Helper function to format long text
+function formatLongText(text, maxLength = 35) {
+  if (!text) return '';
+  text = String(text);
+  
+  if (text.length <= maxLength) return text;
+  
+  // If text contains underscores, try to break it at a logical point
+  if (text.includes('_')) {
+    const parts = text.split('_');
+    
+    // If there are just a few parts, try to keep the first and last parts
+    if (parts.length <= 3) {
+      const firstPart = parts[0];
+      const lastPart = parts[parts.length - 1];
+      
+      // If first + last would fit with ellipsis between
+      if (firstPart.length + lastPart.length + 3 <= maxLength) {
+        return firstPart + '...' + lastPart;
+      }
+    }
+    
+    // Otherwise build up from the start
+    let result = parts[0];
+    let currentLength = result.length;
+    
+    // Add parts until we approach the max length
+    for (let i = 1; i < parts.length; i++) {
+      if (currentLength + parts[i].length + 1 > maxLength - 3) {
+        return result + '...';
+      }
+      result += '_' + parts[i];
+      currentLength = result.length;
+    }
+    
+    return result;
+  }
+  
+  // Simple truncation with ellipsis
+  return text.substring(0, maxLength - 3) + '...';
+}
+
 // Display query results in the middle panel
 function displayResults(data) {
+  currentData = data;
   resultsContainer.innerHTML = '';
-  
+
+  // If no data
   if (!data || !data.length) {
     resultsContainer.innerHTML = '<div class="notification">No results found</div>';
     return;
   }
-  
-  // Create table for results
+
   const table = document.createElement('table');
   table.className = 'result-table';
-  
-  // Create table header
+
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-  
-  // Hardcoded headers 
-  const headers = ['name', 'date', 'object_id',  'object_type'];
-  
-  headers.forEach(header => {
-    const th = document.createElement('th');
-    th.textContent = header;
+
+  const headers = ['name', 'date', 'object_id', 'object_type'];
+
+  // Set column widths based on content type
+  const colWidths = {
+    'name': '38%',      // Allocate more space for names
+    'date': '15%',      // Dates have a consistent format
+    'object_id': '25%', // IDs can be long
+    'object_type': '22%' // Types are usually short
+  };
+
+  headers.forEach((header) => {
+    const th = createSortableHeader(header);
+    // Set the width for each column
+    th.style.width = colWidths[header];
     headerRow.appendChild(th);
   });
-  
+
   thead.appendChild(headerRow);
   table.appendChild(thead);
-  
+
   // Create table body
   const tbody = document.createElement('tbody');
-  
-  data.forEach(row => {
+
+  data.forEach((row) => {
     const tr = document.createElement('tr');
     const properties = JSON.parse(row['properties']);
     const date = properties['created'];
     const name = properties['name'];
 
-    headers.forEach(header => {
+    headers.forEach((header) => {
       const td = document.createElement('td');
+      td.setAttribute('data-header', header);
       let value;
+      
       if (header === 'date') {
         value = date;
-      }else if (header === 'name'){
+      } else if (header === 'name') {
         value = name;
-      }else{
+        // Add title attribute for tooltip on hover for long names
+        td.title = name || '';
+        // Format long names for display
+        td.textContent = formatLongText(value);
+        tr.appendChild(td);
+        return; // Skip the td.textContent line below
+      } else {
         value = row[header];
+        // Don't format object_id or other columns, use their original values
       }
-
-      td.textContent = value;
+      
+      td.textContent = value || '';
       tr.appendChild(td);
     });
-    
+
     // Add click event to show object details
     tr.addEventListener('click', () => {
       let objectId, objectType;
-      
+
       if (row.object_id) {
         objectId = row.object_id;
-        
         // Try to get object_type
         if (row.object_type) {
           objectType = row.object_type;
@@ -232,26 +297,103 @@ function displayResults(data) {
             const props = JSON.parse(row.properties);
             if (props.object_type) objectType = props.object_type;
           } catch (e) {
-            // If parsing fails, extract type from ID (format is usually type_uuid)
             const idParts = objectId.split('_');
             if (idParts.length > 1) objectType = idParts[0];
           }
         }
-        
+
         if (objectId && objectType) {
           fetchObjectDetails(objectId, objectType);
         } else if (objectId) {
-          // If we have an ID but no type, try to load it anyway
           fetchObjectDetails(objectId);
         }
       }
     });
-    
+
     tbody.appendChild(tr);
   });
-  
+
   table.appendChild(tbody);
   resultsContainer.appendChild(table);
+}
+
+function createSortableHeader(header) {
+  const th = document.createElement('th');
+  th.className = 'sortable-header';
+  th.setAttribute('data-header', header);
+  
+  // Create a simple text node for the header label
+  const labelText = document.createTextNode(header);
+  th.appendChild(labelText);
+  
+  // Create the sort button
+  const sortButton = document.createElement('button');
+  sortButton.className = 'sort-button';
+  sortButton.innerHTML = '<i class="fas fa-sort-alpha-up"></i>';
+  
+  // Add click event for sorting
+  sortButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sortAndRender(header);
+  });
+  
+  // Add the button after the text
+  th.appendChild(sortButton);
+  
+  return th;
+}
+
+function sortAndRender(header) {
+  // Toggle direction
+  const currentDirection = sortDirections[header];
+  const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+  sortDirections[header] = newDirection;
+
+  currentData.sort((a, b) => {
+    const propsA = JSON.parse(a.properties);
+    const propsB = JSON.parse(b.properties);
+
+    let valA, valB;
+    if (header === 'name') {
+      valA = propsA.name || '';
+      valB = propsB.name || '';
+    } else if (header === 'date') {
+      valA = propsA.created || '';
+      valB = propsB.created || '';
+    } else {
+      valA = a[header] || '';
+      valB = b[header] || '';
+    }
+
+    // Convert to string & lowercase for case-insensitive compare
+    valA = String(valA).toLowerCase();
+    valB = String(valB).toLowerCase();
+
+    // Compare as strings (or parse as dates if you want real date sorting)
+    if (valA < valB) return newDirection === 'asc' ? -1 : 1;
+    if (valA > valB) return newDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  displayResults(currentData);
+  const allHeaders = document.querySelectorAll('th.sortable-header');
+  allHeaders.forEach((th) => {
+    const hName = th.getAttribute('data-header');
+    const icon = th.querySelector('button.sort-button i'); // the <i> inside the button
+    if (!icon) return;
+
+    // If this is the sorted column, set the correct icon
+    if (hName === header) {
+      if (newDirection === 'asc') {
+        icon.className = 'fas fa-sort-alpha-up';   // or 'fa-sort-up'
+      } else {
+        icon.className = 'fas fa-sort-alpha-down'; // or 'fa-sort-down'
+      }
+    } else {
+      // For all other columns, revert to a neutral icon (optional)
+      icon.className = 'fas fa-sort-alpha-up';
+    }
+  });
 }
 
 // Fetch details of a specific object

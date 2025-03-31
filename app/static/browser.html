@@ -145,22 +145,83 @@
       color: white;
     }
     
-    table {
+    .result-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 1rem; /* optional spacing below table */ 
+      table-layout: fixed; /* Add fixed layout to ensure consistent column widths */
     }
     
-    th, td {
+    .result-table th,
+    .result-table td {
       border: 1px solid #ddd;
       padding: 8px;
+      vertical-align: middle; /* keep content centered vertically */
       text-align: left;
     }
     
-    th {
-      background-color: #f5f5f5;
+    /* Special styling for the name column only */
+    .result-table td[data-header="name"] {
+      width: 40%;
+      word-wrap: break-word; /* Allow long words to break and wrap */
+      overflow-wrap: break-word; /* Modern version of word-wrap */
+      word-break: break-word; /* More gentle than break-all, preserves words where possible */
+      max-width: 0; /* Force the cell to respect width constraints */
+      white-space: normal; /* Allow text to wrap */
+      hyphens: auto; /* Enable hyphenation for very long words */
     }
     
+    /* Set widths for other columns but without special text handling */
+    .result-table td[data-header="date"] {
+      width: 20%;
+    }
+    
+    .result-table td[data-header="object_id"] {
+      width: 25%;
+    }
+    
+    .result-table td[data-header="object_type"] {
+      width: 15%;
+    }
+
+    /* Lighter background for header cells */
+    .result-table th {
+      background-color: #f8f8f8;
+      font-weight: bold; /* Ensure headers have bold text */
+    }
+
+    .sortable-header {
+      padding: 8px;
+      /* Remove display: table-cell as it's already a th element */
+    }
+
+    /* This is the clickable button that holds the sort icon */
+    .sort-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9em;
+      color: #333;
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      float: right; /* Float the button to the right */
+    }
+
+    .sortable-header div {
+      display: flex;
+      flex-direction: row; /* Ensure horizontal layout */
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .sort-button:hover {
+      background-color: #e2e2e2; /* subtle hover highlight */
+    }
+
     tr:hover {
       background-color: skyblue;
       cursor: pointer;
@@ -216,6 +277,7 @@
       margin-top: 20px;
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
 <body>
   <!-- Top menu bar -->
@@ -259,7 +321,7 @@
   </div>
   
   <!-- Include external JavaScript file with cache busting -->
-  <script src="/static/js/browser.js?v=20240513"></script>
+  <script src="/static/js/browser.js?v=20240518"></script>
   
 </body>
 </html>
