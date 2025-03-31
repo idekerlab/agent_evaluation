@@ -59,14 +59,62 @@ function displayObject(index) {
     });
   }
   
-  // Display object properties, excluding system properties
-  const systemProperties = ['object_id', 'type', '_criteria', '_display_types'];
+  // Get order configuration from the object list, not from the individual object
+  // _order: An optional property in the object list that defines the display order of properties
+  // Format: { "property_name": order_rank_number, ... }
+  // Properties with lower rank numbers are displayed first
+  // Properties with the same rank are sorted alphabetically
+  // Properties not mentioned in _order are displayed after ordered properties, sorted alphabetically
+  const orderConfig = objectList && objectList._order ? objectList._order : {};
+  console.log('Object list order configuration:', orderConfig);
   
-  Object.keys(object).forEach(key => {
-    if (systemProperties.includes(key)) return;
+  // Display object properties, excluding system properties
+  const systemProperties = ['object_id', 'type', '_criteria', '_display_types', '_order'];
+  
+  // Get all property keys from this object and sort them according to objectList._order if available
+  const propertyKeys = Object.keys(object).filter(key => !systemProperties.includes(key) && 
+                                                      object[key] !== null && 
+                                                      object[key] !== undefined && 
+                                                      object[key] !== '');
+  
+  // Sort keys of this object using the _order property from objectList
+  propertyKeys.sort((a, b) => {
+    // Get the order ranks from objectList._order for the properties in this object
+    const rankA = orderConfig[a];
+    const rankB = orderConfig[b];
     
+    // Log the ranks for debugging
+    if (rankA !== undefined || rankB !== undefined) {
+      console.log(`Comparing object property ${a} (rank ${rankA}) with ${b} (rank ${rankB})`);
+    }
+    
+    // If both have defined ranks in objectList._order
+    if (rankA !== undefined && rankB !== undefined) {
+      // If ranks are different, sort by rank
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      // If ranks are the same, sort alphabetically
+      return a.localeCompare(b);
+    }
+    
+    // If only a has rank in objectList._order, it comes first
+    if (rankA !== undefined) {
+      return -1;
+    }
+    
+    // If only b has rank in objectList._order, it comes first
+    if (rankB !== undefined) {
+      return 1;
+    }
+    
+    // If neither has rank in objectList._order, sort alphabetically
+    return a.localeCompare(b);
+  });
+  
+  // Now display this object's properties in the sorted order
+  propertyKeys.forEach(key => {
     const value = object[key];
-    if (value === null || value === undefined || value === '') return;
     
     const propertyItem = document.createElement('div');
     propertyItem.className = 'property-item';
