@@ -238,6 +238,7 @@
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
       margin-bottom: 15px;
+      position: relative;
     }
     
     .object-title {
@@ -275,6 +276,71 @@
       display: flex;
       gap: 10px;
       margin-top: 20px;
+    }
+    
+    .delete-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: #ff4136;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .delete-button:hover {
+      background-color: #d50000;
+    }
+    
+    .confirmation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 400px;
+      max-width: 80%;
+    }
+    
+    .modal-header {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+    }
+    
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .modal-cancel {
+      background-color: #ccc;
+      color: #333;
+    }
+    
+    .modal-confirm {
+      background-color: #ff4136;
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
@@ -322,6 +388,21 @@
   
   <!-- Include external JavaScript file with cache busting -->
   <script src="/static/js/browser.js?v=20240518"></script>
+  
+  <!-- Confirmation modal for delete action -->
+  <div id="confirmation-modal" class="confirmation-modal">
+    <div class="modal-content">
+      <div class="modal-header">Confirm Delete</div>
+      <div class="modal-body">
+        Are you sure you want to delete this object? This action cannot be undone.
+        <div id="modal-detail" style="margin-top: 10px; font-style: italic;"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel" class="search-button modal-cancel">Cancel</button>
+        <button id="modal-confirm" class="search-button modal-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
   
 </body>
 </html>

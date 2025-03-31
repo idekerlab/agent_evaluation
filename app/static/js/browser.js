@@ -78,6 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
   textSearchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeTextSearch();
   });
+  
+  // Add keyboard event to close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('confirmation-modal');
+      if (modal.style.display === 'flex') {
+        modal.style.display = 'none';
+      }
+    }
+  });
+  
+  // Also close modal when clicking outside of it
+  const modal = document.getElementById('confirmation-modal');
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
 });
 
 // Initialize the predefined queries list
@@ -433,8 +451,17 @@ function displayObjectDetails(data) {
   type.className = 'object-type';
   type.textContent = `Type: ${data.object_type}`;
   
+  // Add delete button
+  const deleteButton = document.createElement('button');
+  deleteButton.className = 'delete-button';
+  deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
+  deleteButton.addEventListener('click', () => {
+    showDeleteConfirmation(data.object.object_id, data.object_type, data.object);
+  });
+  
   header.appendChild(title);
   header.appendChild(type);
+  header.appendChild(deleteButton);
   objectView.appendChild(header);
   
   // Properties section
@@ -714,6 +741,87 @@ async function fetchObjectRelationships(objectId) {
     errorMessage.className = 'notification error';
     errorMessage.textContent = `Error fetching relationships: ${error.message}`;
     objectView.appendChild(errorMessage);
+  }
+}
+
+// Show delete confirmation modal
+function showDeleteConfirmation(objectId, objectType, objectData) {
+  const modal = document.getElementById('confirmation-modal');
+  const modalDetail = document.getElementById('modal-detail');
+  const modalCancel = document.getElementById('modal-cancel');
+  const modalConfirm = document.getElementById('modal-confirm');
+  
+  // Clear previous event listeners
+  const newModalCancel = modalCancel.cloneNode(true);
+  const newModalConfirm = modalConfirm.cloneNode(true);
+  modalCancel.parentNode.replaceChild(newModalCancel, modalCancel);
+  modalConfirm.parentNode.replaceChild(newModalConfirm, modalConfirm);
+  
+  // If it's an object_list, add additional warning
+  if (objectType === 'object_list' && objectData.object_ids && objectData.object_ids.length > 0) {
+    modalDetail.textContent = `This will also delete ${objectData.object_ids.length} objects contained in this list.`;
+  } else {
+    modalDetail.textContent = '';
+  }
+  
+  // Show the modal
+  modal.style.display = 'flex';
+  
+  // Cancel button event
+  newModalCancel.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  // Confirm button event
+  newModalConfirm.addEventListener('click', () => {
+    deleteObject(objectId, objectType, objectData);
+    modal.style.display = 'none';
+  });
+}
+
+// Delete an object
+async function deleteObject(objectId, objectType, objectData) {
+  showLoading(objectContainer);
+  
+  try {
+    // Delete the main object
+    const response = await fetch(`/objects/${objectType}/${objectId}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error deleting object: ${response.statusText}`);
+    }
+    
+    // If it's an object_list, also delete all contained objects
+    if (objectType === 'object_list' && objectData.object_ids && objectData.object_ids.length > 0) {
+      // We'll delete the objects sequentially to avoid overwhelming the server
+      for (const containedId of objectData.object_ids) {
+        try {
+          // Use POST for contained objects since it's guaranteed to work
+          // The DELETE endpoint might not be supported for all object types
+          await fetch(`/objects/objects/${containedId}/delete`, {
+            method: 'POST'
+          });
+        } catch (error) {
+          console.error(`Error deleting contained object ${containedId}:`, error);
+          // Continue with other deletions even if one fails
+        }
+      }
+    }
+    
+    // Show success message and clear the object view
+    objectContainer.innerHTML = '<div class="notification success">Object successfully deleted.</div>';
+    
+    // Refresh the search results
+    if (sqlInput.value) {
+      executeSQL();
+    } else if (textSearchInput.value) {
+      executeTextSearch();
+    }
+    
+  } catch (error) {
+    showError(objectContainer, `Error deleting object: ${error.message}`);
   }
 }
 

@@ -406,6 +406,28 @@ async def delete_object(request: Request, object_type: str, object_id: str):
     db.remove(object_id)
     return RedirectResponse(url=f"/objects/{object_type}", status_code=303)
 
+@router.delete("/objects/{object_type}/{object_id}")
+async def delete_object_api(request: Request, object_type: str, object_id: str):
+    """Delete an object via REST API call."""
+    logger.info(f"Deleting {object_type} with ID: {object_id} via API")
+    db = request.app.state.db
+    
+    try:
+        # First check if the object exists
+        properties, _ = db.load(object_id)
+        if not properties:
+            raise HTTPException(status_code=404, detail=f"Object with ID {object_id} not found")
+        
+        # Delete the object
+        db.remove(object_id)
+        
+        return {"success": True, "message": f"Object {object_id} deleted successfully"}
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        logger.error(f"Error deleting object: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error deleting object: {str(e)}")
+
 @router.post("/objects/{object_type}/{object_id}/execute")
 async def execute_object(request: Request, object_type: str, object_id: str):
     """Execute a plan object (analysis_plan or review_plan)."""
