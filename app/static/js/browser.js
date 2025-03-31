@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
   sqlSearchButton.addEventListener('click', executeSQL);
   textSearchButton.addEventListener('click', executeTextSearch);
   
+  // Reset the right panel header
+  resetObjectDetailsHeader();
+  
   // Execute the first predefined query on load to show some initial data
   sqlInput.value = predefinedQueries[0].query;
   
@@ -361,6 +364,63 @@ function createSortableHeader(header) {
   return th;
 }
 
+// Helper function to parse date strings in format "mm-dd-yyyy hh:mm:ss" or "yyyy-mm-dd hh:mm:ss"
+function parseDate(dateStr) {
+  if (!dateStr) return null;
+  
+  // Try to determine the format based on the string
+  let parts;
+  let year, month, day, hours, minutes, seconds;
+  
+  // Check for mm.dd.yyyy format (with dots)
+  if (dateStr.includes('.')) {
+    parts = dateStr.split(/[\.\s:]/);
+    month = parseInt(parts[0], 10);
+    day = parseInt(parts[1], 10);
+    year = parseInt(parts[2], 10);
+    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
+    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
+    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
+  }
+  // Check for mm-dd-yyyy format (with hyphens)
+  else if (dateStr.includes('-') && dateStr.indexOf('-') < 3) {
+    parts = dateStr.split(/[-\s:]/);
+    month = parseInt(parts[0], 10);
+    day = parseInt(parts[1], 10);
+    year = parseInt(parts[2], 10);
+    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
+    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
+    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
+  }
+  // Assume yyyy-mm-dd format (standard ISO-like)
+  else if (dateStr.includes('-')) {
+    parts = dateStr.split(/[-\s:]/);
+    year = parseInt(parts[0], 10);
+    month = parseInt(parts[1], 10);
+    day = parseInt(parts[2], 10);
+    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
+    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
+    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
+  }
+  // Handle slash-separated dates (mm/dd/yyyy)
+  else if (dateStr.includes('/')) {
+    parts = dateStr.split(/[\/\s:]/);
+    month = parseInt(parts[0], 10);
+    day = parseInt(parts[1], 10);
+    year = parseInt(parts[2], 10);
+    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
+    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
+    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
+  }
+  // If none of the above formats match, try creating a date directly
+  else {
+    return new Date(dateStr);
+  }
+  
+  // JavaScript months are 0-indexed (0-11)
+  return new Date(year, month - 1, day, hours, minutes, seconds);
+}
+
 function sortAndRender(header) {
   // Toggle direction
   const currentDirection = sortDirections[header];
@@ -375,22 +435,48 @@ function sortAndRender(header) {
     if (header === 'name') {
       valA = propsA.name || '';
       valB = propsB.name || '';
-    } else if (header === 'date') {
-      valA = propsA.created || '';
-      valB = propsB.created || '';
-    } else {
+      
+      // Convert to string & lowercase for case-insensitive compare
+      valA = String(valA).toLowerCase();
+      valB = String(valB).toLowerCase();
+      
+      // Compare as strings
+      if (valA < valB) return newDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return newDirection === 'asc' ? 1 : -1;
+      return 0;
+    } 
+    else if (header === 'date') {
+      // Handle date sorting
+      const dateStrA = propsA.created || '';
+      const dateStrB = propsB.created || '';
+      
+      // Parse the date strings to Date objects
+      const dateA = parseDate(dateStrA);
+      const dateB = parseDate(dateStrB);
+      
+      // Handle invalid dates - put them at the bottom
+      if (!dateA && !dateB) return 0;
+      if (!dateA) return newDirection === 'asc' ? 1 : -1;
+      if (!dateB) return newDirection === 'asc' ? -1 : 1;
+      
+      // Compare date objects
+      if (dateA < dateB) return newDirection === 'asc' ? -1 : 1;
+      if (dateA > dateB) return newDirection === 'asc' ? 1 : -1;
+      return 0;
+    } 
+    else {
       valA = a[header] || '';
       valB = b[header] || '';
+      
+      // Convert to string & lowercase for case-insensitive compare
+      valA = String(valA).toLowerCase();
+      valB = String(valB).toLowerCase();
+      
+      // Compare as strings
+      if (valA < valB) return newDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return newDirection === 'asc' ? 1 : -1;
+      return 0;
     }
-
-    // Convert to string & lowercase for case-insensitive compare
-    valA = String(valA).toLowerCase();
-    valB = String(valB).toLowerCase();
-
-    // Compare as strings (or parse as dates if you want real date sorting)
-    if (valA < valB) return newDirection === 'asc' ? -1 : 1;
-    if (valA > valB) return newDirection === 'asc' ? 1 : -1;
-    return 0;
   });
 
   displayResults(currentData);
@@ -403,13 +489,13 @@ function sortAndRender(header) {
     // If this is the sorted column, set the correct icon
     if (hName === header) {
       if (newDirection === 'asc') {
-        icon.className = 'fas fa-sort-alpha-up';   // or 'fa-sort-up'
+        icon.className = hName === 'date' ? 'fas fa-sort-numeric-up' : 'fas fa-sort-alpha-up';
       } else {
-        icon.className = 'fas fa-sort-alpha-down'; // or 'fa-sort-down'
+        icon.className = hName === 'date' ? 'fas fa-sort-numeric-down' : 'fas fa-sort-alpha-down';
       }
     } else {
-      // For all other columns, revert to a neutral icon (optional)
-      icon.className = 'fas fa-sort-alpha-up';
+      // For all other columns, revert to the appropriate icon
+      icon.className = hName === 'date' ? 'fas fa-sort-numeric-up' : 'fas fa-sort-alpha-up';
     }
   });
 }
@@ -426,10 +512,85 @@ async function fetchObjectDetails(objectId, objectType = 'objects') {
     }
     
     const data = await response.json();
+    console.log(data);
+    // First, clear the Object Details panel header
+    const panelHeader = document.querySelector('.right-panel .panel-header');
+    
+    // Create the delete button for the panel header
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button';
+    deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
+    deleteButton.addEventListener('click', () => {
+      showDeleteConfirmation(data.object.object_id, data.object_type, data.object);
+    });
+    
+    // Clear the panel header and re-add the text and delete button
+    panelHeader.innerHTML = 'Object Details';
+    panelHeader.appendChild(deleteButton);
+    
     displayObjectDetails(data);
   } catch (error) {
     showError(objectContainer, `Error fetching object details: ${error.message}`);
   }
+}
+
+// Helper function to check if value is a 2D array with consistent row lengths
+function is2DArray(value) {
+  // Check if it's an array first
+  if (!Array.isArray(value)) return false;
+  
+  // Check if all elements are arrays
+  const allArrays = value.every(item => Array.isArray(item));
+  if (!allArrays) return false;
+  
+  // Check if all subarrays have the same length
+  if (value.length === 0) return false;
+  
+  const firstLength = value[0].length;
+  const allSameLength = value.every(arr => arr.length === firstLength);
+  
+  return allSameLength;
+}
+
+// Function to create a table from a 2D array
+function createTableFromArray(arr) {
+  const csvContainer = document.createElement('div');
+  csvContainer.className = 'csv-table';
+  
+  const table = document.createElement('table');
+  
+  // Create header row (using first row of array)
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  
+  arr[0].forEach(cell => {
+    const th = document.createElement('th');
+    th.textContent = cell !== null && cell !== undefined ? String(cell).trim() : '';
+    headerRow.appendChild(th);
+  });
+  
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+  
+  // Create table body rows (rest of the array)
+  const tbody = document.createElement('tbody');
+  
+  for (let i = 1; i < arr.length; i++) {
+    const tr = document.createElement('tr');
+    
+    arr[i].forEach(cell => {
+      const td = document.createElement('td');
+      td.textContent = cell !== null && cell !== undefined ? String(cell).trim() : '';
+      tr.appendChild(td);
+    });
+    
+    tbody.appendChild(tr);
+  }
+  
+  table.appendChild(tbody);
+  csvContainer.appendChild(table);
+  
+  return csvContainer;
 }
 
 // Display object details in the right panel
@@ -451,17 +612,10 @@ function displayObjectDetails(data) {
   type.className = 'object-type';
   type.textContent = `Type: ${data.object_type}`;
   
-  // Add delete button
-  const deleteButton = document.createElement('button');
-  deleteButton.className = 'delete-button';
-  deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
-  deleteButton.addEventListener('click', () => {
-    showDeleteConfirmation(data.object.object_id, data.object_type, data.object);
-  });
+  // Delete button is now in the panel header, so remove it from here
   
   header.appendChild(title);
   header.appendChild(type);
-  header.appendChild(deleteButton);
   objectView.appendChild(header);
   
   // Properties section
@@ -481,12 +635,22 @@ function displayObjectDetails(data) {
     return a.localeCompare(b);
   });
   
+  // Check for _display_types in the object
+  const displayTypes = {};
+  if (properties._display_types && Array.isArray(properties._display_types)) {
+    properties._display_types.forEach(dt => {
+      if (dt.property_name && dt.display_type) {
+        displayTypes[dt.property_name] = dt.display_type;
+      }
+    });
+  }
+  
   sortedKeys.forEach(key => {
     const value = properties[key];
     
     // Skip empty values or complex objects that have their own visualization
     if (value === null || value === undefined || value === '') return;
-    if (key === 'visualizations') return;
+    if (key === 'visualizations' || key === '_display_types') return;
     
     const propertyItem = document.createElement('div');
     propertyItem.className = 'property-item';
@@ -498,8 +662,71 @@ function displayObjectDetails(data) {
     const propertyValue = document.createElement('div');
     propertyValue.className = 'property-value';
     
-    // Handle different value types
-    if (typeof value === 'object') {
+    // Check if this property has a special display type
+    const displayType = displayTypes[key];
+    
+    if (displayType === 'csv' && typeof value === 'string') {
+      try {
+        // Display CSV as a table
+        const csvContainer = document.createElement('div');
+        csvContainer.className = 'csv-table';
+        
+        const table = document.createElement('table');
+        
+        const rows = value.trim().split('\n');
+        
+        if (rows.length > 0) {
+          // Create header
+          const header = rows[0].split(',');
+          const thead = document.createElement('thead');
+          const headerRow = document.createElement('tr');
+          
+          header.forEach(cell => {
+            const th = document.createElement('th');
+            th.textContent = cell.trim();
+            headerRow.appendChild(th);
+          });
+          
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+          
+          // Create body
+          const tbody = document.createElement('tbody');
+          
+          for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].split(',');
+            const tr = document.createElement('tr');
+            
+            cells.forEach(cell => {
+              const td = document.createElement('td');
+              td.textContent = cell.trim();
+              tr.appendChild(td);
+            });
+            
+            tbody.appendChild(tr);
+          }
+          
+          table.appendChild(tbody);
+          csvContainer.appendChild(table);
+          propertyValue.appendChild(csvContainer);
+        } else {
+          // Fallback if CSV parsing fails
+          propertyValue.textContent = value;
+        }
+      } catch (e) {
+        // If CSV parsing fails, display as plain text
+        propertyValue.textContent = value;
+      }
+    } else if (Array.isArray(value) && is2DArray(value) && value.length > 0) {
+      // Handle 2D arrays by displaying them as tables
+      try {
+        const tableElement = createTableFromArray(value);
+        propertyValue.appendChild(tableElement);
+      } catch (e) {
+        // Fallback to JSON display if table creation fails
+        propertyValue.textContent = JSON.stringify(value, null, 2);
+      }
+    } else if (typeof value === 'object') {
       try {
         propertyValue.textContent = JSON.stringify(value, null, 2);
       } catch (e) {
@@ -779,6 +1006,14 @@ function showDeleteConfirmation(objectId, objectType, objectData) {
   });
 }
 
+// Helper function to reset the Object Details panel header
+function resetObjectDetailsHeader() {
+  const panelHeader = document.querySelector('.right-panel .panel-header');
+  if (panelHeader) {
+    panelHeader.innerHTML = 'Object Details';
+  }
+}
+
 // Delete an object
 async function deleteObject(objectId, objectType, objectData) {
   showLoading(objectContainer);
@@ -812,6 +1047,9 @@ async function deleteObject(objectId, objectType, objectData) {
     
     // Show success message and clear the object view
     objectContainer.innerHTML = '<div class="notification success">Object successfully deleted.</div>';
+    
+    // Reset the panel header after deletion
+    resetObjectDetailsHeader();
     
     // Refresh the search results
     if (sqlInput.value) {

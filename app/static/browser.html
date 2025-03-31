@@ -93,6 +93,29 @@
       margin-bottom: 15px;
       padding-bottom: 5px;
       border-bottom: 1px solid #ddd;
+      position: relative;
+    }
+    
+    /* Add a new class for the panel header in the right panel */
+    .right-panel .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    /* Modify .delete-button for when it's in the panel header */
+    .panel-header .delete-button {
+      position: static; /* Override absolute positioning */
+      margin-left: 10px; /* Add some spacing */
+      font-size: 0.9rem;
+      padding: 3px 10px;
+      display: flex;
+      align-items: center;
+      height: fit-content;
+    }
+    
+    .panel-header .delete-button i {
+      margin-right: 5px;
     }
     
     .notification {
@@ -342,6 +365,39 @@
     .modal-confirm {
       background-color: #ff4136;
     }
+    
+    /* CSV Table Styles */
+    .csv-table {
+      width: 100%;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    .csv-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    .csv-table th, 
+    .csv-table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    
+    .csv-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    
+    .csv-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .csv-table tr:hover {
+      background-color: #f0f0f0;
+    }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
@@ -385,10 +441,7 @@
       </div>
     </div>
   </div>
-  
-  <!-- Include external JavaScript file with cache busting -->
-  <script src="/static/js/browser.js?v=20240518"></script>
-  
+    
   <!-- Confirmation modal for delete action -->
   <div id="confirmation-modal" class="confirmation-modal">
     <div class="modal-content">
@@ -403,6 +456,7 @@
       </div>
     </div>
   </div>
-  
+    <!-- Include external JavaScript file with cache busting -->
+    <script src="/static/js/browser.js?v=20240522"></script>
 </body>
 </html>
