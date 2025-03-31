@@ -200,6 +200,56 @@ async function submitReview() {
   }
 }
 
+// Export the review, object list, and objects as JSON
+async function exportReview() {
+  try {
+    // Save current scores first to ensure everything is up to date
+    saveCurrentScores();
+    
+    // Prepare the export data
+    const exportData = {
+      review: review,
+      object_list: objectList,
+      objects: objects
+    };
+    
+    console.log('Exporting review data:', exportData);
+    
+    // Convert to JSON
+    const jsonData = JSON.stringify(exportData, null, 2);
+    
+    // Create a blob and download link
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a filename with the review ID and timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `review_${review.object_id}_${timestamp}.json`;
+    
+    // Create a temporary link element to trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    
+    // Add to the document, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
+    
+    showNotification('Review exported successfully!', 'success');
+    
+  } catch (error) {
+    console.error('Error in exportReview:', error);
+    showNotification(`Error exporting review: ${error.message}`, 'error');
+  }
+}
+
 // Disable all form inputs
 function disableFormInputs() {
   // Disable reviewer input
