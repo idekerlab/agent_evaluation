@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
     const uuidInput = document.getElementById('ndex-uuid');
     const fetchButton = document.getElementById('fetch-network-btn');
+    const fileDropZone = document.getElementById('file-drop-zone');
+    const fileInput = document.getElementById('cx-file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
     const networkPreview = document.getElementById('network-preview');
     const previewContent = document.getElementById('preview-content');
     const importOptions = document.getElementById('import-options');
@@ -21,246 +24,296 @@ document.addEventListener('DOMContentLoaded', function() {
     const testProxyBtn = document.getElementById('test-proxy-btn');
     
     // State variables
-    let networkData = null;
     let fullNetworkData = null;
     let scoringCriteria = null;
     
     // Add event listeners
-    fetchButton.addEventListener('click', fetchNetworkHandler);
     importForm.addEventListener('submit', importNetworkHandler);
     
-    // Test buttons
-    testFetchBtn.addEventListener('click', testFetchHandler);
-    testProxyBtn.addEventListener('click', testProxyHandler);
+    // File input listeners
+    fileDropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
     
-    // Handle enter key in the UUID input
-    uuidInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            fetchNetworkHandler(e);
-        }
+    // Drag and drop listeners
+    fileDropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileDropZone.classList.add('dragover');
     });
+    fileDropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        fileDropZone.classList.remove('dragover');
+    });
+    fileDropZone.addEventListener('drop', handleFileDrop);
+    
+    // Test buttons
+    testFetchBtn.style.display = 'none';
+    testProxyBtn.style.display = 'none';
     
     /**
-     * Validate UUID format
-     * @param {string} uuid - The UUID to validate
-     * @returns {boolean} - True if valid UUID format
+     * Handle file selection from input click
      */
-    function validateUUID(uuid) {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        return uuidRegex.test(uuid);
-    }
-    
-    /**
-     * Test direct fetch button handler
-     */
-    async function testFetchHandler() {
-        const uuid = uuidInput.value.trim();
-        if (!uuid) {
-            alert('Please enter a UUID first');
-            return;
-        }
-        
-        showLoading(resultsContainer);
-        
-        try {
-            const data = await ndexClient.testFetchNetwork(uuid);
-            
-            const html = `
-                <div class="object-view">
-                    <h3>Direct Fetch Test Result (Success)</h3>
-                    <div class="notification success">Successfully fetched network details directly</div>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                </div>
-            `;
-            resultsContainer.innerHTML = html;
-        } catch (error) {
-            const html = `
-                <div class="object-view">
-                    <h3>Direct Fetch Test Result (Failed)</h3>
-                    <div class="notification error">${error.message}</div>
-                </div>
-            `;
-            resultsContainer.innerHTML = html;
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            processFile(file);
         }
     }
     
     /**
-     * Test proxy fetch button handler
+     * Handle file drop event
      */
-    async function testProxyHandler() {
-        const uuid = uuidInput.value.trim();
-        if (!uuid) {
-            alert('Please enter a UUID first');
-            return;
-        }
-        
-        showLoading(resultsContainer);
-        
-        try {
-            const data = await ndexClient.testProxyFetch(uuid);
-            
-            const html = `
-                <div class="object-view">
-                    <h3>Proxy Fetch Test Result (Success)</h3>
-                    <div class="notification success">Successfully fetched network details via proxy</div>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                </div>
-            `;
-            resultsContainer.innerHTML = html;
-        } catch (error) {
-            const html = `
-                <div class="object-view">
-                    <h3>Proxy Fetch Test Result (Failed)</h3>
-                    <div class="notification error">${error.message}</div>
-                </div>
-            `;
-            resultsContainer.innerHTML = html;
-        }
-    }
-    
-    /**
-     * Handle fetch network button click
-     * @param {Event} event - Click event
-     */
-    async function fetchNetworkHandler(event) {
+    function handleFileDrop(event) {
         event.preventDefault();
-        
-        // Clear previous notifications
+        fileDropZone.classList.remove('dragover');
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            processFile(file);
+        }
+    }
+    
+    /**
+     * Process the selected/dropped CX file
+     * @param {File} file
+     */
+    function processFile(file) {
+        // Clear previous notifications and results
         notificationContainer.innerHTML = '';
+        resultsContainer.innerHTML = '';
         
-        const uuid = uuidInput.value.trim();
-        if (!uuid) {
-            showNotification('Please enter a valid UUID', 'error');
+        // Validate file type
+        if (!file.name.toLowerCase().endsWith('.cx')) {
+            showNotification('Invalid file type. Please upload a .cx file.', 'error');
+            resetFileInput();
             return;
         }
         
-        // Reset UI
-        networkPreview.classList.add('hidden');
+        fileNameDisplay.textContent = `Selected file: ${file.name}`;
+        showLoading(previewContent);
+        networkPreview.classList.remove('hidden');
         importOptions.classList.add('hidden');
         criteriaPreview.classList.add('hidden');
         
-        // Show loading state
-        fetchButton.disabled = true;
-        fetchButton.textContent = 'Fetching...';
-        showLoading(previewContent);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const cxData = JSON.parse(e.target.result);
+                console.log("Successfully parsed CX file");
+                
+                // Basic validation of CX structure (can be expanded)
+                if (!Array.isArray(cxData) || cxData.length === 0) {
+                    throw new Error('Invalid CX format: Expected an array of aspects.');
+                }
+                
+                // Store the parsed data
+                fullNetworkData = parseCxToStructuredData(cxData);
+                console.log("Structured network data:", fullNetworkData);
+                
+                // Display preview using the parsed data
+                displayNetworkPreviewFromFile(fullNetworkData);
+                
+            } catch (error) {
+                console.error("Error parsing CX file:", error);
+                showNotification(`Error processing file: ${error.message}`, 'error');
+                resetFileInput();
+                previewContent.innerHTML = `<div class="notification error">Failed to parse CX file. Ensure it's valid JSON.</div>`;
+            }
+        };
+        reader.onerror = function() {
+            showNotification('Error reading file.', 'error');
+            resetFileInput();
+            previewContent.innerHTML = `<div class="notification error">Failed to read file.</div>`;
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    /**
+     * Reset file input display
+     */
+    function resetFileInput() {
+        fileNameDisplay.textContent = '';
+        fileInput.value = '';
+        networkPreview.classList.add('hidden');
+        importOptions.classList.add('hidden');
+        criteriaPreview.classList.add('hidden');
+        fullNetworkData = null;
+    }
+    
+    /**
+     * Parses the raw CX JSON array into a more structured object
+     * similar to what the NDEx API might return.
+     * @param {Array} cxData - Raw array of CX aspects
+     * @returns {Object} - Structured network data
+     */
+    function parseCxToStructuredData(cxData) {
+        const structuredData = {
+            name: 'Unnamed Network from CX',
+            description: '',
+            properties: [],
+            nodes: [],
+            edges: [],
+            nodeAttributes: [],
+            edgeAttributes: [],
+        };
+        
+        cxData.forEach(aspectContainer => {
+            const aspectName = Object.keys(aspectContainer)[0];
+            const aspectData = aspectContainer[aspectName];
+            
+            switch (aspectName) {
+                case 'networkAttributes':
+                    structuredData.properties = aspectData;
+                    const nameProp = aspectData.find(p => p.n === 'name');
+                    if (nameProp) structuredData.name = nameProp.v;
+                    const descProp = aspectData.find(p => p.n === 'description');
+                    if (descProp) structuredData.description = descProp.v;
+                    break;
+                case 'nodes':
+                    structuredData.nodes = aspectData.map(node => ({
+                        id: node['@id'],
+                        name: node.n,
+                        represents: node.r
+                    }));
+                    break;
+                case 'edges':
+                    structuredData.edges = aspectData.map(edge => ({
+                        id: edge['@id'],
+                        source: edge.s,
+                        target: edge.t,
+                        interaction: edge.i
+                    }));
+                    break;
+                case 'nodeAttributes':
+                    structuredData.nodeAttributes = aspectData.map(attr => ({
+                        propertyOf: attr.po,
+                        name: attr.n,
+                        value: attr.v,
+                        dataType: attr.d
+                    }));
+                    break;
+                case 'edgeAttributes':
+                    structuredData.edgeAttributes = aspectData.map(attr => ({
+                        propertyOf: attr.po,
+                        name: attr.n,
+                        value: attr.v,
+                        dataType: attr.d
+                    }));
+                    break;
+            }
+        });
+        
+        structuredData.nodeCount = structuredData.nodes.length;
+        structuredData.edgeCount = structuredData.edges.length;
+        
+        return structuredData;
+    }
+    
+    /**
+     * Display network preview based on data parsed from CX file
+     * @param {Object} parsedData - Structured data from CX file
+     */
+    function displayNetworkPreviewFromFile(parsedData) {
+        console.log("Displaying preview for data:", parsedData);
+        
+        const nodeCount = parsedData.nodeCount || 0;
+        const edgeCount = parsedData.edgeCount || 0;
+        
+        if (nodeCount === 0 && edgeCount === 0) {
+            showNotification('Warning: CX file contains no nodes or edges.', 'warning');
+        }
+        
+        if (nodeCount > 100 && edgeCount > 100) {
+            showNotification('Network too large: both nodes and edges exceed 100 limit. Import will be capped.', 'warning');
+        } else if (nodeCount > 100) {
+            showNotification('Network nodes exceed 100 limit. Import will be capped if importing nodes.', 'warning');
+        } else if (edgeCount > 100) {
+            showNotification('Network edges exceed 100 limit. Import will be capped if importing edges.', 'warning');
+        }
+        
+        const html = `
+            <table class="result-table">
+                <tbody>
+                    <tr>
+                        <td><strong>Name:</strong></td>
+                        <td>${parsedData.name || 'Unnamed Network'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Description:</strong></td>
+                        <td>${parsedData.description || 'No description'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nodes:</strong></td>
+                        <td>${nodeCount} ${nodeCount > 100 ? '<span class="notification warning" style="padding:2px 5px; margin:0;">limit 100</span>' : ''}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Edges:</strong></td>
+                        <td>${edgeCount} ${edgeCount > 100 ? '<span class="notification warning" style="padding:2px 5px; margin:0;">limit 100</span>' : ''}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attributes:</strong></td>
+                        <td>${(parsedData.properties?.length || 0)} network, ${parsedData.nodeAttributes?.length || 0} node, ${parsedData.edgeAttributes?.length || 0} edge</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        previewContent.innerHTML = html;
+        networkPreview.classList.remove('hidden');
+        
+        networkNameInput.value = parsedData.name || 'Unnamed Network';
         
         try {
-            // Validate UUID format
-            if (!validateUUID(uuid)) {
-                throw new Error('Invalid UUID format. Please enter a valid NDEx UUID.');
-            }
-            
-            console.log("Attempting to fetch network with UUID:", uuid);
-            
-            // First, fetch the network summary for quick display
-            try {
-                networkData = await ndexClient.getNetworkSummary(uuid);
-                console.log("Successfully retrieved network summary:", networkData);
+            scoringCriteria = findAndParseScoringCriteria(parsedData.properties);
+            if (scoringCriteria) {
+                criteriaContent.textContent = JSON.stringify(scoringCriteria, null, 2);
+                criteriaPreview.classList.remove('hidden');
                 
-                // Then fetch the full network data in the background
-                try {
-                    showNotification('Fetching full network data...', 'info');
-                    fullNetworkData = await ndexClient.getFullNetwork(uuid);
-                    console.log("Successfully retrieved full network data");
-                    showNotification('Successfully fetched full network data', 'success');
-                } catch (fullNetworkError) {
-                    console.error("Error fetching full network:", fullNetworkError);
-                    showNotification('Failed to fetch full network data. Import may be limited.', 'warning');
+                if (!deckhardClient.validateScoringCriteria(scoringCriteria)) {
+                    showNotification('Scoring criteria found but format is invalid. The criteria will not be included in the import.', 'warning');
                 }
-            } catch (fetchError) {
-                console.error("Error fetching network:", fetchError);
-                throw new Error(`Failed to fetch network: ${fetchError.message}`);
+            } else {
+                criteriaPreview.classList.add('hidden');
             }
+        } catch (criteriaError) {
+            showNotification('Error processing scoring criteria: ' + criteriaError.message, 'error');
+            scoringCriteria = null;
+            criteriaPreview.classList.add('hidden');
+        }
+        
+        importOptions.classList.remove('hidden');
+        
+        updateResultsWithGuidance(nodeCount, edgeCount);
+    }
+    
+    /**
+     * Finds and parses the scoring criteria from network attributes.
+     * @param {Array} networkAttributes - Array of network attributes from CX.
+     * @returns {Object|null} - Parsed scoring criteria object or null.
+     */
+    function findAndParseScoringCriteria(networkAttributes) {
+        if (!networkAttributes || !Array.isArray(networkAttributes)) {
+            return null;
+        }
+        
+        const criteriaAttr = networkAttributes.find(attr => attr.n === 'scoring_criteria');
+        
+        if (!criteriaAttr || criteriaAttr.v === undefined || criteriaAttr.v === null) {
+            console.log("No scoring_criteria attribute found in network properties");
+            return null;
+        }
+        
+        try {
+            const criteriaValue = criteriaAttr.v;
+            const criteria = typeof criteriaValue === 'string' ?
+                           JSON.parse(criteriaValue) : criteriaValue;
             
-            // Check network size
-            const nodeCount = networkData.nodeCount || (fullNetworkData?.nodes?.length || 0);
-            const edgeCount = networkData.edgeCount || (fullNetworkData?.edges?.length || 0);
-            
-            if (nodeCount > 100 && edgeCount > 100) {
-                showNotification('Network too large: both nodes and edges exceed 100 limit. This network cannot be imported.', 'warning');
+            console.log("Found scoring criteria:", criteria);
+            if (!Array.isArray(criteria)) {
+                throw new Error('Scoring criteria is not an array.');
             }
-            
-            // Extract network properties
-            const properties = ndexClient.extractNetworkProperties(networkData);
-            
-            // Display network preview
-            const html = `
-                <table class="result-table">
-                    <tbody>
-                        <tr>
-                            <td><strong>Name:</strong></td>
-                            <td>${properties.name || 'Unnamed Network'}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Description:</strong></td>
-                            <td>${properties.description || 'No description'}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Nodes:</strong></td>
-                            <td>${nodeCount} ${nodeCount > 100 ? '<span class="notification warning" style="padding:2px 5px; margin:0;">exceeds limit</span>' : ''}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Edges:</strong></td>
-                            <td>${edgeCount} ${edgeCount > 100 ? '<span class="notification warning" style="padding:2px 5px; margin:0;">exceeds limit</span>' : ''}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Owner:</strong></td>
-                            <td>${properties.owner || 'Unknown'}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Created:</strong></td>
-                            <td>${new Date(properties.creationTime).toLocaleString()}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `;
-            
-            previewContent.innerHTML = html;
-            networkPreview.classList.remove('hidden');
-            
-            // Set network name in form
-            networkNameInput.value = properties.name || 'Unnamed Network';
-            
-            // Check for scoring criteria
-            try {
-                scoringCriteria = ndexClient.getScoringCriteria(networkData);
-                
-                if (scoringCriteria) {
-                    criteriaContent.textContent = JSON.stringify(scoringCriteria, null, 2);
-                    criteriaPreview.classList.remove('hidden');
-                    
-                    // Validate criteria
-                    if (!deckhardClient.validateScoringCriteria(scoringCriteria)) {
-                        showNotification('Scoring criteria found but format is invalid. The criteria will not be included in the import.', 'warning');
-                    }
-                }
-            } catch (criteriaError) {
-                showNotification('Error parsing scoring criteria: ' + criteriaError.message, 'error');
-                scoringCriteria = null;
-            }
-            
-            // Show import options
-            importOptions.classList.remove('hidden');
-            
-            // Show additional guidance in results panel
-            updateResultsWithGuidance(nodeCount, edgeCount);
-            
+            return criteria;
         } catch (error) {
-            console.error("Error in fetchNetworkHandler:", error);
-            showNotification('Error: ' + error.message, 'error');
-            // Display error in results panel to make it more visible
-            resultsContainer.innerHTML = `
-                <div class="object-view">
-                    <h3>Error Fetching Network</h3>
-                    <div class="notification error">${error.message}</div>
-                    <p>Try a different NDEx UUID or check your connection.</p>
-                </div>
-            `;
-        } finally {
-            // Reset button state
-            fetchButton.disabled = false;
-            fetchButton.textContent = 'Fetch Network';
+            console.error('Failed to parse scoring criteria from attribute:', error);
+            throw new Error('Invalid scoring_criteria format: ' + error.message);
         }
     }
     
@@ -312,18 +365,11 @@ document.addEventListener('DOMContentLoaded', function() {
     async function importNetworkHandler(event) {
         event.preventDefault();
         
-        if (!networkData) {
-            showNotification('Please fetch a network first', 'error');
-            return;
-        }
-        
-        // Check if we have full network data
         if (!fullNetworkData) {
-            showNotification('Full network data is not available. Please try fetching the network again.', 'error');
+            showNotification('Please upload and process a CX file first', 'error');
             return;
         }
         
-        // Get form values
         const importType = document.querySelector('input[name="import-type"]:checked').value;
         const objectType = document.getElementById('object-type').value.trim();
         const networkName = networkNameInput.value.trim();
@@ -338,39 +384,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Use either the summary counts or the actual length of the arrays
-        const nodeCount = networkData.nodeCount || fullNetworkData.nodes?.length || 0;
-        const edgeCount = networkData.edgeCount || fullNetworkData.edges?.length || 0;
+        const nodeCount = fullNetworkData.nodeCount || 0;
+        const edgeCount = fullNetworkData.edgeCount || 0;
         
-        // Check size limits based on import type
         if (importType === 'nodes' && nodeCount > 100) {
-            showNotification('Network has too many nodes (> 100). Please choose to import edges or use a smaller network.', 'error');
-            return;
+            showNotification('Network has too many nodes (> 100). Import will be capped at 100 nodes.', 'warning');
         }
         
         if (importType === 'edges' && edgeCount > 100) {
-            showNotification('Network has too many edges (> 100). Please choose to import nodes or use a smaller network.', 'error');
-            return;
+            showNotification('Network has too many edges (> 100). Import will be capped at 100 edges.', 'warning');
         }
         
-        // Disable form during import
         const importBtn = document.getElementById('import-btn');
         importBtn.disabled = true;
         importBtn.textContent = 'Importing...';
         showLoading(resultsContainer);
         
         try {
-            // Use the full network data for import
-            // Make sure it includes all the summary data
-            const dataToImport = {
-                ...fullNetworkData,
-                name: networkData.name || fullNetworkData.name,
-                description: networkData.description || fullNetworkData.description,
-                externalId: networkData.externalId || fullNetworkData.externalId,
-                properties: networkData.properties || fullNetworkData.properties
-            };
+            const dataToImport = fullNetworkData;
             
-            // Call the importNetworkToDeckhard function
             const result = await deckhardClient.importNetworkToDeckhard(
                 dataToImport,
                 objectType,
@@ -381,14 +413,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             );
             
-            // Show success message
             showNotification(`Successfully imported ${result.objectCount} ${importType} to Deckhard as ${objectType} objects`, 'success');
             
-            // Display detailed results
             displayImportResults(result, networkName, objectType, importType);
             
         } catch (error) {
-            showNotification('Import failed: ' + error.message, 'error');
+            console.error("Import failed:", error);
+            showNotification(`Import failed: ${error.message}`, 'error');
             resultsContainer.innerHTML = `
                 <div class="object-view">
                     <h3>Import Failed</h3>
@@ -397,7 +428,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         } finally {
-            // Reset button state
             importBtn.disabled = false;
             importBtn.textContent = 'Import to Deckhard';
         }
@@ -406,16 +436,16 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Display import results
      * @param {Object} result - Import result
-     * @param {string} networkName - Network name
+     * @param {string} listName - Name given to the object list
      * @param {string} objectType - Object type
      * @param {string} importType - Import type (nodes or edges)
      */
-    function displayImportResults(result, networkName, objectType, importType) {
+    function displayImportResults(result, listName, objectType, importType) {
         const html = `
             <div class="object-view">
                 <div class="object-header">
                     <h2 class="object-title">Import Successful</h2>
-                    <div class="object-type">Network: ${networkName}</div>
+                    <div class="object-type">Object List: ${listName}</div>
                 </div>
                 
                 <h3 class="panel-header">Summary</h3>
@@ -457,10 +487,8 @@ document.addEventListener('DOMContentLoaded', function() {
         notification.className = `notification ${type}`;
         notification.textContent = message;
         
-        // Add to notification container
         notificationContainer.appendChild(notification);
         
-        // Remove after a delay (except for errors)
         if (type !== 'error') {
             setTimeout(() => {
                 notification.remove();

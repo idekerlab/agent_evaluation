@@ -203,6 +203,7 @@ function displayObject(index) {
 function generateScoringForm() {
   console.log('Generating scoring form with criteria:', objectList._criteria);
   
+  console.log('objectList:', objectList);
   scoringFormContainer.innerHTML = '';
   
   if (!objectList._criteria || !Array.isArray(objectList._criteria) || objectList._criteria.length === 0) {
