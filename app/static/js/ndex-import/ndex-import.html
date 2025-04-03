@@ -80,6 +80,24 @@
             border-top: 1px solid var(--border-color);
             padding-top: 10px;
         }
+
+        .file-drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--background-light);
+            margin-bottom: 15px;
+        }
+        .file-drop-zone.dragover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-light);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -95,8 +113,8 @@
             <h3 class="panel-header">Instructions</h3>
             <div class="query-list">
                 <div class="query-item">
-                    <strong>1. Enter NDEx UUID</strong>
-                    <p>Provide the UUID of the NDEx network you want to import</p>
+                    <strong>1. Upload CX File</strong>
+                    <p>Drag & drop or select a network file ending in '.cx'</p>
                 </div>
                 <div class="query-item">
                     <strong>2. Preview Network</strong>
@@ -129,13 +147,21 @@
         
         <!-- Middle panel - Network Import Form -->
         <div class="middle-panel">
-            <h3 class="panel-header">Import Network</h3>
+            <h3 class="panel-header">Import Network from CX File</h3>
             
             <div id="notification-container"></div>
             
             <form id="import-form">
-                <div class="uuid-input-container">
-                    <input type="text" class="uuid-input" id="ndex-uuid" name="ndex-uuid" placeholder="Enter NDEx UUID" required>
+                <!-- File Upload Input -->
+                <div id="file-drop-zone" class="file-drop-zone">
+                    <p>Drag & drop your CX file here, or click to select file</p>
+                    <input type="file" id="cx-file-input" accept=".cx" style="display: none;">
+                    <p id="file-name-display" style="margin-top: 10px; font-weight: bold;"></p>
+                </div>
+                
+                <!-- UUID Input (Hidden for now, could be re-enabled later) -->
+                <div class="uuid-input-container hidden">
+                    <input type="text" class="uuid-input" id="ndex-uuid" name="ndex-uuid" placeholder="Enter NDEx UUID">
                     <button type="button" id="fetch-network-btn" class="search-button">Fetch Network</button>
                 </div>
                 
@@ -195,8 +221,8 @@
     </div>
     
     <!-- Include our JavaScript modules -->
-    <script src="/static/js/ndex-import/deckhard-client.js"></script>
-    <script src="/static/js/ndex-import/ndex-client.js"></script>
-    <script src="/static/js/ndex-import/ndex-import-ui.js"></script>
+    <script src="/static/js/ndex-import/deckhard-client.js?v=20240526"></script>
+    <script src="/static/js/ndex-import/ndex-client.js?v=20240526"></script>
+    <script src="/static/js/ndex-import/ndex-import-ui.js?v=20240526"></script>
 </body>
 </html>

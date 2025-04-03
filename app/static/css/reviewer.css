@@ -287,3 +287,20 @@ body {
 .status-complete {
   background-color: #4CAF50;
 }
+
+.review-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-export {
+  background-color: #2196F3;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  margin-left: 10px;
+}
+
+.button-export:hover {
+  background-color: #0b7dda;
+}

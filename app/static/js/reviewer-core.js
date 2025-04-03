@@ -13,7 +13,7 @@ let autoSaveTimeout = null;
 let objectContainer, scoringFormContainer, reviewerInput;
 let prevButton, nextButton, saveButton, submitButton, navInfo;
 let statusIndicator, statusText, completionCount, reviewStatusValue;
-let notificationContainer;
+let notificationContainer, exportButton;
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nextButton = document.getElementById('next-button');
   saveButton = document.getElementById('save-button');
   submitButton = document.getElementById('submit-button');
+  exportButton = document.getElementById('export-button');
   navInfo = document.getElementById('nav-info');
   statusIndicator = document.getElementById('status-indicator');
   statusText = document.getElementById('status-text');
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nextButton.addEventListener('click', goToNextObject);
   saveButton.addEventListener('click', () => saveReview(false));
   submitButton.addEventListener('click', submitReview);
+  exportButton.addEventListener('click', exportReview);
   
   // Set up auto-save
   reviewerInput.addEventListener('input', scheduleAutoSave);

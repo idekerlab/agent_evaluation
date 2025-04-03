@@ -269,24 +269,69 @@ const deckhardClient = {
    */
   importNetworkToDeckhard: async function(networkData, objectType, importType, options = {}) {
     try {
-      console.log(`Starting import of ${importType} as ${objectType}`, 
-                  `NetworkData structure includes:`, Object.keys(networkData));
+      console.log(`Starting import of ${importType} as ${objectType}`,
+                  `NetworkData structure includes:`, Object.keys(networkData),
+                  `with ${networkData.properties?.length || 0} network properties.`);
       
       // 1. Create object_list
       const objectListProps = {
         name: options.name || networkData.name || 'NDEx Import',
         description: `Imported from NDEx network: ${networkData.name || 'Unnamed'}`,
-        ndex_uuid: networkData.externalId || networkData.uuid || '',
+        ndex_uuid: networkData.externalId || networkData.uuid || '', // Keep if available, else empty
+        import_source: 'cx_file', // Indicate source was a file
         import_type: importType,
         object_type: objectType
       };
       
-      // Add scoring criteria if available and valid
-      if (options.criteria && Array.isArray(options.criteria)) {
-        if (this.validateScoringCriteria(options.criteria)) {
-          objectListProps._criteria = options.criteria;
-        } else {
-          console.warn('Invalid scoring criteria format, not including in object_list');
+      // Add network attributes from CX file (networkData.properties)
+      // These usually have { n: name, v: value, d: dataType }
+      if (networkData.properties && Array.isArray(networkData.properties)) {
+        networkData.properties.forEach(prop => {
+          if (prop.n && prop.v !== undefined && prop.v !== null) {
+            // Clean the property name and avoid overwriting core props
+            const key = prop.n.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+            if (!['name', 'description', 'ndex_uuid', 'import_source', 'import_type', 'object_type', 'object_ids', '_criteria', '_order'].includes(key)) {
+              // Convert value to string if it's not a basic type (default for unknown complex attributes)
+              if (typeof prop.v === 'object') {
+                objectListProps[key] = JSON.stringify(prop.v);
+              } else {
+                objectListProps[key] = prop.v; // Store the value directly
+              }
+            }
+          }
+        });
+        console.log("Added network properties to object list props:", objectListProps);
+      }
+      
+      // Add _order specifically as an object if it exists
+      const orderAttribute = networkData.properties?.find(prop => prop.n === '_order');
+      if (orderAttribute && orderAttribute.v !== undefined && orderAttribute.v !== null) {
+        try {
+          objectListProps._order = (typeof orderAttribute.v === 'string')
+                                   ? JSON.parse(orderAttribute.v)
+                                   : orderAttribute.v;
+          console.log("Added _order object:", objectListProps._order);
+        } catch (e) {
+          console.warn("Could not parse _order attribute as JSON, skipping:", orderAttribute.v, e);
+        }
+      }
+      
+      // Add scoring criteria if available and valid (this handles _criteria)
+      const criteriaAttribute = networkData.properties?.find(prop => prop.n === '_criteria');
+      if (criteriaAttribute && criteriaAttribute.v !== undefined && criteriaAttribute.v !== null) {
+        try {
+          const parsedCriteria = (typeof criteriaAttribute.v === 'string')
+                                 ? JSON.parse(criteriaAttribute.v)
+                                 : criteriaAttribute.v;
+
+          if (this.validateScoringCriteria(parsedCriteria)) {
+            objectListProps._criteria = parsedCriteria;
+            console.log("Added valid _criteria object:", objectListProps._criteria);
+          } else {
+            console.warn('Invalid scoring criteria format found in CX, not including in object_list', parsedCriteria);
+          }
+        } catch (e) {
+          console.warn("Could not parse _criteria attribute as JSON, skipping:", criteriaAttribute.v, e);
         }
       }
       
