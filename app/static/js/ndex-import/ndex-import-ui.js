@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const uuidInput = document.getElementById('ndex-uuid');
     const fetchButton = document.getElementById('fetch-network-btn');
     const fileDropZone = document.getElementById('file-drop-zone');
-    const fileInput = document.getElementById('cx-file-input');
+    const fileInput = document.getElementById('cx2-file-input');
     const fileNameDisplay = document.getElementById('file-name-display');
     const networkPreview = document.getElementById('network-preview');
     const previewContent = document.getElementById('preview-content');
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Process the selected/dropped CX file
+     * Process the selected/dropped CX2 file
      * @param {File} file
      */
     function processFile(file) {
@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsContainer.innerHTML = '';
         
         // Validate file type
-        if (!file.name.toLowerCase().endsWith('.cx')) {
-            showNotification('Invalid file type. Please upload a .cx file.', 'error');
+        if (!file.name.toLowerCase().endsWith('.cx2')) {
+            showNotification('Invalid file type. Please upload a .cx2 file.', 'error');
             resetFileInput();
             return;
         }
@@ -97,11 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.onload = function(e) {
             try {
                 const cxData = JSON.parse(e.target.result);
-                console.log("Successfully parsed CX file");
+                console.log("Successfully parsed CX2 file");
                 
-                // Basic validation of CX structure (can be expanded)
+                // Basic validation of CX2 structure (can be expanded)
                 if (!Array.isArray(cxData) || cxData.length === 0) {
-                    throw new Error('Invalid CX format: Expected an array of aspects.');
+                    throw new Error('Invalid CX2 format: Expected an array of aspects.');
                 }
                 
                 // Store the parsed data
@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayNetworkPreviewFromFile(fullNetworkData);
                 
             } catch (error) {
-                console.error("Error parsing CX file:", error);
+                console.error("Error parsing CX2 file:", error);
                 showNotification(`Error processing file: ${error.message}`, 'error');
                 resetFileInput();
-                previewContent.innerHTML = `<div class="notification error">Failed to parse CX file. Ensure it's valid JSON.</div>`;
+                previewContent.innerHTML = `<div class="notification error">Failed to parse CX2 file. Ensure it's valid JSON.</div>`;
             }
         };
         reader.onerror = function() {
@@ -140,14 +140,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Parses the raw CX JSON array into a more structured object
+     * Parses the raw CX2 JSON array into a more structured object
      * similar to what the NDEx API might return.
-     * @param {Array} cxData - Raw array of CX aspects
+     * @param {Array} cxData - Raw array of CX2 aspects
      * @returns {Object} - Structured network data
      */
     function parseCxToStructuredData(cxData) {
         const structuredData = {
-            name: 'Unnamed Network from CX',
+            name: 'Unnamed Network from CX2',
             description: '',
             properties: [],
             nodes: [],
@@ -169,11 +169,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (descProp) structuredData.description = descProp.v;
                     break;
                 case 'nodes':
-                    structuredData.nodes = aspectData.map(node => ({
-                        id: node['@id'],
-                        name: node.n,
-                        represents: node.r
-                    }));
+                    structuredData.nodes = aspectData.map(node => {
+                        // Handle both traditional CX2 structure and our generated structure
+                        if (node.v && typeof node.v === 'object') {
+                            // Our CX2 structure puts properties in 'v' object
+                            return {
+                                id: node.id,
+                                name: node.v.n || 'Unnamed Node',
+                                represents: node.v.represents || null,
+                                // Store all other properties from v for use in transformNodesForDeckhard
+                                _rawData: node.v
+                            };
+                        } else {
+                            // Traditional CX2 structure
+                            return {
+                                id: node['@id'] || node.id,
+                                name: node.n,
+                                represents: node.r
+                            };
+                        }
+                    });
                     break;
                 case 'edges':
                     structuredData.edges = aspectData.map(edge => ({
@@ -209,8 +224,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Display network preview based on data parsed from CX file
-     * @param {Object} parsedData - Structured data from CX file
+     * Display network preview based on data parsed from CX2 file
+     * @param {Object} parsedData - Structured data from CX2 file
      */
     function displayNetworkPreviewFromFile(parsedData) {
         console.log("Displaying preview for data:", parsedData);
@@ -219,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const edgeCount = parsedData.edgeCount || 0;
         
         if (nodeCount === 0 && edgeCount === 0) {
-            showNotification('Warning: CX file contains no nodes or edges.', 'warning');
+            showNotification('Warning: CX2 file contains no nodes or edges.', 'warning');
         }
         
         if (nodeCount > 100 && edgeCount > 100) {
@@ -286,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     /**
      * Finds and parses the scoring criteria from network attributes.
-     * @param {Array} networkAttributes - Array of network attributes from CX.
+     * @param {Array} networkAttributes - Array of network attributes from CX2.
      * @returns {Object|null} - Parsed scoring criteria object or null.
      */
     function findAndParseScoringCriteria(networkAttributes) {
@@ -366,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         
         if (!fullNetworkData) {
-            showNotification('Please upload and process a CX file first', 'error');
+            showNotification('Please upload and process a CX2 file first', 'error');
             return;
         }
         

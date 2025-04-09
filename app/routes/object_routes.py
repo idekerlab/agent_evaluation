@@ -31,7 +31,7 @@ from models.judgment_space import JudgmentSpace
 from helpers.json_to_markdown import json_to_markdown
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["objects"])
@@ -145,15 +145,34 @@ async def view_object(request: Request, object_type: str, object_id: str):
         link_names = {}
         
         if object_type in object_specifications:
-            processed_properties = preprocess_properties(properties, object_type, object_specifications)
-            link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+            try:
+                logger.info(f"Preprocessing properties for {object_id} of type {object_type}")
+                processed_properties = preprocess_properties(properties, object_type, object_specifications)
+            except Exception as e:
+                logger.error(f"Error in preprocess_properties for {object_id}: {str(e)}", exc_info=True)
+                raise HTTPException(status_code=500, detail=f"Failed to preprocess properties: {str(e)}")
+                
+            try:
+                logger.info(f"Processing object links for {object_id}")
+                link_names = process_object_links(db, processed_properties, object_specifications, object_type)
+            except Exception as e:
+                logger.error(f"Error in process_object_links for {object_id}: {str(e)}", exc_info=True)
+                raise HTTPException(status_code=500, detail=f"Failed to process object links: {str(e)}")
             
             if object_type == "hypothesis":
-                processed_properties = handle_hypothesis(processed_properties)
+                try:
+                    logger.info(f"Handling hypothesis object {object_id}")
+                    logger.debug(f"Hypothesis properties before handling: {json.dumps(processed_properties)}")
+                    processed_properties = handle_hypothesis(processed_properties)
+                except Exception as e:
+                    logger.error(f"Error in handle_hypothesis for {object_id}: {str(e)}", exc_info=True)
+                    raise HTTPException(status_code=500, detail=f"Failed to handle hypothesis: {str(e)}")
         
         visualizations = {}
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error processing object {object_id}: {str(e)}")
+        logger.error(f"Error processing object {object_id}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to process object: {str(e)}")
     
     if object_type == "json":

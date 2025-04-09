@@ -43,6 +43,7 @@ const deckhardClient = {
    * @returns {Promise} - Created object
    */
   createObject: async function(objectType, properties) {
+    console.log("Creating object with properties:", properties)
     try {
       // Ensure all property values are strings or basic types
       const sanitizedProps = {};
@@ -56,7 +57,7 @@ const deckhardClient = {
           }
         }
       }
-      
+      console.log("sanitized properties:", sanitizedProps)
       const response = await fetch(`/objects/${objectType}/create`, {
         method: 'POST',
         headers: {
@@ -88,6 +89,8 @@ const deckhardClient = {
     console.log(`Creating ${objectsProperties.length} objects of type ${objectType}`);
     
     for (const properties of objectsProperties) {
+      console.log("Creating (batch) object with properties:", properties)
+
       try {
         const obj = await this.createObject(objectType, properties);
         createdObjects.push(obj);
@@ -131,14 +134,30 @@ const deckhardClient = {
         properties.represents = String(node.represents);
       }
       
+      // Handle rawData from our custom CX2 format (from the v property in nodes)
+      if (node._rawData && typeof node._rawData === 'object') {
+        for (const [key, value] of Object.entries(node._rawData)) {
+          if (key !== 'n' && value !== undefined && value !== null) { // Skip 'n' as it's already used for name
+            // Clean the key name to ensure it's valid for Deckhard
+            const cleanKey = key.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+            if (typeof value === 'object') {
+              properties[cleanKey] = JSON.stringify(value);
+            } else {
+              properties[cleanKey] = value;
+            }
+          }
+        }
+      }
+      
       // Add any additional properties that might exist on the node
       for (const [key, value] of Object.entries(node)) {
-        if (key !== 'id' && key !== 'name' && value !== undefined && value !== null) {
+        if (!['id', 'name', '_rawData', 'represents'].includes(key) && 
+            value !== undefined && value !== null) {
           // Clean the key name to ensure it's valid for Deckhard
           const cleanKey = key.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-          if (typeof value === 'object') {
+          if (typeof value === 'object' && key !== '_rawData') {
             properties[cleanKey] = JSON.stringify(value);
-          } else {
+          } else if (key !== '_rawData') {
             properties[cleanKey] = value;
           }
         }

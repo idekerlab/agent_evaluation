@@ -1,0 +1,47 @@
+[
+  {
+    "title": "DENV2 NS2A disrupts chromatin remodeling via ACTR5",
+    "null_hypothesis": "DENV2 NS2A interaction with ACTR5 does not alter INO80 chromatin remodeling complex activity during infection.",
+    "alternative_hypothesis": "DENV2 NS2A interaction with ACTR5 significantly disrupts INO80 chromatin remodeling complex activity to facilitate viral replication.",
+    "rationale": "ACTR5 has the highest propagation weight (0.32) and significant Z-score (1.6397), suggesting strong interaction with NS2A. ACTR5 is a critical component of the INO80 chromatin remodeling complex, which includes other detected interactors NFRKB, ING3, and TFPT. The clustering of multiple INO80 complex components in the interaction network suggests NS2A may target this complex to modulate host chromatin structure and gene expression.",
+    "proteins_involved": [
+      "DENV2 NS2A",
+      "ACTR5",
+      "NFRKB",
+      "ING3",
+      "TFPT"
+    ],
+    "experimental_data_used": "Propagation weights showing ACTR5 (0.32), NFRKB (0.12), ING3 (0.105), and TFPT (0.035) as top interactors; all with positive Average_Zscore values indicating significant interactions.",
+    "experimental_validation": [
+      "Co-immunoprecipitation assays to confirm direct binding between NS2A and ACTR5 in infected cells",
+      "Chromatin accessibility assays (ATAC-seq) comparing wild-type DENV2 infection versus NS2A mutants deficient in ACTR5 binding",
+      "Measure INO80 complex activity in the presence of recombinant NS2A protein using in vitro nucleosome remodeling assays"
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "viral_protein": "DENV2 16681 NS2A"
+  },
+  {
+    "title": "NS2A inhibits mitochondrial translation machinery",
+    "null_hypothesis": "DENV2 NS2A does not specifically target mitochondrial ribosomal proteins to inhibit mitochondrial translation during infection.",
+    "alternative_hypothesis": "DENV2 NS2A specifically targets mitochondrial ribosomal proteins (MRPL10, MRPS16, MRPL21) to inhibit mitochondrial translation and suppress innate immune responses.",
+    "rationale": "Multiple mitochondrial ribosomal proteins (MRPL10, MRPS16, MRPL21) appear in the interaction network with significant Z-scores (2.0694, 1.7345, 1.6522 respectively). MRPS16 shows downregulation in RNAseq data (RNAseq_48h: -2.1632), suggesting active suppression. Mitochondrial translation is critical for oxidative phosphorylation and innate immune signaling, making it a logical target for viral evasion strategies.",
+    "proteins_involved": [
+      "DENV2 NS2A",
+      "MRPL10",
+      "MRPS16",
+      "MRPL21",
+      "GADD45GIP1",
+      "MTG1"
+    ],
+    "experimental_data_used": "Propagation weights for mitochondrial ribosomal proteins (MRPL10: 0.025, MRPS16: 0.015, MRPL21: 0.01); high Average_Zscore values; negative RNAseq_48h value for MRPS16 (-2.1632).",
+    "experimental_validation": [
+      "Mitochondrial translation assays using 35S-methionine labeling in cells expressing NS2A versus control",
+      "Rescue experiments using MRPL10/MRPS16/MRPL21 overexpression in DENV2-infected cells to measure viral replication efficiency",
+      "Analysis of mitochondrial membrane potential and oxidative phosphorylation in the presence of wild-type versus mutant NS2A"
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "viral_protein": "DENV2 16681 NS2A"
+  }
+]

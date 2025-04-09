@@ -591,8 +591,11 @@ def create_hypothesis_network(all_hypotheses: List[Dict[str, Any]]) -> CX2Networ
             # Create node name (will be displayed in visualization)
             node_name = f"{viral_protein} - {hypothesis['title']}"
             
-            # Add node to network
-            cx2_network.add_node(node_id, name=node_name)
+            # Add node to network (without name parameter)
+            cx2_network.add_node(node_id)
+            
+            # Add node name as 'n' attribute (this is what CX2 expects)
+            cx2_network.add_node_attribute(node_id, 'n', node_name)
             
             # Add node attributes
             cx2_network.add_node_attribute(node_id, 'title', hypothesis['title'])

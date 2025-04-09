@@ -19,6 +19,8 @@ from scripts.generate_hypotheses import (
 def main():
     """
     Generate a hypothesis network from a list of NDEx UUIDs and save it to a file.
+    
+    Note: This script requires NDEX_ACCOUNT and NDEX_PASSWORD environment variables to be set.
     """
     # List of UUIDs to process
     uuids = [
@@ -52,6 +54,11 @@ def main():
         print(f"\nProcessing network {i+1}/{len(uuids)}: {uuid}")
         
         try:
+            # Check if environment variables are set
+            username = os.environ.get("NDEX_ACCOUNT")
+            password = os.environ.get("NDEX_PASSWORD")
+            print(f"Using NDEx credentials - Username: {username or 'NOT SET'}, Password: {'*****' if password else 'NOT SET'}")
+            
             # Load network from NDEx
             G, network_name, network_attrs = load_from_ndex(uuid)
             print(f"Loaded network '{network_name}' with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
@@ -94,16 +101,19 @@ def main():
     
     # Create hypothesis network
     print("\nCreating hypothesis network...")
-    hypothesis_network = create_hypothesis_network(all_hypotheses)
-    
-    # Save CX2 network to file
-    cx2_network_filename = f"hypothesis_network_{timestamp}.cx2"
-    cx2_network_filepath = os.path.join(os.path.dirname(__file__), cx2_network_filename)
-    
-    with open(cx2_network_filepath, 'w') as f:
-        json.dump(hypothesis_network.to_cx2(), f, indent=2)
-    
-    print(f"Saved hypothesis network to {cx2_network_filepath}")
+    try:
+        hypothesis_network = create_hypothesis_network(all_hypotheses)
+        
+        # Save CX2 network to file
+        cx2_network_filename = f"hypothesis_network_{timestamp}.cx2"
+        cx2_network_filepath = os.path.join(os.path.dirname(__file__), cx2_network_filename)
+        
+        with open(cx2_network_filepath, 'w') as f:
+            json.dump(hypothesis_network.to_cx2(), f, indent=2)
+        
+        print(f"Saved hypothesis network to {cx2_network_filepath}")
+    except Exception as e:
+        print(f"Error creating hypothesis network: {str(e)}")
     
     # Display summary of generated hypotheses
     print("\nGenerated Hypotheses Summary:")
@@ -117,3 +127,4 @@ def main():
     print(f"\nTotal hypotheses: {len(all_hypotheses)}")
 
 if __name__ == "__main__":
+    main()
