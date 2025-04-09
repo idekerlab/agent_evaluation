@@ -38,59 +38,86 @@ def identify_viral_proteins(G: nx.Graph) -> List[Tuple[str, str]]:
     
     return viral_proteins
 
-def enhance_network_with_propagation(original_cx2: CX2Network, weights: Dict[str, float], 
-                                      viral_protein_id: str, viral_protein_name: str) -> CX2Network:
+def create_propagation_network(original_g: nx.Graph, weights: Dict[str, float], 
+                               viral_protein_id: str, viral_protein_name: str) -> CX2Network:
     """
-    Enhance the original CX2 network with propagation results
+    Create a CX2 network from the propagation results
     
     Args:
-        original_cx2: Original CX2Network
+        original_g: Original NetworkX graph
         weights: Node weights from propagation
         viral_protein_id: ID of the viral protein used as start node
         viral_protein_name: Name of the viral protein
         
     Returns:
-        Enhanced CX2 network
+        CX2 network
     """
-    # Create a copy of the original network
-    # (We'll actually modify the original, but this makes it clear we're working with a new instance)
-    enhanced_network = original_cx2
+    # Create a new CX2 network
+    cx2_network = CX2Network()
     
-    # Update network attributes to reflect propagation
+    # Set network attributes
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    network_name = f"Dengue Propagation from {viral_protein_name} - {timestamp}"
     
-    # Update network name
-    original_name = enhanced_network.get_name()
-    new_name = f"Propagation from {viral_protein_name} - {timestamp}"
-    enhanced_network.set_name(new_name)
+    cx2_network.set_name(network_name)
+    cx2_network.add_network_attribute('description', 
+                                     f"Propagation network from viral protein {viral_protein_name}")
+    cx2_network.add_network_attribute('viral_protein_id', viral_protein_id)
+    cx2_network.add_network_attribute('viral_protein_name', viral_protein_name)
+    cx2_network.add_network_attribute('propagation_timestamp', timestamp)
     
-    # Add propagation-specific network attributes
-    enhanced_network.add_network_attribute('description', 
-                                         f"Propagation network from viral protein {viral_protein_name}. Original network: {original_name}")
-    enhanced_network.add_network_attribute('viral_protein_id', viral_protein_id)
-    enhanced_network.add_network_attribute('viral_protein_name', viral_protein_name)
-    enhanced_network.add_network_attribute('propagation_timestamp', timestamp)
+    # Add attribute declarations
+    attr_declarations = {
+        'nodes': {
+            'name': {'d': 'string'},
+            'GeneSymbol': {'d': 'string'},
+            'type': {'d': 'string'},
+            'viral_protein': {'d': 'boolean'},
+            'propagation_weight': {'d': 'double'},
+            'x': {'d': 'double'},
+            'y': {'d': 'double'}
+        },
+        'edges': {
+            'interaction': {'d': 'string'},
+            'combined_score': {'d': 'double'}
+        }
+    }
+    cx2_network.set_attribute_declarations(attr_declarations)
     
-    # Add propagation_weight to attribute declarations if not already present
-    attr_declarations = enhanced_network.get_attribute_declarations()
-    if 'nodes' not in attr_declarations:
-        attr_declarations['nodes'] = {}
-    if 'propagation_weight' not in attr_declarations['nodes']:
-        attr_declarations['nodes']['propagation_weight'] = {'d': 'double'}
-    enhanced_network.set_attribute_declarations(attr_declarations)
+    # Add nodes to network (only include nodes with weight > 0)
+    for node_id, weight in weights.items():
+        if weight > 0:
+            # Get original node attributes
+            if node_id in original_g.nodes:
+                attrs = dict(original_g.nodes[node_id])
+                
+                # Add propagation weight
+                attrs['propagation_weight'] = weight
+                
+                # Add node to CX2 network
+                cx2_network.add_node(int(node_id), {"name": attrs.get('name', '')})
+                
+                # Add node attributes
+                for key, value in attrs.items():
+                    if key not in ['id', 'name']:
+                        cx2_network.add_node_attribute(int(node_id), key, value)
     
-    # Add propagation weights to nodes
-    for node_id_str, weight in weights.items():
-        try:
-            # Convert node_id from string to int for CX2
-            node_id = int(node_id_str)
+    # Add edges between nodes that are in the new network
+    for u, v, attrs in original_g.edges(data=True):
+        if u in weights and v in weights and weights[u] > 0 and weights[v] > 0:
+            # Add edge to CX2 network
+            source_id = int(u)
+            target_id = int(v)
             
-            # Add propagation weight to node attributes
-            enhanced_network.add_node_attribute(node_id, 'propagation_weight', weight)
-        except (ValueError, KeyError) as e:
-            print(f"Warning: Could not add propagation weight to node {node_id_str}: {str(e)}")
+            # Add edge to CX2 network with attributes
+            cx2_network.add_edge(source_id, target_id)
+            
+            # Add edge attributes
+            for key, value in attrs.items():
+                if key != 'id':
+                    cx2_network.add_edge_attribute(source_id, target_id, key, value)
     
-    return enhanced_network
+    return cx2_network
 
 def upload_to_ndex(cx2_network: CX2Network) -> str:
     """
@@ -119,41 +146,6 @@ def upload_to_ndex(cx2_network: CX2Network) -> str:
     # Upload to NDEx
     response = client.save_new_cx2_network(cx2_data)
     return response
-
-def load_cx2_from_ndex(uuid: str) -> Tuple[CX2Network, str]:
-    """
-    Load a CX2 network directly from NDEx
-    
-    Args:
-        uuid: NDEx network UUID
-        
-    Returns:
-        Tuple of (CX2Network, network name)
-    """
-    username, password = load_ndex_credentials()
-    
-    if not username or not password:
-        raise EnvironmentError("NDEX_USERNAME and NDEX_PASSWORD environment variables must be set")
-        
-    client = nc2.Ndex2(
-        "http://public.ndexbio.org",
-        username=username,
-        password=password
-    )
-    
-    # Download from NDEx
-    response = client.get_network_as_cx2_stream(uuid)
-    factory = RawCX2NetworkFactory()
-    cx2_network = factory.get_cx2network(response.json())
-    
-    # Get network name
-    network_name = cx2_network.get_name()
-    if not network_name:
-        # Fallback to network attributes
-        network_attrs = cx2_network.get_network_attributes()
-        network_name = network_attrs.get('name', f"network-{uuid[:8]}")
-    
-    return cx2_network, network_name
 
 def main():
     parser = argparse.ArgumentParser(description='Propagate from all viral proteins in a dengue network')
@@ -187,14 +179,10 @@ def main():
     else:
         print(f"Warning: Type scores file {args.type_scores} not found, using default scores")
     
-    # Load graph from NDEx for the propagation algorithm
+    # Load graph from NDEx
     print(f"Loading network {args.uuid} from NDEx...")
     G, network_name = load_from_ndex(args.uuid)
     print(f"Loaded network '{network_name}' with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
-    
-    # Also load the original CX2 network to preserve all properties
-    print(f"Loading CX2 network {args.uuid} to preserve all node properties...")
-    original_cx2, _ = load_cx2_from_ndex(args.uuid)
     
     # Identify viral proteins
     print("Identifying viral proteins...")
@@ -262,25 +250,14 @@ def main():
             print(f"  Propagation completed in {execution_time:.2f} seconds")
             print(f"  Walk stats: {results['walk_stats']}")
             
-            # Create enhanced network with propagation results
+            # Create network from propagation results
             if args.upload_to_ndex:
-                print("  Enhancing network with propagation weights...")
-                
-                # Make a deep copy of the original CX2 for this viral protein
-                # We need this because we're modifying the network for each viral protein
-                import copy
-                current_cx2 = copy.deepcopy(original_cx2)
-                
-                enhanced_network = enhance_network_with_propagation(
-                    current_cx2, 
-                    results['node_weights'], 
-                    node_id, 
-                    name
-                )
+                print("  Creating propagation network...")
+                cx2_network = create_propagation_network(G, results['node_weights'], node_id, name)
                 
                 # Upload to NDEx
                 print("  Uploading network to NDEx...")
-                uuid = upload_to_ndex(enhanced_network)
+                uuid = upload_to_ndex(cx2_network)
                 print(f"  Upload successful. New network UUID: {uuid}")
                 
                 # Store network UUID
