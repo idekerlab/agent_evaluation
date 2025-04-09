@@ -300,45 +300,43 @@ th, td {
 .copy-button {
   margin-top: 10px;
 }
-
-/* Target the main container of the Markdown content */
 .markdown-content {
   line-height: 1.2;
   background-color: white;
-  padding-right: 20;
-  padding-left: 10;
-  padding-bottom: 5;
-  padding-top: 1;
+  padding-right: 20px;  /* Added 'px' units */
+  padding-left: 10px;   /* Added 'px' units */
+  padding-bottom: 5px;  /* Added 'px' units */
+  padding-top: 1px;     /* Added 'px' units */
 }
 
-/* Reduce spacing between paragraphs */
+/* Keep paragraphs compact */
 .markdown-content p {
   margin: 0;
 }
 
-/* Reduce spacing above and below headings */
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3,
-.markdown-content h4,
-.markdown-content h5,
-.markdown-content h6 {
-  margin-top: 0;
-  margin-bottom: 0;
-}
+/* Add indentation and spacing for headers */
+.markdown-content h1 { margin-left: 0rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.markdown-content h2 { margin-left: 1rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.markdown-content h3 { margin-left: 2rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+.markdown-content h4 { margin-left: 3rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+.markdown-content h5 { margin-left: 4rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+.markdown-content h6 { margin-left: 5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
 
-/* Adjust spacing for lists */
+/* Keep list spacing compact */
 .markdown-content ul,
 .markdown-content ol {
   margin-top: 0;
   margin-bottom: 0;
 }
 
-/* Reduce spacing between list items */
 .markdown-content li {
   margin-bottom: 0;
 }
 
+/* Optional: remove top margin from first heading */
+.markdown-content > :first-child {
+  margin-top: 0;
+}
 
 /* import "ag-grid-community/styles/ag-grid.css" // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css" // Optional Theme applied to the Data Grid

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deckhard Browser</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .top-bar {
+      background-color: black;
+      color: white;
+      padding: 10px;
+      font-family: 'Times New Roman', Georgia, serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+    }
+    
+    .top-bar-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 10px;
+      flex-grow: 1;
+      padding: 0 20px;
+    }
+    
+    .search-input {
+      flex-grow: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .search-button {
+      background-color: orange;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .main-container {
+      display: flex;
+      flex-grow: 1;
+      overflow: hidden;
+    }
+    
+    .left-panel {
+      width: 250px;
+      background-color: #f5f5f5;
+      overflow-y: auto;
+      border-right: 1px solid #ddd;
+      padding: 10px;
+    }
+    
+    .middle-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      border-right: 1px solid #ddd;
+    }
+    
+    .right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .panel-header {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ddd;
+      position: relative;
+    }
+    
+    /* Add a new class for the panel header in the right panel */
+    .right-panel .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    /* Modify .delete-button for when it's in the panel header */
+    .panel-header .delete-button {
+      position: static; /* Override absolute positioning */
+      margin-left: 10px; /* Add some spacing */
+      font-size: 0.9rem;
+      padding: 3px 10px;
+      display: flex;
+      align-items: center;
+      height: fit-content;
+    }
+    
+    .panel-header .delete-button i {
+      margin-right: 5px;
+    }
+    
+    .notification {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+    }
+    
+    .query-list {
+      list-style: none;
+    }
+    
+    .query-item {
+      padding: 8px;
+      margin-bottom: 4px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .query-item:hover {
+      background-color: skyblue;
+      color: white;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: orange;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error {
+      background-color: crimson;
+      color: white;
+    }
+    
+    .success {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem; /* optional spacing below table */ 
+      table-layout: fixed; /* Add fixed layout to ensure consistent column widths */
+    }
+    
+    .result-table th,
+    .result-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      vertical-align: middle; /* keep content centered vertically */
+      text-align: left;
+    }
+    
+    /* Special styling for the name column only */
+    .result-table td[data-header="name"] {
+      width: 40%;
+      word-wrap: break-word; /* Allow long words to break and wrap */
+      overflow-wrap: break-word; /* Modern version of word-wrap */
+      word-break: break-word; /* More gentle than break-all, preserves words where possible */
+      max-width: 0; /* Force the cell to respect width constraints */
+      white-space: normal; /* Allow text to wrap */
+      hyphens: auto; /* Enable hyphenation for very long words */
+    }
+    
+    /* Set widths for other columns but without special text handling */
+    .result-table td[data-header="date"] {
+      width: 20%;
+    }
+    
+    .result-table td[data-header="object_id"] {
+      width: 25%;
+    }
+    
+    .result-table td[data-header="object_type"] {
+      width: 15%;
+    }
+
+    /* Lighter background for header cells */
+    .result-table th {
+      background-color: #f8f8f8;
+      font-weight: bold; /* Ensure headers have bold text */
+    }
+
+    .sortable-header {
+      padding: 8px;
+      /* Remove display: table-cell as it's already a th element */
+    }
+
+    /* This is the clickable button that holds the sort icon */
+    .sort-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9em;
+      color: #333;
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      float: right; /* Float the button to the right */
+    }
+
+    .sortable-header div {
+      display: flex;
+      flex-direction: row; /* Ensure horizontal layout */
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .sort-button:hover {
+      background-color: #e2e2e2; /* subtle hover highlight */
+    }
+
+    tr:hover {
+      background-color: skyblue;
+      cursor: pointer;
+    }
+    
+    .object-view {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+    }
+    
+    .object-header {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    
+    .object-title {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+    
+    .object-type {
+      color: #666;
+      font-style: italic;
+    }
+    
+    .property-list {
+      margin-bottom: 20px;
+    }
+    
+    .property-item {
+      display: flex;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+    
+    .property-label {
+      width: 30%;
+      font-weight: bold;
+    }
+    
+    .property-value {
+      width: 70%;
+      word-break: break-word;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .delete-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: #ff4136;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .delete-button:hover {
+      background-color: #d50000;
+    }
+    
+    .confirmation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 400px;
+      max-width: 80%;
+    }
+    
+    .modal-header {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+    }
+    
+    .modal-body {
+      margin-bottom: 20px;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .modal-cancel {
+      background-color: #ccc;
+      color: #333;
+    }
+    
+    .modal-confirm {
+      background-color: #ff4136;
+    }
+    
+    /* CSV Table Styles */
+    .csv-table {
+      width: 100%;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    .csv-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    .csv-table th, 
+    .csv-table td {
+      padding: 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    
+    .csv-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    
+    .csv-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .csv-table tr:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+</head>
+<body>
+  <!-- Top menu bar -->
+  <div class="top-bar">
+    <div class="top-bar-title">Deckhard Browser</div>
+    <div class="search-container">
+      <input type="text" id="sql-input" class="search-input" placeholder="Enter SQL query...">
+      <button id="sql-search-button" class="search-button">Execute SQL</button>
+      <input type="text" id="text-search-input" class="search-input" placeholder="Search by text...">
+      <button id="text-search-button" class="search-button">Search</button>
+    </div>
+  </div>
+  
+  <!-- Main content container -->
+  <div class="main-container">
+    <!-- Left panel - Predefined queries -->
+    <div class="left-panel">
+      <h3 class="panel-header">Predefined Queries</h3>
+      <ul id="query-list" class="query-list">
+        <!-- Query items will be inserted by JavaScript -->
+      </ul>
+    </div>
+    
+    <!-- Middle panel - Search results -->
+    <div class="middle-panel">
+      <h3 class="panel-header">Search Results</h3>
+      <div id="results-container">
+        <!-- Results will be inserted by JavaScript -->
+        <div class="notification">Execute a query to see results</div>
+      </div>
+    </div>
+    
+    <!-- Right panel - Object details -->
+    <div class="right-panel">
+      <h3 class="panel-header">Object Details</h3>
+      <div id="object-container">
+        <!-- Object details will be inserted by JavaScript -->
+        <div class="notification">Select an object to view details</div>
+      </div>
+    </div>
+  </div>
+    
+  <!-- Confirmation modal for delete action -->
+  <div id="confirmation-modal" class="confirmation-modal">
+    <div class="modal-content">
+      <div class="modal-header">Confirm Delete</div>
+      <div class="modal-body">
+        Are you sure you want to delete this object? This action cannot be undone.
+        <div id="modal-detail" style="margin-top: 10px; font-style: italic;"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel" class="search-button modal-cancel">Cancel</button>
+        <button id="modal-confirm" class="search-button modal-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+    <!-- Include external JavaScript file with cache busting -->
+    <script src="/static/js/browser.js?v=20240522"></script>
+</body>
+</html>

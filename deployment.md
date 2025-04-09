@@ -1,6 +1,6 @@
 # Deployment of Agent Evaluation App
 #### Redeploying the app:
- - $ cd /home/speccoud/agent_evaluation
+ - $ cd /home/<user>/agent_evaluation
  - $ git pull
  - $ conda activate agent_eval
  - $ cd react-app

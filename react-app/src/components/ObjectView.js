@@ -7,7 +7,7 @@ import HypothesisList from './HypothesisList'
 import MarkdownDisplay from './MarkdownDisplay';
 import JsonTreeView from './JsonTreeView';
 
-
+const OBJECT_SPEC_NAME = "_object_spec"
 const api_base = process.env.REACT_APP_API_BASE_URL
 
 const ObjectView = ({objectType, ...props}) => {
@@ -31,8 +31,18 @@ const ObjectView = ({objectType, ...props}) => {
           .then(response => {
             // Handle the response data
             // console.log(response)
-            setObject(response.data.object)
-            setObjectSpec(response.data.object_spec)
+            const dataObject = response.data.object;
+            setObject(dataObject);
+            // check if the dataObject has the property 'object_spec'
+            if (
+              dataObject.hasOwnProperty(OBJECT_SPEC_NAME) &&
+              isValidObjectSpec(dataObject, dataObject[OBJECT_SPEC_NAME])
+            ) {
+              setObjectSpec(dataObject[OBJECT_SPEC_NAME]);
+            } else {
+              // if not, use default object_spec
+              setObjectSpec(response.data.object_spec);
+            }
             setLinkNames(response.data.link_names)
             setLoading(false)
           })
@@ -145,10 +155,18 @@ const ObjectView = ({objectType, ...props}) => {
                 :
                 <div>
                     <div className="header">
-                        <img
-                            src={`/static/images/${objectType}.png`}
-                            alt={`${objectType} Logo`}
-                        />
+                        {/* Only show icon if it exists */}
+                        <div className="object-icon">
+                            {objectType && (
+                                <img
+                                    src={`/static/images/${objectType}.png`}
+                                    alt={`${objectType} Logo`}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            )}
+                        </div>
                         <div>
                             <h1>
                                 {objectType} : {object.name || "unnamed"}
@@ -310,14 +328,17 @@ const ObjectView = ({objectType, ...props}) => {
                                                         </pre>
                                                     </div>
                                                     
+                                                ) : propSpec.view === "markdown" || propName === "markdown" ? (
+                                                    <MarkdownDisplay 
+                                                        content={object[propName]} 
+                                                        style={{ maxWidth: "800px"}}
+                                                        className="markdown-content"
+                                                    />
                                                 ) : (
                                                     <MarkdownDisplay 
                                                         content={object[propName]} 
                                                         style={{ maxWidth: "800px"}}
                                                     />
-//                                                    <pre className='pre-format' style={{ maxWidth: "800px" }}>
-//                                                        {object[propName]}
-//                                                    </pre>
                                                 )}
                                                 </td>
                                             </tr>
@@ -337,5 +358,20 @@ const ObjectView = ({objectType, ...props}) => {
        
     )
 }
+
+const isValidObjectSpec = (object, objectSpec) => {
+    if (objectSpec.hasOwnProperty("properties")) {
+      Object.entries(objectSpec.properties).forEach(([propName, propSpec]) => {
+        if (!propSpec.hasOwnProperty("view")) {
+          return false;
+        }
+        if (!object.hasOwnProperty(propName)) {
+          return false;
+        }
+      });
+      return true;
+    }
+    return false;
+};
 
 export default ObjectView

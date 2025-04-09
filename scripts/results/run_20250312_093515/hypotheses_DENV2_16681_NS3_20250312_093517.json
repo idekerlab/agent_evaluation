@@ -1,0 +1,43 @@
+[
+  {
+    "title": "NS3 manipulates host heat shock response via HSPH1",
+    "null_hypothesis": "H0: DENV2 NS3 does not interact with HSPH1 to modulate the cellular heat shock response during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS3 directly interacts with HSPH1 to manipulate the cellular heat shock response, thereby creating a favorable environment for viral replication.",
+    "rationale": "HSPH1 (heat shock protein 105kDa) shows a high propagation weight (0.0700) and elevated Average_Zscore (1.6058), suggesting strong functional association with NS3. The presence of both HSPH1 and CDC37 (another heat shock protein co-chaperone) in the top propagation results indicates NS3 may exploit the host heat shock response. HSF1, the master regulator of heat shock response, also appears in the network with a positive Average_Zscore (1.1346), further supporting this hypothesis.",
+    "proteins_involved": [
+      "NS3",
+      "HSPH1",
+      "CDC37",
+      "HSF1"
+    ],
+    "experimental_data_used": "Propagation weights showing strong connectivity between NS3 and heat shock proteins; elevated Average_Zscores for HSPH1 (1.6058), CDC37 (1.1436), and HSF1 (1.1346)",
+    "experimental_validation": [
+      "Co-immunoprecipitation assays to confirm direct physical interaction between NS3 and HSPH1",
+      "HSPH1 knockdown/knockout studies to assess impact on DENV2 replication efficiency",
+      "Quantification of HSF1 activation and heat shock protein expression in the presence vs. absence of NS3"
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "viral_protein": "DENV2 16681 NS3"
+  },
+  {
+    "title": "NS3 disrupts mitochondrial function via MRPS16/MRPL21",
+    "null_hypothesis": "H0: DENV2 NS3 does not interact with mitochondrial ribosomal proteins MRPS16 and MRPL21 to disrupt mitochondrial translation during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS3 interacts with mitochondrial ribosomal proteins MRPS16 and MRPL21 to dysregulate mitochondrial translation, leading to altered energy metabolism that benefits viral replication.",
+    "rationale": "Both MRPS16 and MRPL21 appear in the propagation network with high Average_Zscores (1.7345 and 1.6522 respectively), indicating potential functional significance. MRPS16 shows significant downregulation at 48 hours post-infection (RNAseq_48h: -2.1632), suggesting active viral interference with mitochondrial ribosome function. The simultaneous appearance of both small (MRPS16) and large (MRPL21) mitochondrial ribosomal subunit proteins suggests a coordinated effect on mitochondrial translation machinery rather than random associations.",
+    "proteins_involved": [
+      "NS3",
+      "MRPS16",
+      "MRPL21"
+    ],
+    "experimental_data_used": "Propagation weights connecting NS3 to mitochondrial ribosomal proteins; downregulation of MRPS16 at 48h (RNAseq_48h: -2.1632); high Average_Zscores for both MRPS16 (1.7345) and MRPL21 (1.6522)",
+    "experimental_validation": [
+      "Proximity ligation assays to detect NS3 localization to mitochondria and association with mitochondrial ribosomes",
+      "Measurement of mitochondrial translation efficiency and ATP production in cells expressing NS3 versus controls",
+      "Rescue experiments using MRPS16/MRPL21 overexpression to determine if viral replication is affected"
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "viral_protein": "DENV2 16681 NS3"
+  }
+]

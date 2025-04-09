@@ -1,0 +1,87 @@
+[
+  {
+    "title": "NS4A disrupts ER-Golgi vesicular trafficking via SNARE complex",
+    "null_hypothesis": "H0: DENV2 NS4A does not significantly alter the function of SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB) in ER-Golgi vesicular trafficking during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS4A significantly disrupts ER-Golgi vesicular trafficking by directly interacting with and altering the function of SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB), which contributes to viral replication complex formation.",
+    "rationale": "Multiple SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB) show high propagation weights and elevated Z-scores in the network analysis, suggesting functional alteration during DENV infection. VTI1B has the highest propagation weight (0.0800) among human proteins, indicating a potentially direct interaction with NS4A. These SNARE proteins are critical for vesicular trafficking between ER and Golgi, and their disruption could facilitate the membrane rearrangements required for DENV replication complex formation.",
+    "proteins_involved": [
+      "NS4A",
+      "VTI1B",
+      "STX12",
+      "SEC22C",
+      "NAPB"
+    ],
+    "experimental_data_used": "Propagation weights showing strong network proximity of SNARE proteins to NS4A (VTI1B: 0.0800, STX12: 0.0300, SEC22C: 0.0200, NAPB: 0.0300) and elevated Average_Zscores for all these proteins (>1.1).",
+    "experimental_validation": [
+      "Co-immunoprecipitation assays to detect direct physical interactions between NS4A and identified SNARE proteins in infected cells.",
+      "Fluorescence microscopy to visualize colocalization of NS4A with SNARE proteins during different stages of viral infection.",
+      "siRNA knockdown of VTI1B, STX12, SEC22C, and NAPB to assess effects on viral replication and membrane reorganization."
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "viral_protein": "DENV2 16681 NS4A"
+  },
+  {
+    "title": "NS4A exploits ER quality control via SCFD1-PIGT axis",
+    "null_hypothesis": "H0: DENV2 NS4A does not utilize the SCFD1-PIGT axis to modulate ER quality control mechanisms for viral replication.",
+    "alternative_hypothesis": "H1: DENV2 NS4A specifically exploits the SCFD1-PIGT axis to modulate ER quality control mechanisms, thereby creating a favorable environment for viral replication complex assembly.",
+    "rationale": "SCFD1 and PIGT both show high propagation weights (0.0550 each) and high Average_Zscores (1.3983 and 1.3110 respectively), suggesting significant functional alteration during DENV infection. SCFD1 is involved in ER-to-Golgi transport while PIGT is part of the GPI transamidase complex in the ER. The coordinated exploitation of these ER quality control components by NS4A could facilitate the extensive ER membrane rearrangements required for DENV replication complex formation while evading host defense mechanisms.",
+    "proteins_involved": [
+      "NS4A",
+      "SCFD1",
+      "PIGT",
+      "TMED4",
+      "SEC24B"
+    ],
+    "experimental_data_used": "High propagation weights for SCFD1 (0.0550) and PIGT (0.0550), along with their elevated Average_Zscores (1.3983 and 1.3110). Additional support from network proximity of ER-Golgi transport proteins TMED4 (weight: 0.0600) and SEC24B (weight: 0.0150).",
+    "experimental_validation": [
+      "CRISPR-Cas9 knockout of SCFD1 and PIGT to assess impact on DENV replication efficiency and ER membrane reorganization.",
+      "Proximity ligation assays to detect NS4A interactions with SCFD1 and PIGT in situ during different stages of viral infection.",
+      "Electron microscopy analysis of ER membrane morphology in cells expressing NS4A with and without SCFD1/PIGT depletion."
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "viral_protein": "DENV2 16681 NS4A"
+  },
+  {
+    "title": "NS3 manipulates host heat shock response via HSPH1",
+    "null_hypothesis": "H0: DENV2 NS3 does not interact with HSPH1 to modulate the cellular heat shock response during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS3 directly interacts with HSPH1 to manipulate the cellular heat shock response, thereby creating a favorable environment for viral replication.",
+    "rationale": "HSPH1 (heat shock protein 105kDa) shows a high propagation weight (0.0700) and elevated Average_Zscore (1.6058), suggesting strong functional association with NS3. The presence of both HSPH1 and CDC37 (another heat shock protein co-chaperone) in the top propagation results indicates NS3 may exploit the host heat shock response. HSF1, the master regulator of heat shock response, also appears in the network with a positive Average_Zscore (1.1346), further supporting this hypothesis.",
+    "proteins_involved": [
+      "NS3",
+      "HSPH1",
+      "CDC37",
+      "HSF1"
+    ],
+    "experimental_data_used": "Propagation weights showing strong connectivity between NS3 and heat shock proteins; elevated Average_Zscores for HSPH1 (1.6058), CDC37 (1.1436), and HSF1 (1.1346)",
+    "experimental_validation": [
+      "Co-immunoprecipitation assays to confirm direct physical interaction between NS3 and HSPH1",
+      "HSPH1 knockdown/knockout studies to assess impact on DENV2 replication efficiency",
+      "Quantification of HSF1 activation and heat shock protein expression in the presence vs. absence of NS3"
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "viral_protein": "DENV2 16681 NS3"
+  },
+  {
+    "title": "NS3 disrupts mitochondrial function via MRPS16/MRPL21",
+    "null_hypothesis": "H0: DENV2 NS3 does not interact with mitochondrial ribosomal proteins MRPS16 and MRPL21 to disrupt mitochondrial translation during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS3 interacts with mitochondrial ribosomal proteins MRPS16 and MRPL21 to dysregulate mitochondrial translation, leading to altered energy metabolism that benefits viral replication.",
+    "rationale": "Both MRPS16 and MRPL21 appear in the propagation network with high Average_Zscores (1.7345 and 1.6522 respectively), indicating potential functional significance. MRPS16 shows significant downregulation at 48 hours post-infection (RNAseq_48h: -2.1632), suggesting active viral interference with mitochondrial ribosome function. The simultaneous appearance of both small (MRPS16) and large (MRPL21) mitochondrial ribosomal subunit proteins suggests a coordinated effect on mitochondrial translation machinery rather than random associations.",
+    "proteins_involved": [
+      "NS3",
+      "MRPS16",
+      "MRPL21"
+    ],
+    "experimental_data_used": "Propagation weights connecting NS3 to mitochondrial ribosomal proteins; downregulation of MRPS16 at 48h (RNAseq_48h: -2.1632); high Average_Zscores for both MRPS16 (1.7345) and MRPL21 (1.6522)",
+    "experimental_validation": [
+      "Proximity ligation assays to detect NS3 localization to mitochondria and association with mitochondrial ribosomes",
+      "Measurement of mitochondrial translation efficiency and ATP production in cells expressing NS3 versus controls",
+      "Rescue experiments using MRPS16/MRPL21 overexpression to determine if viral replication is affected"
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "viral_protein": "DENV2 16681 NS3"
+  }
+]

@@ -591,11 +591,18 @@ object_specifications = {
                 "editable": False
             },
             "json": {
-                "label": "JSON Content",
+                "label": "JSON",
                 "type": "object",
                 "editable": False,
                 "view": "json_tree",
                 "collapsible": True
+            },
+            "markdown": {
+                "label": "JSON Markdown",
+                "type": "object",
+                "editable": False,
+                "view": "markdown",
+                "collapsible": False
             }
         }
     }
