@@ -1,0 +1,44 @@
+[
+  {
+    "title": "DENV2 Capsid Disrupts Mitochondrial Ribosomal Function",
+    "null_hypothesis": "H0: DENV2 16681 Capsid protein does not alter the expression or function of mitochondrial ribosomal proteins (MRPS16, MRPL21, MRPL10)",
+    "alternative_hypothesis": "H1: DENV2 16681 Capsid protein significantly downregulates expression or disrupts function of mitochondrial ribosomal proteins (MRPS16, MRPL21, MRPL10) to inhibit host cell translation",
+    "rationale": "The network analysis shows strong connections between DENV2 Capsid and multiple mitochondrial ribosomal proteins. MRPS16 shows a negative RNAseq_48h value (-2.1632) despite high Average_Zscore (1.7345), suggesting viral capsid may suppress its expression during infection. Other mitochondrial ribosomal proteins (MRPL21, MRPL10) show high Average_Zscores but are closely connected to Capsid, suggesting potential functional interactions that may impair mitochondrial translation.",
+    "entities_involved": [
+      "DENV2 16681 Capsid",
+      "MRPS16",
+      "MRPL21",
+      "MRPL10",
+      "Mitochondrial ribosomes"
+    ],
+    "experimental_data_used": "Network propagation weights showing close connections between Capsid and mitochondrial ribosomal proteins; negative RNAseq_48h value for MRPS16; high Average_Zscores for MRPS16, MRPL21, and MRPL10",
+    "experimental_validation": [
+      "Measure expression levels of mitochondrial ribosomal proteins in cells expressing DENV2 Capsid versus control cells using RT-qPCR and western blot",
+      "Perform co-immunoprecipitation assays to detect direct interactions between DENV2 Capsid and mitochondrial ribosomal proteins",
+      "Assess mitochondrial translation efficiency using pulse-chase labeling in the presence or absence of DENV2 Capsid"
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "source_node": "DENV2 16681 Capsid"
+  },
+  {
+    "title": "DENV2 Capsid Modulates Stress Response via GADD45GIP1",
+    "null_hypothesis": "H0: DENV2 16681 Capsid does not affect cellular stress response through interaction with GADD45GIP1",
+    "alternative_hypothesis": "H1: DENV2 16681 Capsid interacts with GADD45GIP1 to modulate cellular stress response pathways, promoting viral replication",
+    "rationale": "GADD45GIP1 (Growth Arrest and DNA Damage-inducible 45 Gamma Interacting Protein 1) shows high propagation weight (0.1000) and Average_Zscore (1.8784) in the network analysis, indicating a strong connection to DENV2 Capsid. GADD45GIP1 is known to regulate cell cycle arrest and stress response pathways. The close network connection suggests Capsid may hijack GADD45GIP1 function to modulate cellular stress responses, potentially creating a more favorable environment for viral replication.",
+    "entities_involved": [
+      "DENV2 16681 Capsid",
+      "GADD45GIP1",
+      "Cellular stress response pathways"
+    ],
+    "experimental_data_used": "Network propagation weight of GADD45GIP1 (0.1000); high Average_Zscore for GADD45GIP1 (1.8784)",
+    "experimental_validation": [
+      "Perform knockdown/knockout of GADD45GIP1 and measure effects on DENV2 replication efficiency",
+      "Use fluorescence microscopy to assess co-localization of DENV2 Capsid and GADD45GIP1 during infection",
+      "Analyze stress response pathway activation in cells expressing DENV2 Capsid with or without GADD45GIP1"
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "source_node": "DENV2 16681 Capsid"
+  }
+]
