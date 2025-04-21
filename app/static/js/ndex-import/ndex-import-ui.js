@@ -191,12 +191,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     break;
                 case 'edges':
-                    structuredData.edges = aspectData.map(edge => ({
-                        id: edge['@id'],
-                        source: edge.s,
-                        target: edge.t,
-                        interaction: edge.i
-                    }));
+                    structuredData.edges = aspectData.map(edge => {
+                        const edgeObj = {
+                            id: edge['@id'] || edge.id,
+                            source: edge.s,
+                            target: edge.t,
+                            interaction: edge.i
+                        };
+                        
+                        // Add all properties from the 'v' object if it exists
+                        if (edge.v && typeof edge.v === 'object') {
+                            Object.keys(edge.v).forEach(key => {
+                                edgeObj[key] = edge.v[key];
+                            });
+                        }
+                        
+                        return edgeObj;
+                    });
                     break;
                 case 'nodeAttributes':
                     structuredData.nodeAttributes = aspectData.map(attr => ({

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "H1",
+    "title": "NS3 Inhibits STAT1 Phosphorylation",
+    "null_hypothesis": "NS3 does not inhibit STAT1 phosphorylation during infection",
+    "alternative_hypothesis": "NS3 inhibits STAT1 phosphorylation during infection",
+    "rationale": "STAT1 shows significant propagation weight in the network analysis. This suggests NS3 may interfere with JAK-STAT signaling to suppress antiviral responses.",
+    "proteins_involved": [
+      "STAT1",
+      "JAK1",
+      "IFNAR1"
+    ],
+    "experimental_data_used": "Phosphorylation levels and propagation weights",
+    "experimental_validation": "Western blot for phospho-STAT1; Co-IP of NS3 with STAT1; siRNA knockdown of NS3",
+    "confidence": 4,
+    "viral_protein": "DENV2 NS3"
+  },
+  {
+    "id": "H2",
+    "title": "NS3 Upregulates A2M Expression",
+    "null_hypothesis": "NS3 does not alter A2M expression in host cells",
+    "alternative_hypothesis": "NS3 increases A2M expression in host cells",
+    "rationale": "A2M showed the highest propagation weight, suggesting a strong connection with NS3. A2M is involved in immune regulation and could be manipulated by the virus.",
+    "proteins_involved": [
+      "A2M",
+      "NS3"
+    ],
+    "experimental_data_used": "Propagation weights and gene expression data",
+    "experimental_validation": "qPCR for A2M expression; Reporter assay for A2M promoter; ChIP-seq",
+    "confidence": 3,
+    "viral_protein": "DENV2 NS3"
+  }
+]

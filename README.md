@@ -1,5 +1,19 @@
 # agent_evaluation
-Supports a paper on the development and evaluation of reviewer agents that, in turn, evaluate mechanistic hypotheses derived from datasets.
+This repo is about two things:
+
+1. a system called deckard (in some places, accidently called "deckhard") for reviewing lists of objects in the database.
+ - deckard (and its database) is accessible programatically by both its REST api and as an MCP server.
+2. analysis code for a dengue fever omics data modeling and hypothesis generation project. It is one of the projects using deckard.
+
+It has a great deal of legacy code from when the deckard system had (1) internal hypothesis generation and review generation features and (2) a rigid schema of objects implemented in the "models" directory
+
+An earlier react-based interface has been superseded by a simpler interface found in the static directory. It uses the same fastAPI service but the front end is based on three one page web apps in plain javascript
+
+Goals:
+We want the fast api service and interface to only use localhost:3000  And simplify startup.
+We want to remove the legacy code step by step, testing as we go, to be sure we don't remove something important. 
+
+Everything past this point in the file is obsolete:
 
 # Install requirements 
 
