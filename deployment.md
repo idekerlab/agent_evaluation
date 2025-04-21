@@ -6,12 +6,23 @@
 ```bash
 sudo -u deckard /bin/bash
 cd /opt/agent_evaluation
+# Verify on correct branch. See Changing branch and getting latest changes from that branch
 git pull
 exit # switches back to your user account
 sudo systemctl restart agent_eval
 ```
 
 NOTE: To check status of service run `systemctl status agent_eval`
+
+## Changing branch and getting latest changes from that branch
+
+```bash
+sudo -u deckard /bin/bash
+cd /opt/agent_evaluation
+git status # shows current branch and any uncommitted changes
+git checkout dev # switches to dev branch
+git pull # gets latest changes on current branch
+```
 
 ## Changing the Database File
 
