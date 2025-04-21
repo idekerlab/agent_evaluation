@@ -4,7 +4,7 @@
 
 
 ```bash
-su - deckard
+sudo -u deckard /bin/bash
 cd /opt/agent_evaluation
 git pull
 exit # switches back to your user account
@@ -25,7 +25,7 @@ scp /path/to/ae_database.db user@server.ideker.ucsd.edu:/tmp/ae_database.db
 ### To backup and update the copied database file
 
  ```bash
- su - deckard
+ sudo -u deckard /bin/bash
  cp /opt/data/ae_database/ae_database.db /opt/data/ae_database/ae_database.db.bk.`date +%s`
  cp /tmp/ae_database.db /opt/data/ae_database/.
  exit # switches back to your user account
@@ -47,5 +47,5 @@ sudo systemctl restart agent_eval
 
 ```bash
 sudo nano /etc/nginx/sites-available/agent_eval.conf
-udo systemctl daemon-reload
+sudo systemctl daemon-reload
 sudo systemctl restart nginx
