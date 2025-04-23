@@ -59,14 +59,33 @@ function displayObject(index) {
     });
   }
   
-  // Get order configuration from the object list, not from the individual object
-  // _order: An optional property in the object list that defines the display order of properties
-  // Format: { "property_name": order_rank_number, ... }
-  // Properties with lower rank numbers are displayed first
-  // Properties with the same rank are sorted alphabetically
-  // Properties not mentioned in _order are displayed after ordered properties, sorted alphabetically
-  const orderConfig = objectList && objectList._order ? objectList._order : {};
-  console.log('Object list order configuration:', orderConfig);
+  // Get display_order configuration from the object list
+  // display_order: String in comma-separated format: "prop1,prop2,prop3"
+  // Properties are ranked in the order they appear in the string
+  // Properties not mentioned are displayed after ordered properties, sorted alphabetically
+  let orderConfig = {};
+  
+  if (objectList && objectList.display_order) {
+    // Parse the string format into an order configuration object
+    const displayOrderStr = objectList.display_order;
+    console.log('Object list display_order string:', displayOrderStr);
+    
+    if (typeof displayOrderStr === 'string') {
+      // Split by comma and create a rank object
+      const properties = displayOrderStr.split(',');
+      properties.forEach((prop, index) => {
+        const trimmedProp = prop.trim();
+        if (trimmedProp) {
+          orderConfig[trimmedProp] = index + 1; // Rank starts at 1
+        }
+      });
+    } else if (typeof displayOrderStr === 'object') {
+      // Support for legacy format as a fallback
+      orderConfig = displayOrderStr;
+    }
+  }
+  
+  console.log('Parsed display order configuration:', orderConfig);
   
   // Display object properties, excluding system properties
   const systemProperties = ['object_id', 'type', '_criteria', '_display_types', '_order'];
@@ -77,7 +96,7 @@ function displayObject(index) {
                                                       object[key] !== undefined && 
                                                       object[key] !== '');
   
-  // Sort keys of this object using the _order property from objectList
+  // Sort keys of this object using the display_order property from objectList
   propertyKeys.sort((a, b) => {
     // Get the order ranks from objectList._order for the properties in this object
     const rankA = orderConfig[a];
@@ -199,22 +218,86 @@ function displayObject(index) {
   updateScoringForm();
 }
 
-// Generate the scoring form based on criteria
+// Generate the scoring form based on scoring_criteria string
 function generateScoringForm() {
-  console.log('Generating scoring form with criteria:', objectList._criteria);
+  console.log('Generating scoring form');
   
   console.log('objectList:', objectList);
   scoringFormContainer.innerHTML = '';
   
-  if (!objectList._criteria || !Array.isArray(objectList._criteria) || objectList._criteria.length === 0) {
+  if (!objectList.scoring_criteria || typeof objectList.scoring_criteria !== 'string') {
     scoringFormContainer.innerHTML = '<div class="notification warning">No scoring criteria defined.</div>';
+    return;
+  }
+  
+  console.log('Parsing scoring criteria string:', objectList.scoring_criteria);
+  
+  // Parse the scoring criteria string: "checkbox: Label|menu: Label: val1, val2|textarea: Label"
+  const criteriaItems = objectList.scoring_criteria.split('|');
+  const parsedCriteria = [];
+  
+  criteriaItems.forEach((item, index) => {
+    const trimmedItem = item.trim();
+    if (!trimmedItem) return;
+    
+    // Find the first colon that separates type from label
+    const firstColonIndex = trimmedItem.indexOf(':');
+    if (firstColonIndex === -1) {
+      console.warn(`Skipping invalid criterion (no colon): ${trimmedItem}`);
+      return;
+    }
+    
+    // Extract input type and the rest of the string
+    const inputType = trimmedItem.substring(0, firstColonIndex).trim();
+    const rest = trimmedItem.substring(firstColonIndex + 1).trim();
+    
+    // Create criterion object
+    const criterion = {
+      input_type: inputType,
+      label: rest, // Default to using all the rest as label
+      property_name: '', // Will be set later
+      options: null // For menu type
+    };
+    
+    // Handle special case for menu type which includes options
+    if (inputType === 'menu') {
+      // For menu type, check for another colon that separates label from options
+      const secondColonIndex = rest.indexOf(':');
+      
+      if (secondColonIndex !== -1) {
+        // Has options
+        criterion.label = rest.substring(0, secondColonIndex).trim();
+        const optionsStr = rest.substring(secondColonIndex + 1).trim();
+        criterion.options = optionsStr.split(',').map(o => o.trim());
+      }
+    }
+    
+    // Generate property_name from label - convert to snake_case
+    criterion.property_name = criterion.label
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
+      .trim();
+    
+    // If property_name is empty or just underscores, use a default
+    if (!criterion.property_name || criterion.property_name.match(/^_+$/)) {
+      criterion.property_name = `criterion_${index + 1}`;
+    }
+    
+    parsedCriteria.push(criterion);
+  });
+  
+  console.log('Parsed criteria:', parsedCriteria);
+  
+  if (parsedCriteria.length === 0) {
+    scoringFormContainer.innerHTML = '<div class="notification warning">No valid scoring criteria found.</div>';
     return;
   }
   
   const currentObject = objects[currentObjectIndex];
   
   // Create form elements for each criterion
-  objectList._criteria.forEach(criterion => {
+  parsedCriteria.forEach(criterion => {
     console.log('Processing criterion:', criterion);
     
     const formGroup = document.createElement('div');
@@ -223,7 +306,7 @@ function generateScoringForm() {
     const label = document.createElement('label');
     label.className = 'form-label';
     label.setAttribute('for', `criterion-${criterion.property_name}`);
-    label.textContent = criterion.label || criterion.property_name;
+    label.textContent = criterion.label;
     
     let input;
     
@@ -244,14 +327,14 @@ function generateScoringForm() {
         input = document.createElement('select');
         input.className = 'form-select';
         
+        // Add an empty option first
+        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = 'Select an option';
+        input.appendChild(emptyOption);
+        
         // If options are provided, add them to the select
         if (criterion.options && Array.isArray(criterion.options)) {
-          // Add an empty option first
-          const emptyOption = document.createElement('option');
-          emptyOption.value = '';
-          emptyOption.textContent = 'Select an option';
-          input.appendChild(emptyOption);
-          
           criterion.options.forEach(option => {
             const optionEl = document.createElement('option');
             optionEl.value = option;
@@ -259,7 +342,7 @@ function generateScoringForm() {
             input.appendChild(optionEl);
           });
         } else {
-          // Default options
+          // Default options if none provided
           [1, 2, 3, 4, 5].forEach(val => {
             const optionEl = document.createElement('option');
             optionEl.value = val;
@@ -329,9 +412,12 @@ function updateScoringForm() {
   const objectScores = review.scores.find(s => s.reviewed_object === objectId);
   console.log('Found object scores:', objectScores);
   
+  // Get criteria once and use throughout the function
+  const parsedCriteria = parseScoringCriteria();
+  
   // Clear all inputs first to avoid carrying over values from previous objects
-  if (objectList._criteria && Array.isArray(objectList._criteria)) {
-    objectList._criteria.forEach(criterion => {
+  if (parsedCriteria && Array.isArray(parsedCriteria)) {
+    parsedCriteria.forEach(criterion => {
       const input = document.getElementById(`criterion-${criterion.property_name}`);
       if (!input) return;
       
@@ -348,9 +434,9 @@ function updateScoringForm() {
   // If no scores exist for this object, leave form empty
   if (!objectScores) return;
   
-  // Update form values with this object's specific scores
-  if (objectList._criteria && Array.isArray(objectList._criteria)) {
-    objectList._criteria.forEach(criterion => {
+  // Update form values with this object's specific scores using the same parsedCriteria
+  if (parsedCriteria && Array.isArray(parsedCriteria)) {
+    parsedCriteria.forEach(criterion => {
       const input = document.getElementById(`criterion-${criterion.property_name}`);
       if (!input) return;
       
@@ -370,14 +456,71 @@ function updateScoringForm() {
   }
 }
 
+/**
+ * Parse the scoring_criteria string from objectList into an array of criterion objects
+ * @returns {Array|null} Array of criterion objects or null if no criteria
+ */
+function parseScoringCriteria() {
+  if (!objectList || !objectList.scoring_criteria || typeof objectList.scoring_criteria !== 'string') {
+    return null;
+  }
+  
+  const criteriaItems = objectList.scoring_criteria.split('|');
+  const parsedCriteria = [];
+  
+  criteriaItems.forEach((item, index) => {
+    const trimmedItem = item.trim();
+    if (!trimmedItem) return;
+    
+    const firstColonIndex = trimmedItem.indexOf(':');
+    if (firstColonIndex === -1) return;
+    
+    const inputType = trimmedItem.substring(0, firstColonIndex).trim();
+    const rest = trimmedItem.substring(firstColonIndex + 1).trim();
+    
+    const criterion = {
+      input_type: inputType,
+      label: rest,
+      property_name: '',
+      options: null
+    };
+    
+    if (inputType === 'menu') {
+      const secondColonIndex = rest.indexOf(':');
+      
+      if (secondColonIndex !== -1) {
+        criterion.label = rest.substring(0, secondColonIndex).trim();
+        const optionsStr = rest.substring(secondColonIndex + 1).trim();
+        criterion.options = optionsStr.split(',').map(o => o.trim());
+      }
+    }
+    
+    criterion.property_name = criterion.label
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
+      .trim();
+    
+    if (!criterion.property_name || criterion.property_name.match(/^_+$/)) {
+      criterion.property_name = `criterion_${index + 1}`;
+    }
+    
+    parsedCriteria.push(criterion);
+  });
+  
+  return parsedCriteria.length > 0 ? parsedCriteria : null;
+}
+
 // Save the scores for the current object only
 function saveCurrentScores() {
   console.log('Saving scores for object index:', currentObjectIndex);
   
-  if (!review || !objectList._criteria || !Array.isArray(objectList._criteria) || currentObjectIndex >= objects.length) {
+  const parsedCriteria = parseScoringCriteria();
+  
+  if (!review || !parsedCriteria || !Array.isArray(parsedCriteria) || currentObjectIndex >= objects.length) {
     console.warn('Cannot save scores - missing required data', { 
       review: !!review, 
-      criteria: objectList ? !!objectList._criteria : false, 
+      criteria: !!parsedCriteria, 
       objects: !!objects, 
       currentObjectIndex 
     });
@@ -392,7 +535,7 @@ function saveCurrentScores() {
   let isValid = true;
   
   // Collect scores from form inputs
-  objectList._criteria.forEach(criterion => {
+  parsedCriteria.forEach(criterion => {
     const input = document.getElementById(`criterion-${criterion.property_name}`);
     if (!input) {
       console.warn(`Input not found for criterion: ${criterion.property_name}`);

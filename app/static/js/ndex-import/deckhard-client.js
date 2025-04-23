@@ -259,23 +259,20 @@ const deckhardClient = {
   },
   
   /**
-   * Validate scoring criteria format
-   * @param {Object} criteria - Scoring criteria object
+   * Validate scoring criteria string format
+   * @param {string} criteriaString - Scoring criteria string in pipe-delimited format
    * @returns {boolean} - True if valid
    */
-  validateScoringCriteria: function(criteria) {
-    if (!criteria || !Array.isArray(criteria)) {
+  validateScoringCriteriaString: function(criteriaString) {
+    if (!criteriaString || typeof criteriaString !== 'string') {
       return false;
     }
     
-    // Check if all criteria items have required properties
-    return criteria.every(item => {
-      return (
-        item.label && typeof item.label === 'string' &&
-        item.property_name && typeof item.property_name === 'string' &&
-        (!item.input_type || ['text', 'textarea', 'checkbox', 'menu'].includes(item.input_type))
-      );
-    });
+    // Basic validation that string contains at least one valid input type
+    const validTypes = ['checkbox', 'menu', 'text', 'textarea'];
+    const hasValidType = validTypes.some(type => criteriaString.includes(type + ':'));
+    
+    return hasValidType;
   },
   
   /**
@@ -302,14 +299,17 @@ const deckhardClient = {
         object_type: objectType
       };
       
-      // Add network attributes from CX file (networkData.properties)
+      // Add network attributes from CX2 file (networkData.properties)
       // These usually have { n: name, v: value, d: dataType }
       if (networkData.properties && Array.isArray(networkData.properties)) {
         networkData.properties.forEach(prop => {
           if (prop.n && prop.v !== undefined && prop.v !== null) {
             // Clean the property name and avoid overwriting core props
             const key = prop.n.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-            if (!['name', 'description', 'ndex_uuid', 'import_source', 'import_type', 'object_type', 'object_ids', '_criteria', '_order'].includes(key)) {
+            const excludedProps = ['name', 'description', 'ndex_uuid', 'import_source', 'import_type', 'object_type', 'object_ids'];
+            
+            // Include scoring_criteria and display_order as is - don't skip them
+            if (!excludedProps.includes(key)) {
               // Convert value to string if it's not a basic type (default for unknown complex attributes)
               if (typeof prop.v === 'object') {
                 objectListProps[key] = JSON.stringify(prop.v);
@@ -322,35 +322,19 @@ const deckhardClient = {
         console.log("Added network properties to object list props:", objectListProps);
       }
       
-      // Add _order specifically as an object if it exists
-      const orderAttribute = networkData.properties?.find(prop => prop.n === '_order');
-      if (orderAttribute && orderAttribute.v !== undefined && orderAttribute.v !== null) {
-        try {
-          objectListProps._order = (typeof orderAttribute.v === 'string')
-                                   ? JSON.parse(orderAttribute.v)
-                                   : orderAttribute.v;
-          console.log("Added _order object:", objectListProps._order);
-        } catch (e) {
-          console.warn("Could not parse _order attribute as JSON, skipping:", orderAttribute.v, e);
-        }
+      // Handle display_order if it exists (directly from networkData)
+      if (networkData.display_order !== undefined && networkData.display_order !== null) {
+        objectListProps.display_order = networkData.display_order;
+        console.log("Added display_order string:", objectListProps.display_order);
       }
       
-      // Add scoring criteria if available and valid (this handles _criteria)
-      const criteriaAttribute = networkData.properties?.find(prop => prop.n === '_criteria');
-      if (criteriaAttribute && criteriaAttribute.v !== undefined && criteriaAttribute.v !== null) {
-        try {
-          const parsedCriteria = (typeof criteriaAttribute.v === 'string')
-                                 ? JSON.parse(criteriaAttribute.v)
-                                 : criteriaAttribute.v;
-
-          if (this.validateScoringCriteria(parsedCriteria)) {
-            objectListProps._criteria = parsedCriteria;
-            console.log("Added valid _criteria object:", objectListProps._criteria);
-          } else {
-            console.warn('Invalid scoring criteria format found in CX, not including in object_list', parsedCriteria);
-          }
-        } catch (e) {
-          console.warn("Could not parse _criteria attribute as JSON, skipping:", criteriaAttribute.v, e);
+      // Handle scoring_criteria if it exists (directly from networkData)
+      if (networkData.scoring_criteria !== undefined && networkData.scoring_criteria !== null) {
+        if (this.validateScoringCriteriaString(networkData.scoring_criteria)) {
+          objectListProps.scoring_criteria = networkData.scoring_criteria;
+          console.log("Added scoring_criteria string:", objectListProps.scoring_criteria);
+        } else {
+          console.warn('Invalid scoring_criteria format found in CX2, not including in object_list', networkData.scoring_criteria);
         }
       }
       

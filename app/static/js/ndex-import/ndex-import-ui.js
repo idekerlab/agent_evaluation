@@ -1,3 +1,4 @@
+
 /**
  * NDEx Import UI Module
  * 
@@ -162,11 +163,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             switch (aspectName) {
                 case 'networkAttributes':
+                    // Store the entire networkAttributes aspect data
                     structuredData.properties = aspectData;
-                    const nameProp = aspectData.find(p => p.n === 'name');
-                    if (nameProp) structuredData.name = nameProp.v;
-                    const descProp = aspectData.find(p => p.n === 'description');
-                    if (descProp) structuredData.description = descProp.v;
+                    
+                    // If we have networkAttributes, copy all properties directly to the structured data
+                    if (aspectData && aspectData.length > 0) {
+                        // Copy all properties from the first networkAttributes object
+                        const networkAttr = aspectData[0];
+                        
+                        // Copy each property to the structured data directly
+                        Object.keys(networkAttr).forEach(key => {
+                            structuredData[key] = networkAttr[key];
+                        });
+                        
+                        console.log("Copied network attributes:", networkAttr);
+                    }
                     break;
                 case 'nodes':
                     structuredData.nodes = aspectData.map(node => {
@@ -288,12 +299,14 @@ document.addEventListener('DOMContentLoaded', function() {
         networkNameInput.value = parsedData.name || 'Unnamed Network';
         
         try {
-            scoringCriteria = findAndParseScoringCriteria(parsedData.properties);
+            // Pass the entire parsedData object to findAndParseScoringCriteria
+            scoringCriteria = findAndParseScoringCriteria(parsedData);
             if (scoringCriteria) {
                 criteriaContent.textContent = JSON.stringify(scoringCriteria, null, 2);
                 criteriaPreview.classList.remove('hidden');
                 
-                if (!deckhardClient.validateScoringCriteria(scoringCriteria)) {
+                // Use the correct function name: validateScoringCriteriaString instead of validateScoringCriteria
+                if (!deckhardClient.validateScoringCriteriaString(parsedData.scoring_criteria)) {
                     showNotification('Scoring criteria found but format is invalid. The criteria will not be included in the import.', 'warning');
                 }
             } else {
@@ -313,30 +326,90 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * Finds and parses the scoring criteria from network attributes.
      * @param {Array} networkAttributes - Array of network attributes from CX2.
-     * @returns {Object|null} - Parsed scoring criteria object or null.
+     * @returns {Object|null} - Parsed scoring criteria object in array format or null.
      */
-    function findAndParseScoringCriteria(networkAttributes) {
-        if (!networkAttributes || !Array.isArray(networkAttributes)) {
+    function findAndParseScoringCriteria(networkData) {
+        if (!networkData) {
             return null;
         }
         
-        const criteriaAttr = networkAttributes.find(attr => attr.n === 'scoring_criteria');
-        
-        if (!criteriaAttr || criteriaAttr.v === undefined || criteriaAttr.v === null) {
-            console.log("No scoring_criteria attribute found in network properties");
+        // Check if scoring_criteria is available directly in the network data
+        if (networkData.scoring_criteria) {
+            const criteriaString = networkData.scoring_criteria;
+            console.log("Found scoring_criteria directly in network data:", criteriaString);
+            
+            if (typeof criteriaString !== 'string' || criteriaString.trim() === '') {
+                console.log("Scoring criteria is empty or not a string");
+                return null;
+            }
+        } else {
+            console.log("No scoring_criteria attribute found in network data");
             return null;
         }
         
         try {
-            const criteriaValue = criteriaAttr.v;
-            const criteria = typeof criteriaValue === 'string' ?
-                           JSON.parse(criteriaValue) : criteriaValue;
+            const criteriaString = networkData.scoring_criteria;
             
-            console.log("Found scoring criteria:", criteria);
-            if (!Array.isArray(criteria)) {
-                throw new Error('Scoring criteria is not an array.');
-            }
-            return criteria;
+            console.log("Found scoring criteria string:", criteriaString);
+            
+            // Parse the string-based format: "checkbox: Label|menu: Label: val1, val2|textarea: Label"
+            const criteriaItems = criteriaString.split('|');
+            const parsedCriteria = [];
+            
+            criteriaItems.forEach((item, index) => {
+                const trimmedItem = item.trim();
+                if (!trimmedItem) return;
+                
+                // Find the first colon that separates type from label
+                const firstColonIndex = trimmedItem.indexOf(':');
+                if (firstColonIndex === -1) {
+                    console.warn(`Skipping invalid criterion (no colon): ${trimmedItem}`);
+                    return;
+                }
+                
+                // Extract input type and the rest of the string
+                const inputType = trimmedItem.substring(0, firstColonIndex).trim();
+                const rest = trimmedItem.substring(firstColonIndex + 1).trim();
+                
+                // Create criterion object
+                const criterion = {
+                    input_type: inputType,
+                    label: rest, // Default to using all the rest as label
+                    property_name: '', // Will be set later
+                    display_type: 'text',
+                    data_type: inputType === 'checkbox' ? 'bool' : 'str'
+                };
+                
+                // Handle special case for menu type which includes options
+                if (inputType === 'menu') {
+                    // For menu type, check for another colon that separates label from options
+                    const secondColonIndex = rest.indexOf(':');
+                    
+                    if (secondColonIndex !== -1) {
+                        // Has options
+                        criterion.label = rest.substring(0, secondColonIndex).trim();
+                        const optionsStr = rest.substring(secondColonIndex + 1).trim();
+                        criterion.options = optionsStr.split(',').map(o => o.trim());
+                    }
+                }
+                
+                // Generate property_name from label - convert to snake_case
+                criterion.property_name = criterion.label
+                    .toLowerCase()
+                    .replace(/\s+/g, '_')
+                    .replace(/[^a-z0-9_]/g, '')
+                    .trim();
+                
+                // If property_name is empty or just underscores, use a default
+                if (!criterion.property_name || criterion.property_name.match(/^_+$/)) {
+                    criterion.property_name = `criterion_${index + 1}`;
+                }
+                
+                parsedCriteria.push(criterion);
+            });
+            
+            console.log("Parsed criteria:", parsedCriteria);
+            return parsedCriteria;
         } catch (error) {
             console.error('Failed to parse scoring criteria from attribute:', error);
             throw new Error('Invalid scoring_criteria format: ' + error.message);
