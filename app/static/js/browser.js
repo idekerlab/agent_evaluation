@@ -192,48 +192,6 @@ async function executeTextSearch() {
   }
 }
 
-// Helper function to format long text
-function formatLongText(text, maxLength = 35) {
-  if (!text) return '';
-  text = String(text);
-  
-  if (text.length <= maxLength) return text;
-  
-  // If text contains underscores, try to break it at a logical point
-  if (text.includes('_')) {
-    const parts = text.split('_');
-    
-    // If there are just a few parts, try to keep the first and last parts
-    if (parts.length <= 3) {
-      const firstPart = parts[0];
-      const lastPart = parts[parts.length - 1];
-      
-      // If first + last would fit with ellipsis between
-      if (firstPart.length + lastPart.length + 3 <= maxLength) {
-        return firstPart + '...' + lastPart;
-      }
-    }
-    
-    // Otherwise build up from the start
-    let result = parts[0];
-    let currentLength = result.length;
-    
-    // Add parts until we approach the max length
-    for (let i = 1; i < parts.length; i++) {
-      if (currentLength + parts[i].length + 1 > maxLength - 3) {
-        return result + '...';
-      }
-      result += '_' + parts[i];
-      currentLength = result.length;
-    }
-    
-    return result;
-  }
-  
-  // Simple truncation with ellipsis
-  return text.substring(0, maxLength - 3) + '...';
-}
-
 // Display query results in the middle panel
 function displayResults(data) {
   currentData = data;
@@ -336,89 +294,6 @@ function displayResults(data) {
 
   table.appendChild(tbody);
   resultsContainer.appendChild(table);
-}
-
-function createSortableHeader(header) {
-  const th = document.createElement('th');
-  th.className = 'sortable-header';
-  th.setAttribute('data-header', header);
-  
-  // Create a simple text node for the header label
-  const labelText = document.createTextNode(header);
-  th.appendChild(labelText);
-  
-  // Create the sort button
-  const sortButton = document.createElement('button');
-  sortButton.className = 'sort-button';
-  sortButton.innerHTML = '<i class="fas fa-sort-alpha-up"></i>';
-  
-  // Add click event for sorting
-  sortButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    sortAndRender(header);
-  });
-  
-  // Add the button after the text
-  th.appendChild(sortButton);
-  
-  return th;
-}
-
-// Helper function to parse date strings in format "mm-dd-yyyy hh:mm:ss" or "yyyy-mm-dd hh:mm:ss"
-function parseDate(dateStr) {
-  if (!dateStr) return null;
-  
-  // Try to determine the format based on the string
-  let parts;
-  let year, month, day, hours, minutes, seconds;
-  
-  // Check for mm.dd.yyyy format (with dots)
-  if (dateStr.includes('.')) {
-    parts = dateStr.split(/[\.\s:]/);
-    month = parseInt(parts[0], 10);
-    day = parseInt(parts[1], 10);
-    year = parseInt(parts[2], 10);
-    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
-    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
-    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
-  }
-  // Check for mm-dd-yyyy format (with hyphens)
-  else if (dateStr.includes('-') && dateStr.indexOf('-') < 3) {
-    parts = dateStr.split(/[-\s:]/);
-    month = parseInt(parts[0], 10);
-    day = parseInt(parts[1], 10);
-    year = parseInt(parts[2], 10);
-    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
-    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
-    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
-  }
-  // Assume yyyy-mm-dd format (standard ISO-like)
-  else if (dateStr.includes('-')) {
-    parts = dateStr.split(/[-\s:]/);
-    year = parseInt(parts[0], 10);
-    month = parseInt(parts[1], 10);
-    day = parseInt(parts[2], 10);
-    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
-    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
-    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
-  }
-  // Handle slash-separated dates (mm/dd/yyyy)
-  else if (dateStr.includes('/')) {
-    parts = dateStr.split(/[\/\s:]/);
-    month = parseInt(parts[0], 10);
-    day = parseInt(parts[1], 10);
-    year = parseInt(parts[2], 10);
-    hours = parts.length > 3 ? parseInt(parts[3], 10) : 0;
-    minutes = parts.length > 4 ? parseInt(parts[4], 10) : 0;
-    seconds = parts.length > 5 ? parseInt(parts[5], 10) : 0;
-  }
-  // If none of the above formats match, try creating a date directly
-  else {
-    return new Date(dateStr);
-  }
-  
-  // JavaScript months are 0-indexed (0-11)
-  return new Date(year, month - 1, day, hours, minutes, seconds);
 }
 
 function sortAndRender(header) {
@@ -534,65 +409,6 @@ async function fetchObjectDetails(objectId, objectType = 'objects') {
   }
 }
 
-// Helper function to check if value is a 2D array with consistent row lengths
-function is2DArray(value) {
-  // Check if it's an array first
-  if (!Array.isArray(value)) return false;
-  
-  // Check if all elements are arrays
-  const allArrays = value.every(item => Array.isArray(item));
-  if (!allArrays) return false;
-  
-  // Check if all subarrays have the same length
-  if (value.length === 0) return false;
-  
-  const firstLength = value[0].length;
-  const allSameLength = value.every(arr => arr.length === firstLength);
-  
-  return allSameLength;
-}
-
-// Function to create a table from a 2D array
-function createTableFromArray(arr) {
-  const csvContainer = document.createElement('div');
-  csvContainer.className = 'csv-table';
-  
-  const table = document.createElement('table');
-  
-  // Create header row (using first row of array)
-  const thead = document.createElement('thead');
-  const headerRow = document.createElement('tr');
-  
-  arr[0].forEach(cell => {
-    const th = document.createElement('th');
-    th.textContent = cell !== null && cell !== undefined ? String(cell).trim() : '';
-    headerRow.appendChild(th);
-  });
-  
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-  
-  // Create table body rows (rest of the array)
-  const tbody = document.createElement('tbody');
-  
-  for (let i = 1; i < arr.length; i++) {
-    const tr = document.createElement('tr');
-    
-    arr[i].forEach(cell => {
-      const td = document.createElement('td');
-      td.textContent = cell !== null && cell !== undefined ? String(cell).trim() : '';
-      tr.appendChild(td);
-    });
-    
-    tbody.appendChild(tr);
-  }
-  
-  table.appendChild(tbody);
-  csvContainer.appendChild(table);
-  
-  return csvContainer;
-}
-
 // Display object details in the right panel
 function displayObjectDetails(data) {
   objectContainer.innerHTML = '';
@@ -611,8 +427,6 @@ function displayObjectDetails(data) {
   const type = document.createElement('div');
   type.className = 'object-type';
   type.textContent = `Type: ${data.object_type}`;
-  
-  // Delete button is now in the panel header, so remove it from here
   
   header.appendChild(title);
   header.appendChild(type);
@@ -666,55 +480,10 @@ function displayObjectDetails(data) {
     const displayType = displayTypes[key];
     
     if (displayType === 'csv' && typeof value === 'string') {
-      try {
-        // Display CSV as a table
-        const csvContainer = document.createElement('div');
-        csvContainer.className = 'csv-table';
-        
-        const table = document.createElement('table');
-        
-        const rows = value.trim().split('\n');
-        
-        if (rows.length > 0) {
-          // Create header
-          const header = rows[0].split(',');
-          const thead = document.createElement('thead');
-          const headerRow = document.createElement('tr');
-          
-          header.forEach(cell => {
-            const th = document.createElement('th');
-            th.textContent = cell.trim();
-            headerRow.appendChild(th);
-          });
-          
-          thead.appendChild(headerRow);
-          table.appendChild(thead);
-          
-          // Create body
-          const tbody = document.createElement('tbody');
-          
-          for (let i = 1; i < rows.length; i++) {
-            const cells = rows[i].split(',');
-            const tr = document.createElement('tr');
-            
-            cells.forEach(cell => {
-              const td = document.createElement('td');
-              td.textContent = cell.trim();
-              tr.appendChild(td);
-            });
-            
-            tbody.appendChild(tr);
-          }
-          
-          table.appendChild(tbody);
-          csvContainer.appendChild(table);
-          propertyValue.appendChild(csvContainer);
-        } else {
-          // Fallback if CSV parsing fails
-          propertyValue.textContent = value;
-        }
-      } catch (e) {
-        // If CSV parsing fails, display as plain text
+      const csvTable = createCSVTable(value);
+      if (csvTable) {
+        propertyValue.appendChild(csvTable);
+      } else {
         propertyValue.textContent = value;
       }
     } else if (Array.isArray(value) && is2DArray(value) && value.length > 0) {
@@ -756,6 +525,17 @@ function displayObjectDetails(data) {
       openReviewInterface(data.object.object_id);
     });
     actionButtons.appendChild(reviewButton);
+  }
+  
+  // Add a View Reviews button for review_list type
+  if (data.object_type === 'review_list') {
+    const viewReviewsButton = document.createElement('button');
+    viewReviewsButton.className = 'search-button';
+    viewReviewsButton.textContent = 'View Review List';
+    viewReviewsButton.addEventListener('click', () => {
+      openReviewListViewer(data.object.object_id);
+    });
+    actionButtons.appendChild(viewReviewsButton);
   }
   
   // Handle relationships if present
@@ -815,26 +595,6 @@ function displayObjectDetails(data) {
   }
   
   objectContainer.appendChild(objectView);
-}
-
-// Open review interface in a new tab
-function openReviewInterface(objectListId) {
-  // Create a notification to show that we're opening the review interface
-  const notification = document.createElement('div');
-  notification.className = 'notification success';
-  notification.textContent = 'Opening review interface in a new tab...';
-  
-  // Add notification above the buttons
-  const actionButtons = document.querySelector('.action-buttons');
-  actionButtons.parentNode.insertBefore(notification, actionButtons);
-  
-  // Open the review interface in a new tab
-  window.open(`/reviewer?object_list_id=${objectListId}`, '_blank');
-  
-  // Remove the notification after a few seconds
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
 }
 
 // Fetch relationships for an object
@@ -1006,14 +766,6 @@ function showDeleteConfirmation(objectId, objectType, objectData) {
   });
 }
 
-// Helper function to reset the Object Details panel header
-function resetObjectDetailsHeader() {
-  const panelHeader = document.querySelector('.right-panel .panel-header');
-  if (panelHeader) {
-    panelHeader.innerHTML = 'Object Details';
-  }
-}
-
 // Delete an object
 async function deleteObject(objectId, objectType, objectData) {
   showLoading(objectContainer);
@@ -1061,14 +813,4 @@ async function deleteObject(objectId, objectType, objectData) {
   } catch (error) {
     showError(objectContainer, `Error deleting object: ${error.message}`);
   }
-}
-
-// Helper function to show loading spinner
-function showLoading(container) {
-  container.innerHTML = '<div class="spinner"></div>';
-}
-
-// Helper function to show error message
-function showError(container, message) {
-  container.innerHTML = `<div class="notification error">${message}</div>`;
 }

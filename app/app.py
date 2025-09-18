@@ -146,6 +146,18 @@ async def serve_reviewer_page():
             return HTMLResponse(file.read())
     return HTMLResponse("<h1>Reviewer page not available yet</h1>")
 
+@app.get("/review_list.html", response_class=HTMLResponse)
+async def serve_review_list_page():
+    logger.info("Serving review list page")
+    review_list_path = os.path.join(base_dir, "static", "review_list.html")
+    try:
+        with open(review_list_path, "r") as file:
+            content = file.read()
+            return HTMLResponse(content=content)
+    except Exception as e:
+        logger.error(f"Error serving review list page: {e}")
+        return HTMLResponse(content=f"<h1>Error</h1><p>{str(e)}</p>")
+
 @app.get("/ndex-import", response_class=HTMLResponse)
 async def serve_ndex_import_page():
     logger.info("Serving NDEx import page")
@@ -265,7 +277,7 @@ async def debug_paths():
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def serve_react_app(full_path: str, request: Request):
     # Don't handle paths that should be handled by other routes
-    if full_path.startswith("browser") or full_path.startswith("reviewer") or full_path.startswith("ndex-import") or full_path.startswith("static"):
+    if full_path.startswith("browser") or full_path.startswith("reviewer") or full_path.startswith("review_list.html") or full_path.startswith("ndex-import") or full_path.startswith("static"):
         return HTMLResponse("<h1>Route not found</h1>")
         
     # Serve the index.html file for any route that doesn't match an API endpoint
