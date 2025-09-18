@@ -1,0 +1,1348 @@
+[
+    {
+        "CXVersion": "2.0",
+        "hasFragments": false
+    },
+    {
+        "metaData": [
+            {
+                "name": "attributeDeclarations",
+                "elementCount": 1
+            },
+            {
+                "name": "networkAttributes",
+                "elementCount": 1
+            },
+            {
+                "name": "edges",
+                "elementCount": 7
+            },
+            {
+                "name": "nodes",
+                "elementCount": 6
+            },
+            {
+                "name": "visualProperties",
+                "elementCount": 1
+            },
+            {
+                "name": "visualEditorProperties",
+                "elementCount": 1
+            },
+            {
+                "name": "edgeBypasses"
+            },
+            {
+                "name": "nodeBypasses"
+            },
+            {
+                "name": "tableVisualProperties"
+            }
+        ]
+    },
+    {
+        "attributeDeclarations": [
+            {
+                "nodes": {
+                    "Condition": {
+                        "d": "string"
+                    },
+                    "viral_interaction": {
+                        "d": "integer"
+                    },
+                    "log2FC_48hpi": {
+                        "d": "double"
+                    },
+                    "has_siRNA": {
+                        "d": "integer"
+                    },
+                    "has_rnaSeq_48hr": {
+                        "d": "integer"
+                    },
+                    "has_rnaSeq_24hr": {
+                        "d": "integer"
+                    },
+                    "Condition_48hpi": {
+                        "d": "string"
+                    },
+                    "type": {
+                        "d": "string"
+                    },
+                    "GeneSymbol_48hpi": {
+                        "d": "string"
+                    },
+                    "represents": {
+                        "d": "string"
+                    },
+                    "has_protein_24hr": {
+                        "d": "integer"
+                    },
+                    "has_protein_48hr": {
+                        "d": "integer"
+                    },
+                    "siRNA_Screen_Average_Zscore": {
+                        "d": "double"
+                    },
+                    "UniprotID": {
+                        "d": "string"
+                    },
+                    "querynode": {
+                        "d": "boolean"
+                    },
+                    "siRNA_GeneSymbol": {
+                        "d": "string"
+                    },
+                    "name": {
+                        "d": "string"
+                    },
+                    "alias": {
+                        "d": "list_of_string"
+                    },
+                    "GeneID": {
+                        "d": "integer"
+                    },
+                    "log2FC": {
+                        "d": "double"
+                    },
+                    "selected": {
+                        "d": "boolean"
+                    },
+                    "GeneSymbol": {
+                        "d": "string"
+                    }
+                },
+                "networkAttributes": {
+                    "shared name": {
+                        "d": "string"
+                    },
+                    "prov:wasDerivedFrom": {
+                        "d": "string"
+                    },
+                    "prov:wasGeneratedBy": {
+                        "d": "string"
+                    },
+                    "__Annotations": {
+                        "d": "list_of_string"
+                    },
+                    "name": {
+                        "d": "string"
+                    },
+                    "description": {
+                        "d": "string"
+                    },
+                    "version": {
+                        "d": "string"
+                    },
+                    "selected": {
+                        "d": "boolean"
+                    }
+                },
+                "edges": {
+                    "homology": {
+                        "d": "double"
+                    },
+                    "coexpression_transferred": {
+                        "d": "double"
+                    },
+                    "shared interaction": {
+                        "d": "string"
+                    },
+                    "cooccurence": {
+                        "d": "double"
+                    },
+                    "experiments": {
+                        "d": "double"
+                    },
+                    "textmining_transferred": {
+                        "d": "double"
+                    },
+                    "combined_score": {
+                        "d": "double"
+                    },
+                    "shared name": {
+                        "d": "string"
+                    },
+                    "fusion": {
+                        "d": "double"
+                    },
+                    "experiments_transferred": {
+                        "d": "double"
+                    },
+                    "database": {
+                        "d": "double"
+                    },
+                    "name": {
+                        "d": "string"
+                    },
+                    "interaction": {
+                        "d": "string"
+                    },
+                    "neighborhood": {
+                        "d": "double"
+                    },
+                    "neighborhood_transferred": {
+                        "d": "double"
+                    },
+                    "coexpression": {
+                        "d": "double"
+                    },
+                    "selected": {
+                        "d": "boolean"
+                    },
+                    "database_transferred": {
+                        "d": "double"
+                    },
+                    "textmining": {
+                        "d": "double"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "networkAttributes": [
+            {
+                "prov:wasDerivedFrom": "307823b7-c123-11ee-8a13-005056ae23aa",
+                "prov:wasGeneratedBy": "NDEx Neighborhood Query/v1.1 (Depth=2; Query terms=\"cmtm4\")",
+                "name": "Neighborhood  query result on network - Immune checkpoint regulation C4493824_dengue string 12.0 0.7",
+                "description": "subsystem of dengue model",
+                "version": "1.0"
+            }
+        ]
+    },
+    {
+        "nodes": [
+            {
+                "id": 12491,
+                "x": -8.379458844661713,
+                "y": -58.19977569580078,
+                "v": {
+                    "Condition": "24h",
+                    "viral_interaction": 0,
+                    "has_siRNA": 0,
+                    "has_rnaSeq_48hr": 0,
+                    "has_rnaSeq_24hr": 1,
+                    "type": "protein",
+                    "has_protein_24hr": 0,
+                    "has_protein_48hr": 0,
+                    "querynode": true,
+                    "UniprotID": "Q8IZR5",
+                    "name": "CMTM4",
+                    "alias": [
+                        "ncbigene:146223",
+                        "ensembl:ENSP00000333833"
+                    ],
+                    "GeneID": 146223,
+                    "log2FC": -3.00542995423449,
+                    "GeneSymbol": "CMTM4"
+                }
+            },
+            {
+                "id": 4425,
+                "x": 53.26389366388321,
+                "y": -150.3251724243164,
+                "v": {
+                    "viral_interaction": 0,
+                    "has_siRNA": 1,
+                    "has_rnaSeq_48hr": 0,
+                    "has_rnaSeq_24hr": 0,
+                    "type": "protein",
+                    "has_protein_24hr": 0,
+                    "siRNA_Screen_Average_Zscore": 1.469534037684706,
+                    "has_protein_48hr": 0,
+                    "UniprotID": "Q96DZ9",
+                    "siRNA_GeneSymbol": "CKLFSF5",
+                    "name": "CMTM5",
+                    "alias": [
+                        "ncbigene:116173",
+                        "ensembl:ENSP00000344819"
+                    ],
+                    "GeneID": 116173,
+                    "GeneSymbol": "CKLFSF5"
+                }
+            },
+            {
+                "id": 1093,
+                "x": -5.778010785579681,
+                "y": 58.54981231689453,
+                "v": {
+                    "Condition": "24h",
+                    "viral_interaction": 0,
+                    "log2FC_48hpi": 3.9761673053432,
+                    "has_siRNA": 1,
+                    "has_rnaSeq_48hr": 1,
+                    "has_rnaSeq_24hr": 1,
+                    "Condition_48hpi": "48h",
+                    "type": "protein",
+                    "GeneSymbol_48hpi": "CD274",
+                    "has_protein_24hr": 0,
+                    "siRNA_Screen_Average_Zscore": 1.242951946743088,
+                    "has_protein_48hr": 0,
+                    "UniprotID": "Q9NZQ7",
+                    "siRNA_GeneSymbol": "CD274",
+                    "name": "CD274",
+                    "alias": [
+                        "ncbigene:29126",
+                        "ensembl:ENSP00000370989"
+                    ],
+                    "GeneID": 29126,
+                    "log2FC": 2.21063685284327,
+                    "GeneSymbol": "CD274",
+                    "selected": true
+                }
+            },
+            {
+                "id": 4420,
+                "x": -52.99903339147568,
+                "y": -159.98892974853516,
+                "v": {
+                    "viral_interaction": 0,
+                    "has_siRNA": 1,
+                    "has_rnaSeq_48hr": 0,
+                    "has_rnaSeq_24hr": 0,
+                    "type": "protein",
+                    "has_protein_24hr": 0,
+                    "siRNA_Screen_Average_Zscore": 1.210443874293482,
+                    "has_protein_48hr": 0,
+                    "UniprotID": "Q8TAZ6",
+                    "siRNA_GeneSymbol": "CKLFSF2",
+                    "name": "CMTM2",
+                    "alias": [
+                        "ncbigene:146225",
+                        "ensembl:ENSP00000268595"
+                    ],
+                    "GeneID": 146225,
+                    "GeneSymbol": "CKLFSF2"
+                }
+            },
+            {
+                "id": 10657,
+                "x": -45.97950726747513,
+                "y": 162.21771240234375,
+                "v": {
+                    "viral_interaction": 0,
+                    "has_siRNA": 1,
+                    "has_rnaSeq_48hr": 0,
+                    "has_rnaSeq_24hr": 0,
+                    "type": "protein",
+                    "has_protein_24hr": 0,
+                    "siRNA_Screen_Average_Zscore": 1.246459719805994,
+                    "has_protein_48hr": 0,
+                    "UniprotID": "P35453",
+                    "siRNA_GeneSymbol": "HOXD13",
+                    "name": "HOXD13",
+                    "alias": [
+                        "ncbigene:3239",
+                        "ensembl:ENSP00000376322"
+                    ],
+                    "GeneID": 3239,
+                    "GeneSymbol": "HOXD13"
+                }
+            },
+            {
+                "id": 1072,
+                "x": 59.87211662530899,
+                "y": 147.74635314941406,
+                "v": {
+                    "viral_interaction": 0,
+                    "log2FC_48hpi": 2.1590112748983,
+                    "has_siRNA": 0,
+                    "has_rnaSeq_48hr": 1,
+                    "has_rnaSeq_24hr": 0,
+                    "Condition_48hpi": "48h",
+                    "type": "protein",
+                    "GeneSymbol_48hpi": "PDCD1LG2",
+                    "has_protein_24hr": 0,
+                    "has_protein_48hr": 0,
+                    "UniprotID": "Q9BQ51",
+                    "name": "PDCD1LG2",
+                    "alias": [
+                        "ncbigene:80380",
+                        "ensembl:ENSP00000380855"
+                    ],
+                    "GeneID": 80380
+                }
+            }
+        ]
+    },
+    {
+        "edges": [
+            {
+                "id": 156157,
+                "s": 12491,
+                "t": 1093,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 54.0,
+                    "cooccurence": 0.0,
+                    "experiments": 292.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 748.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 0.0,
+                    "database_transferred": 0.0,
+                    "textmining": 655.0
+                }
+            },
+            {
+                "id": 156158,
+                "s": 12491,
+                "t": 4425,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 0.0,
+                    "cooccurence": 0.0,
+                    "experiments": 0.0,
+                    "textmining_transferred": 44.0,
+                    "combined_score": 821.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 0.0,
+                    "database_transferred": 0.0,
+                    "textmining": 821.0
+                }
+            },
+            {
+                "id": 210124,
+                "s": 1093,
+                "t": 10657,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 0.0,
+                    "cooccurence": 0.0,
+                    "experiments": 0.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 726.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 0.0,
+                    "database_transferred": 0.0,
+                    "textmining": 726.0
+                }
+            },
+            {
+                "id": 210113,
+                "s": 1093,
+                "t": 1072,
+                "v": {
+                    "homology": 817.0,
+                    "coexpression_transferred": 86.0,
+                    "cooccurence": 0.0,
+                    "experiments": 600.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 996.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 500.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 422.0,
+                    "database_transferred": 0.0,
+                    "textmining": 970.0
+                }
+            },
+            {
+                "id": 85358,
+                "s": 4420,
+                "t": 12491,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 0.0,
+                    "cooccurence": 0.0,
+                    "experiments": 0.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 963.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 0.0,
+                    "database_transferred": 0.0,
+                    "textmining": 963.0
+                }
+            },
+            {
+                "id": 85355,
+                "s": 4420,
+                "t": 4425,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 0.0,
+                    "cooccurence": 0.0,
+                    "experiments": 0.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 848.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 85.0,
+                    "database_transferred": 0.0,
+                    "textmining": 841.0
+                }
+            },
+            {
+                "id": 213123,
+                "s": 10657,
+                "t": 1072,
+                "v": {
+                    "homology": 0.0,
+                    "coexpression_transferred": 0.0,
+                    "cooccurence": 0.0,
+                    "experiments": 0.0,
+                    "textmining_transferred": 0.0,
+                    "combined_score": 702.0,
+                    "fusion": 0.0,
+                    "experiments_transferred": 0.0,
+                    "database": 0.0,
+                    "interaction": "interacts-with",
+                    "neighborhood": 0.0,
+                    "neighborhood_transferred": 0.0,
+                    "coexpression": 0.0,
+                    "database_transferred": 0.0,
+                    "textmining": 702.0
+                }
+            }
+        ]
+    },
+    {
+        "visualEditorProperties": [
+            {
+                "properties": {
+                    "nodeSizeLocked": false,
+                    "arrowColorMatchesEdge": true,
+                    "nodeCustomGraphicsSizeSync": true,
+                    "NETWORK_CENTER_Y_LOCATION": 1.1143913269042969,
+                    "NETWORK_CENTER_X_LOCATION": 4.4365416169166565,
+                    "NETWORK_SCALE_FACTOR": 1.3388328870939592
+                }
+            }
+        ]
+    },
+    {
+        "visualProperties": [
+            {
+                "default": {
+                    "edge": {
+                        "EDGE_SOURCE_ARROW_SIZE": 6.0,
+                        "EDGE_SOURCE_ARROW_SELECTED_PAINT": "#FFFF00",
+                        "EDGE_LABEL_OPACITY": 1.0,
+                        "EDGE_TARGET_ARROW_SELECTED_PAINT": "#FFFF00",
+                        "EDGE_TARGET_ARROW_SHAPE": "none",
+                        "EDGE_LABEL_BACKGROUND_OPACITY": 1.0,
+                        "EDGE_LABEL_POSITION": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "EDGE_ANCHOR": "C",
+                            "LABEL_ANCHOR": "C"
+                        },
+                        "EDGE_Z_ORDER": 0.0,
+                        "EDGE_LABEL_MAX_WIDTH": 200.0,
+                        "EDGE_LABEL_BACKGROUND_COLOR": "#B6B6B6",
+                        "EDGE_LABEL_ROTATION": 0.0,
+                        "EDGE_VISIBILITY": "element",
+                        "EDGE_LABEL_FONT_SIZE": 10,
+                        "EDGE_LABEL_COLOR": "#000000",
+                        "EDGE_SELECTED_PAINT": "#FF0000",
+                        "EDGE_SELECTED": "false",
+                        "EDGE_STACKING_DENSITY": 0.5,
+                        "EDGE_SOURCE_ARROW_COLOR": "#999999",
+                        "EDGE_TARGET_ARROW_COLOR": "#999999",
+                        "EDGE_STROKE_SELECTED_PAINT": "#FF0000",
+                        "EDGE_WIDTH": 1.0,
+                        "EDGE_SOURCE_ARROW_SHAPE": "none",
+                        "EDGE_LINE_COLOR": "#999999",
+                        "EDGE_OPACITY": 1.0,
+                        "EDGE_LABEL_BACKGROUND_SHAPE": "none",
+                        "EDGE_LABEL_FONT_FACE": {
+                            "FONT_FAMILY": "sans-serif",
+                            "FONT_STYLE": "normal",
+                            "FONT_WEIGHT": "normal",
+                            "FONT_NAME": "Dialog"
+                        },
+                        "EDGE_STACKING": "AUTO_BEND",
+                        "EDGE_LABEL_AUTOROTATE": false,
+                        "EDGE_LINE_STYLE": "solid",
+                        "EDGE_CURVED": true,
+                        "EDGE_TARGET_ARROW_SIZE": 6.0
+                    },
+                    "network": {
+                        "NETWORK_BACKGROUND_COLOR": "#FFFFFF"
+                    },
+                    "node": {
+                        "NODE_Y_LOCATION": 0.0,
+                        "NODE_BACKGROUND_COLOR": "#E5E5E5",
+                        "NODE_LABEL_BACKGROUND_COLOR": "#B6B6B6",
+                        "NODE_WIDTH": 40.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_7": 0.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_6": 0.0,
+                        "COMPOUND_NODE_SHAPE": "ROUND_RECTANGLE",
+                        "NODE_CUSTOMGRAPHICS_SIZE_5": 0.0,
+                        "NODE_LABEL_POSITION": {
+                            "HORIZONTAL_ALIGN": "center",
+                            "VERTICAL_ALIGN": "center",
+                            "HORIZONTAL_ANCHOR": "center",
+                            "VERTICAL_ANCHOR": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "JUSTIFICATION": "center"
+                        },
+                        "NODE_Z_LOCATION": 0.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_4": 0.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_3": 0.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_2": 0.0,
+                        "NODE_VISIBILITY": "element",
+                        "NODE_CUSTOMGRAPHICS_SIZE_1": 0.0,
+                        "NODE_BORDER_STYLE": "solid",
+                        "NODE_BACKGROUND_OPACITY": 1.0,
+                        "NODE_LABEL_COLOR": "#262626",
+                        "NODE_SELECTED": false,
+                        "NODE_BORDER_COLOR": "#666666",
+                        "NODE_CUSTOMGRAPHICS_POSITION_8": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_9": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_4": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_SHAPE": "ellipse",
+                        "NODE_CUSTOMGRAPHICS_POSITION_5": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_6": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_7": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_LABEL_FONT_SIZE": 10,
+                        "NODE_X_LOCATION": 0.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_1": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_BORDER_OPACITY": 1.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_2": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_SIZE_9": 0.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_3": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_LABEL_ROTATION": 0.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_8": 0.0,
+                        "NODE_BORDER_WIDTH": 0.0,
+                        "NODE_LABEL_OPACITY": 1.0,
+                        "NODE_HEIGHT": 40.0,
+                        "NODE_LABEL_BACKGROUND_SHAPE": "none",
+                        "COMPOUND_NODE_PADDING": "10.0",
+                        "NODE_LABEL_BACKGROUND_OPACITY": 1.0,
+                        "NODE_LABEL_FONT_FACE": {
+                            "FONT_FAMILY": "sans-serif",
+                            "FONT_STYLE": "normal",
+                            "FONT_WEIGHT": "normal",
+                            "FONT_NAME": "Dialog"
+                        },
+                        "NODE_SELECTED_PAINT": "#FFFF00",
+                        "NODE_LABEL_MAX_WIDTH": 200.0
+                    }
+                },
+                "edgeMapping": {
+                    "EDGE_LINE_COLOR": {
+                        "type": "CONTINUOUS",
+                        "definition": {
+                            "map": [
+                                {
+                                    "max": 700.0,
+                                    "maxVPValue": "#CCCCCC",
+                                    "includeMin": false,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 700.0,
+                                    "max": 1000.0,
+                                    "maxVPValue": "#000000",
+                                    "minVPValue": "#CCCCCC",
+                                    "includeMin": true,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 1000.0,
+                                    "minVPValue": "#000000",
+                                    "includeMin": true,
+                                    "includeMax": false
+                                }
+                            ],
+                            "attribute": "combined_score",
+                            "type": "double"
+                        }
+                    },
+                    "EDGE_SOURCE_ARROW_COLOR": {
+                        "type": "CONTINUOUS",
+                        "definition": {
+                            "map": [
+                                {
+                                    "max": 700.0,
+                                    "maxVPValue": "#CCCCCC",
+                                    "includeMin": false,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 700.0,
+                                    "max": 1000.0,
+                                    "maxVPValue": "#000000",
+                                    "minVPValue": "#CCCCCC",
+                                    "includeMin": true,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 1000.0,
+                                    "minVPValue": "#000000",
+                                    "includeMin": true,
+                                    "includeMax": false
+                                }
+                            ],
+                            "attribute": "combined_score",
+                            "type": "double"
+                        }
+                    },
+                    "EDGE_TARGET_ARROW_COLOR": {
+                        "type": "CONTINUOUS",
+                        "definition": {
+                            "map": [
+                                {
+                                    "max": 700.0,
+                                    "maxVPValue": "#CCCCCC",
+                                    "includeMin": false,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 700.0,
+                                    "max": 1000.0,
+                                    "maxVPValue": "#000000",
+                                    "minVPValue": "#CCCCCC",
+                                    "includeMin": true,
+                                    "includeMax": true
+                                },
+                                {
+                                    "min": 1000.0,
+                                    "minVPValue": "#000000",
+                                    "includeMin": true,
+                                    "includeMax": false
+                                }
+                            ],
+                            "attribute": "combined_score",
+                            "type": "double"
+                        }
+                    }
+                },
+                "nodeMapping": {
+                    "NODE_BORDER_WIDTH": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "disease",
+                                    "vp": 3.0
+                                },
+                                {
+                                    "v": "antibody",
+                                    "vp": 2.0
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": 4.0
+                                },
+                                {
+                                    "v": "proteinfamily",
+                                    "vp": 4.0
+                                },
+                                {
+                                    "v": "biologicalprocess",
+                                    "vp": 3.0
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": 2.0
+                                },
+                                {
+                                    "v": "cellularcomponent",
+                                    "vp": 3.0
+                                },
+                                {
+                                    "v": "molecularfunction",
+                                    "vp": 3.0
+                                },
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": 6.0
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": 2.0
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": 10.0
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": 4.0
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": 4.0
+                                },
+                                {
+                                    "v": "signal",
+                                    "vp": 3.0
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL": {
+                        "type": "PASSTHROUGH",
+                        "definition": {
+                            "attribute": "name",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": "#191919"
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": "#000000"
+                                },
+                                {
+                                    "v": "protein",
+                                    "vp": "#000000"
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": "#000000"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_BORDER_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": "#D0D378"
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": "#0099CC"
+                                },
+                                {
+                                    "v": "antibody",
+                                    "vp": "#333333"
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": "#467CA8"
+                                },
+                                {
+                                    "v": "proteinfamily",
+                                    "vp": "#285FF0"
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": "#0099FF"
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": "#80DFCD"
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": "#666666"
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": "#F46761"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_HEIGHT": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "disease",
+                                    "vp": 50.0
+                                },
+                                {
+                                    "v": "rna",
+                                    "vp": 100.0
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": 25.0
+                                },
+                                {
+                                    "v": "proteinfamily",
+                                    "vp": 65.0
+                                },
+                                {
+                                    "v": "stimulus",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "biologicalprocess",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": 100.0
+                                },
+                                {
+                                    "v": "cellularcomponent",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "drug",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "molecularfunction",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": 25.0
+                                },
+                                {
+                                    "v": "chemical",
+                                    "vp": 10.0
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "protein",
+                                    "vp": 35.0
+                                },
+                                {
+                                    "v": "mirna",
+                                    "vp": 6.0
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": 25.0
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": 55.0
+                                },
+                                {
+                                    "v": "signal",
+                                    "vp": 20.0
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_BACKGROUND_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": "#E8E8E8"
+                                },
+                                {
+                                    "v": "antibody",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "disease",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "rna",
+                                    "vp": "#F46761"
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "proteinfamily",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "stimulus",
+                                    "vp": "#666666"
+                                },
+                                {
+                                    "v": "biologicalprocess",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "cellularcomponent",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "drug",
+                                    "vp": "#DAE10E"
+                                },
+                                {
+                                    "v": "molecularfunction",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "chemical",
+                                    "vp": "#97CC2C"
+                                },
+                                {
+                                    "v": "protein",
+                                    "vp": "#D1F5FF"
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "mirna",
+                                    "vp": "#EF7F23"
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": "#FFFFFF"
+                                },
+                                {
+                                    "v": "signal",
+                                    "vp": "#FFFFFF"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_SHAPE": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": "round-rectangle"
+                                },
+                                {
+                                    "v": "antibody",
+                                    "vp": "vee"
+                                },
+                                {
+                                    "v": "disease",
+                                    "vp": "hexagon"
+                                },
+                                {
+                                    "v": "rna",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "stimulus",
+                                    "vp": "triangle"
+                                },
+                                {
+                                    "v": "biologicalprocess",
+                                    "vp": "round-rectangle"
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "cellularcomponent",
+                                    "vp": "round-rectangle"
+                                },
+                                {
+                                    "v": "drug",
+                                    "vp": "diamond"
+                                },
+                                {
+                                    "v": "molecularfunction",
+                                    "vp": "round-rectangle"
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": "diamond"
+                                },
+                                {
+                                    "v": "chemical",
+                                    "vp": "ellipse"
+                                },
+                                {
+                                    "v": "mirna",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": "round-rectangle"
+                                },
+                                {
+                                    "v": "signal",
+                                    "vp": "triangle"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL_FONT_SIZE": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": 16
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": 14
+                                },
+                                {
+                                    "v": "protein",
+                                    "vp": 12
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_BACKGROUND_OPACITY": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": 0.39215686274509803
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL_MAX_WIDTH": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "disease",
+                                    "vp": 50.0
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_WIDTH": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "phenotype",
+                                    "vp": 120.0
+                                },
+                                {
+                                    "v": "antibody",
+                                    "vp": 30.0
+                                },
+                                {
+                                    "v": "disease",
+                                    "vp": 70.0
+                                },
+                                {
+                                    "v": "rna",
+                                    "vp": 8.0
+                                },
+                                {
+                                    "v": "gene",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "proteinfamily",
+                                    "vp": 70.0
+                                },
+                                {
+                                    "v": "stimulus",
+                                    "vp": 15.0
+                                },
+                                {
+                                    "v": "biologicalprocess",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "mrna",
+                                    "vp": 8.0
+                                },
+                                {
+                                    "v": "cellularcomponent",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "drug",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "molecularfunction",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "smallmolecule",
+                                    "vp": 20.0
+                                },
+                                {
+                                    "v": "geneproduct",
+                                    "vp": 120.0
+                                },
+                                {
+                                    "v": "chemical",
+                                    "vp": 10.0
+                                },
+                                {
+                                    "v": "complex",
+                                    "vp": 160.0
+                                },
+                                {
+                                    "v": "protein",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "mirna",
+                                    "vp": 45.0
+                                },
+                                {
+                                    "v": "variant",
+                                    "vp": 60.0
+                                },
+                                {
+                                    "v": "pathway",
+                                    "vp": 160.0
+                                },
+                                {
+                                    "v": "signal",
+                                    "vp": 30.0
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "status": [
+            {
+                "success": true
+            }
+        ]
+    }
+]

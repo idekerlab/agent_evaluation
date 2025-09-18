@@ -1,0 +1,1686 @@
+[
+    {
+        "CXVersion": "2.0",
+        "hasFragments": false
+    },
+    {
+        "metaData": [
+            {
+                "elementCount": 1,
+                "name": "attributeDeclarations"
+            },
+            {
+                "elementCount": 1,
+                "name": "networkAttributes"
+            },
+            {
+                "elementCount": 60,
+                "name": "nodes"
+            },
+            {
+                "elementCount": 63,
+                "name": "edges"
+            },
+            {
+                "elementCount": 1,
+                "name": "visualProperties"
+            }
+        ]
+    },
+    {
+        "attributeDeclarations": [
+            {
+                "nodes": {
+                    "label": {
+                        "d": "string"
+                    },
+                    "name": {
+                        "d": "string"
+                    },
+                    "type": {
+                        "d": "string"
+                    },
+                    "id": {
+                        "d": "string"
+                    }
+                },
+                "edges": {
+                    "interaction": {
+                        "d": "string"
+                    },
+                    "bel_expression": {
+                        "d": "string"
+                    },
+                    "text": {
+                        "d": "string"
+                    },
+                    "evidence": {
+                        "d": "string"
+                    }
+                },
+                "networkAttributes": {
+                    "name": {
+                        "d": "string"
+                    },
+                    "scoring_criteria": {
+                        "d": "string"
+                    },
+                    "display_order": {
+                        "d": "string"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "networkAttributes": [
+            {
+                "name": "LLM Text to Knowledge Graph for publication: mk002703",
+                "scoring_criteria": "checkbox: All correct|checkbox: Correct but could be more precise|checkbox: Post-translational modification errors|checkbox: Interaction type errors|checkbox: Identifier database errors|checkbox: Incorrect entities|checkbox: Incorrect order: source and target switched|checkbox: Not a relationship: common upstream cause instead|checkbox: Other errors|textarea: Comments",
+                "display_order": "bel_expression,evidence,text,interaction,source,target"
+            }
+        ]
+    },
+    {
+        "nodes": [
+            {
+                "id": 0,
+                "v": {
+                    "label": "REGULATORY_PROTEIN",
+                    "name": "p(HGNC:REGULATORY_PROTEIN)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 1,
+                "v": {
+                    "label": "pmod(Ph)",
+                    "name": "pmod(Ph)",
+                    "type": "pmod"
+                }
+            },
+            {
+                "id": 2,
+                "v": {
+                    "label": "Q13547",
+                    "name": "p(UNIPROT:Q13547)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 3,
+                "v": {
+                    "label": "RB1",
+                    "name": "complex(p(HGNC:RB1)",
+                    "type": "complex",
+                    "id": "https://identifiers.org/HGNC:9884"
+                }
+            },
+            {
+                "id": 4,
+                "v": {
+                    "label": "transcription, DNA-templated",
+                    "name": "bp(GO:\"transcription, DNA-templated\")",
+                    "type": "bp"
+                }
+            },
+            {
+                "id": 5,
+                "v": {
+                    "label": "RB1",
+                    "name": "p(HGNC:RB1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:9884"
+                }
+            },
+            {
+                "id": 6,
+                "v": {
+                    "label": "JUN",
+                    "name": "p(FPLX:JUN)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 7,
+                "v": {
+                    "label": "CEBP",
+                    "name": "p(FPLX:CEBP)",
+                    "type": "p",
+                    "id": "https://identifiers.org/FPLX:CEBP"
+                }
+            },
+            {
+                "id": 8,
+                "v": {
+                    "label": "WEE1",
+                    "name": "p(HGNC:WEE1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:12761"
+                }
+            },
+            {
+                "id": 9,
+                "v": {
+                    "label": "CDK1, pmod(Ph, Thr, 14",
+                    "name": "p(HGNC:CDK1, pmod(Ph, Thr, 14)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 10,
+                "v": {
+                    "label": "CDK1, pmod(Ph, Tyr, 15",
+                    "name": "p(HGNC:CDK1, pmod(Ph, Tyr, 15)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 11,
+                "v": {
+                    "label": "MYT1",
+                    "name": "p(HGNC:MYT1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:7622"
+                }
+            },
+            {
+                "id": 12,
+                "v": {
+                    "label": "CDC25C",
+                    "name": "p(HGNC:CDC25C)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1727"
+                }
+            },
+            {
+                "id": 13,
+                "v": {
+                    "label": "PLK1",
+                    "name": "p(HGNC:PLK1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:9077"
+                }
+            },
+            {
+                "id": 14,
+                "v": {
+                    "label": "CDC25C",
+                    "name": "act(p(HGNC:CDC25C)",
+                    "type": "act",
+                    "id": "https://identifiers.org/HGNC:1727"
+                }
+            },
+            {
+                "id": 15,
+                "v": {
+                    "label": "CDK1",
+                    "name": "p(HGNC:CDK1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1722"
+                }
+            },
+            {
+                "id": 16,
+                "v": {
+                    "label": "CHK1",
+                    "name": "p(HGNC:CHK1)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 17,
+                "v": {
+                    "label": "CDC25C, pmod(Ph, Ser, 216",
+                    "name": "p(HGNC:CDC25C, pmod(Ph, Ser, 216)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 18,
+                "v": {
+                    "label": "STK11",
+                    "name": "p(HGNC:STK11)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 19,
+                "v": {
+                    "label": "CCNB1",
+                    "name": "act(complex(p(HGNC:CCNB1)",
+                    "type": "act"
+                }
+            },
+            {
+                "id": 20,
+                "v": {
+                    "label": "CDKN2A",
+                    "name": "p(HGNC:CDKN2A)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1787"
+                }
+            },
+            {
+                "id": 21,
+                "v": {
+                    "label": "CDK4",
+                    "name": "p(HGNC:CDK4)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1773"
+                }
+            },
+            {
+                "id": 22,
+                "v": {
+                    "label": "CDK6",
+                    "name": "p(HGNC:CDK6)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1777"
+                }
+            },
+            {
+                "id": 23,
+                "v": {
+                    "label": "CDKN1A",
+                    "name": "p(HGNC:CDKN1A)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1784"
+                }
+            },
+            {
+                "id": 24,
+                "v": {
+                    "label": "CCND1",
+                    "name": "act(complex(p(HGNC:CCND1)",
+                    "type": "act"
+                }
+            },
+            {
+                "id": 25,
+                "v": {
+                    "label": "CDKN1B",
+                    "name": "p(HGNC:CDKN1B)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:1785"
+                }
+            },
+            {
+                "id": 26,
+                "v": {
+                    "label": "CCNE1",
+                    "name": "act(complex(p(HGNC:CCNE1)",
+                    "type": "act"
+                }
+            },
+            {
+                "id": 27,
+                "v": {
+                    "label": "TP53",
+                    "name": "p(HGNC:TP53)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:11998"
+                }
+            },
+            {
+                "id": 28,
+                "v": {
+                    "label": "PCNA",
+                    "name": "p(HGNC:PCNA)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:8729"
+                }
+            },
+            {
+                "id": 29,
+                "v": {
+                    "label": "GADD45A",
+                    "name": "p(HGNC:GADD45A)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:4095"
+                }
+            },
+            {
+                "id": 30,
+                "v": {
+                    "label": "PCAF",
+                    "name": "p(HGNC:PCAF)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 31,
+                "v": {
+                    "label": "TP53, pmod(Ac, Lys, 320",
+                    "name": "p(HGNC:TP53, pmod(Ac, Lys, 320)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 32,
+                "v": {
+                    "label": "MDM2",
+                    "name": "p(HGNC:MDM2)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:6973"
+                }
+            },
+            {
+                "id": 33,
+                "v": {
+                    "label": "TP53",
+                    "name": "act(p(HGNC:TP53)",
+                    "type": "act",
+                    "id": "https://identifiers.org/HGNC:11998"
+                }
+            },
+            {
+                "id": 34,
+                "v": {
+                    "label": "MDM2",
+                    "name": "r(HGNC:MDM2)",
+                    "type": "r",
+                    "id": "https://identifiers.org/HGNC:6973"
+                }
+            },
+            {
+                "id": 35,
+                "v": {
+                    "label": "CCNA2",
+                    "name": "r(HGNC:CCNA2)",
+                    "type": "r"
+                }
+            },
+            {
+                "id": 36,
+                "v": {
+                    "label": "E2F1",
+                    "name": "p(HGNC:E2F1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:3113"
+                }
+            },
+            {
+                "id": 37,
+                "v": {
+                    "label": "TBP",
+                    "name": "p(HGNC:TBP)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:11588"
+                }
+            },
+            {
+                "id": 38,
+                "v": {
+                    "label": "TAF1",
+                    "name": "p(HGNC:TAF1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:11535"
+                }
+            },
+            {
+                "id": 39,
+                "v": {
+                    "label": "EP300",
+                    "name": "p(HGNC:EP300)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:3373"
+                }
+            },
+            {
+                "id": 40,
+                "v": {
+                    "label": "RPA",
+                    "name": "p(HGNC:RPA)",
+                    "type": "p",
+                    "id": "https://identifiers.org/FPLX:RPA"
+                }
+            },
+            {
+                "id": 41,
+                "v": {
+                    "label": "XPG",
+                    "name": "p(HGNC:XPG)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 42,
+                "v": {
+                    "label": "XPF",
+                    "name": "complex(p(HGNC:XPF)",
+                    "type": "complex"
+                }
+            },
+            {
+                "id": 43,
+                "v": {
+                    "label": "XPA",
+                    "name": "p(HGNC:XPA)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:12814"
+                }
+            },
+            {
+                "id": 44,
+                "v": {
+                    "label": "XRCC1",
+                    "name": "p(HGNC:XRCC1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:12828"
+                }
+            },
+            {
+                "id": 45,
+                "v": {
+                    "label": "PARP1",
+                    "name": "act(p(HGNC:PARP1)",
+                    "type": "act",
+                    "id": "https://identifiers.org/HGNC:270"
+                }
+            },
+            {
+                "id": 46,
+                "v": {
+                    "label": "RPA1",
+                    "name": "p(HGNC:RPA1)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 47,
+                "v": {
+                    "label": "RAD52",
+                    "name": "p(HGNC:RAD52)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:9824"
+                }
+            },
+            {
+                "id": 48,
+                "v": {
+                    "label": "RAD51",
+                    "name": "p(HGNC:RAD51)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:9817"
+                }
+            },
+            {
+                "id": 49,
+                "v": {
+                    "label": "recombinational repair",
+                    "name": "bp(GO:\"recombinational repair\")",
+                    "type": "bp",
+                    "id": "https://identifiers.org/GO:0000725"
+                }
+            },
+            {
+                "id": 50,
+                "v": {
+                    "label": "ABL1",
+                    "name": "p(HGNC:ABL1)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:76"
+                }
+            },
+            {
+                "id": 51,
+                "v": {
+                    "label": "ATM",
+                    "name": "p(HGNC:ATM)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:795"
+                }
+            },
+            {
+                "id": 52,
+                "v": {
+                    "label": "PRKDC",
+                    "name": "p(HGNC:PRKDC)",
+                    "type": "p",
+                    "id": "https://identifiers.org/HGNC:9413"
+                }
+            },
+            {
+                "id": 53,
+                "v": {
+                    "label": "ABL1, loc(FPLX:SH3",
+                    "name": "p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "type": "p"
+                }
+            },
+            {
+                "id": 54,
+                "v": {
+                    "label": "DNA replication",
+                    "name": "bp(GO:\"DNA replication\")",
+                    "type": "bp",
+                    "id": "https://identifiers.org/GO:0006260"
+                }
+            },
+            {
+                "id": 55,
+                "v": {
+                    "label": "DNA repair",
+                    "name": "bp(GO:\"DNA repair\")",
+                    "type": "bp",
+                    "id": "https://identifiers.org/GO:0006281"
+                }
+            },
+            {
+                "id": 56,
+                "v": {
+                    "label": "cell cycle arrest",
+                    "name": "bp(GO:\"cell cycle arrest\")",
+                    "type": "bp"
+                }
+            },
+            {
+                "id": 57,
+                "v": {
+                    "label": "apoptotic process",
+                    "name": "bp(GO:\"apoptotic process\")",
+                    "type": "bp",
+                    "id": "https://identifiers.org/GO:0006915"
+                }
+            },
+            {
+                "id": 58,
+                "v": {
+                    "label": "CDK1",
+                    "name": "g(HGNC:CDK1)",
+                    "type": "g",
+                    "id": "https://identifiers.org/HGNC:1722"
+                }
+            },
+            {
+                "id": 59,
+                "v": {
+                    "label": "CDKN1A",
+                    "name": "g(HGNC:CDKN1A)",
+                    "type": "g",
+                    "id": "https://identifiers.org/HGNC:1784"
+                }
+            }
+        ]
+    },
+    {
+        "edges": [
+            {
+                "id": 0,
+                "s": 0,
+                "t": 1,
+                "v": {
+                    "interaction": "hasModification",
+                    "bel_expression": "p(HGNC:REGULATORY_PROTEIN) hasModification pmod(Ph)",
+                    "text": "Most regulatory proteins are subject to a multiplicity of modifications, especially phosphorylations, that alter function. This presents a severe challenge to any diagram method. The difficulty is further increased when combinations of phosphorylations must be considered.",
+                    "evidence": "Most regulatory proteins are subject to a multiplicity of modifications, especially phosphorylations, that alter function."
+                }
+            },
+            {
+                "id": 1,
+                "s": 2,
+                "t": 3,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(UNIPROT:Q13547) binds complex(p(HGNC:RB1)",
+                    "text": "Another mode of regulation arises from the ability of histone deacetylase (HDAC1) to bind to pRb:E2F:DP-type complexes. HDAC1 could deactivate transcription that has been enhanced by histone acetylation and thus could contribute to gene down-regulation by pRb family proteins.",
+                    "evidence": "Another mode of regulation arises from the ability of histone deacetylase (HDAC1) to bind to pRb:E2F:DP-type complexes."
+                }
+            },
+            {
+                "id": 2,
+                "s": 2,
+                "t": 4,
+                "v": {
+                    "interaction": "decreases",
+                    "bel_expression": "p(UNIPROT:Q13547) decreases bp(GO:\"transcription, DNA-templated\")",
+                    "text": "Another mode of regulation arises from the ability of histone deacetylase (HDAC1) to bind to pRb:E2F:DP-type complexes. HDAC1 could deactivate transcription that has been enhanced by histone acetylation and thus could contribute to gene down-regulation by pRb family proteins.",
+                    "evidence": "HDAC1 could deactivate transcription that has been enhanced by histone acetylation and thus could contribute to gene down-regulation by pRb family proteins."
+                }
+            },
+            {
+                "id": 3,
+                "s": 5,
+                "t": 6,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RB1) increases p(FPLX:JUN)",
+                    "text": "pRb sometimes functions as a gene activator rather than repressor. For example, it can activate the Jun family and CCAAT/enhancer-binding protein (C/EBP) transcription factors. The detailed mechanism by which this occurs is not known.",
+                    "evidence": "pRb sometimes functions as a gene activator rather than repressor. For example, it can activate the Jun family and CCAAT/enhancer-binding protein (C/EBP) transcription factors."
+                }
+            },
+            {
+                "id": 4,
+                "s": 5,
+                "t": 7,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RB1) increases p(FPLX:CEBP)",
+                    "text": "pRb sometimes functions as a gene activator rather than repressor. For example, it can activate the Jun family and CCAAT/enhancer-binding protein (C/EBP) transcription factors. The detailed mechanism by which this occurs is not known.",
+                    "evidence": "pRb sometimes functions as a gene activator rather than repressor. For example, it can activate the Jun family and CCAAT/enhancer-binding protein (C/EBP) transcription factors."
+                }
+            },
+            {
+                "id": 5,
+                "s": 8,
+                "t": 9,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:WEE1) directlyIncreases p(HGNC:CDK1, pmod(Ph, Thr, 14)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "These sites are phosphorylated by Wee1 or Myt1."
+                }
+            },
+            {
+                "id": 6,
+                "s": 8,
+                "t": 10,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:WEE1) directlyIncreases p(HGNC:CDK1, pmod(Ph, Tyr, 15)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "These sites are phosphorylated by Wee1 or Myt1."
+                }
+            },
+            {
+                "id": 7,
+                "s": 11,
+                "t": 9,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:MYT1) directlyIncreases p(HGNC:CDK1, pmod(Ph, Thr, 14)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "These sites are phosphorylated by Wee1 or Myt1."
+                }
+            },
+            {
+                "id": 8,
+                "s": 11,
+                "t": 10,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:MYT1) directlyIncreases p(HGNC:CDK1, pmod(Ph, Tyr, 15)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "These sites are phosphorylated by Wee1 or Myt1."
+                }
+            },
+            {
+                "id": 9,
+                "s": 12,
+                "t": 9,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDC25C) directlyDecreases p(HGNC:CDK1, pmod(Ph, Thr, 14)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C."
+                }
+            },
+            {
+                "id": 10,
+                "s": 12,
+                "t": 10,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDC25C) directlyDecreases p(HGNC:CDK1, pmod(Ph, Tyr, 15)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C."
+                }
+            },
+            {
+                "id": 11,
+                "s": 13,
+                "t": 14,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:PLK1) directlyIncreases act(p(HGNC:CDC25C)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1."
+                }
+            },
+            {
+                "id": 12,
+                "s": 15,
+                "t": 14,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:CDK1) directlyIncreases act(p(HGNC:CDC25C)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1."
+                }
+            },
+            {
+                "id": 13,
+                "s": 16,
+                "t": 17,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:CHK1) directlyIncreases p(HGNC:CDC25C, pmod(Ph, Ser, 216)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1."
+                }
+            },
+            {
+                "id": 14,
+                "s": 18,
+                "t": 17,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:STK11) directlyIncreases p(HGNC:CDC25C, pmod(Ph, Ser, 216)",
+                    "text": "A second class of controls on Cdks are stimulatory and inhibitory phosphorylations, which are controlled by several kinases and phosphatases noted on the map. All Cdks are activated by phosphorylation of Thr160 (or 161), carried out by CycH:Cdk7, which functions also as a constituent of the transcription factor IIH (TFIIH) complex. Cdk1, and to some extent other Cdks, can be inhibited by phosphorylations corresponding to Thr14 and/or Tyr15. These sites are phosphorylated by Wee1 or Myt1. In the case of Cdk1, these inhibitory phosphorylations are removed by dual-action phosphatase Cdc25C, which is in turn activated by phosphorylations introduced by mammalian polo-like kinase 1 (Plk1) and/or Cdk1. Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1. Ser216 phosphorylation generates a binding site for 14-3-3, and this binding inhibits the phosphatase.",
+                    "evidence": "Cdc25C can be phosphorylated at Ser216 by Chk1 or C-TAK1."
+                }
+            },
+            {
+                "id": 15,
+                "s": 12,
+                "t": 19,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:CDC25C) increases act(complex(p(HGNC:CCNB1)",
+                    "text": "A positive feedback loop that can be traced on the map consists of just two components: Cdc25C and CycB:Cdk1. Cdc25C is activated by hyperphosphorylation; activated Cdc25C dephosphorylates Thr14 and Tyr15 of Cdk1, thereby removing the inhibitory effect of these phosphates on the kinase and increasing the activating phosphorylation of Cdc25C. This positive feedback could help produce switch-like behavior and may operate in the G2 to M cell cycle phase transition.",
+                    "evidence": "Cdc25C is activated by hyperphosphorylation; activated Cdc25C dephosphorylates Thr14 and Tyr15 of Cdk1, thereby removing the inhibitory effect of these phosphates on the kinase and increasing the activating phosphorylation of Cdc25C."
+                }
+            },
+            {
+                "id": 16,
+                "s": 20,
+                "t": 21,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDKN2A) directlyDecreases p(HGNC:CDK4)",
+                    "text": "A third class of controls acts through the binding of specific Cyclin:Cdk inhibitors, including p16ink4a, p21cip1, p27kip1, and p57kip2. p16ink4a inhibits by binding Cdk4/6 in competition with cycD. p21cip1, p27kip1, and p57kip2 can bind Cyclin complexes of Cdk4/6 and Cdk2. There may be an additional complication, however, because p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound but can inhibit the same activity when a second p21 molecule binds to the complex. p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2. This seemingly paradoxical relationship might be due to intermolecular action of an active CycE:Cdk2 on an inactive CycE:Cdk2:p27 complex.",
+                    "evidence": "p16ink4a inhibits by binding Cdk4/6 in competition with cycD."
+                }
+            },
+            {
+                "id": 17,
+                "s": 20,
+                "t": 22,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDKN2A) directlyDecreases p(HGNC:CDK6)",
+                    "text": "A third class of controls acts through the binding of specific Cyclin:Cdk inhibitors, including p16ink4a, p21cip1, p27kip1, and p57kip2. p16ink4a inhibits by binding Cdk4/6 in competition with cycD. p21cip1, p27kip1, and p57kip2 can bind Cyclin complexes of Cdk4/6 and Cdk2. There may be an additional complication, however, because p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound but can inhibit the same activity when a second p21 molecule binds to the complex. p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2. This seemingly paradoxical relationship might be due to intermolecular action of an active CycE:Cdk2 on an inactive CycE:Cdk2:p27 complex.",
+                    "evidence": "p16ink4a inhibits by binding Cdk4/6 in competition with cycD."
+                }
+            },
+            {
+                "id": 18,
+                "s": 23,
+                "t": 24,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:CDKN1A) directlyIncreases act(complex(p(HGNC:CCND1)",
+                    "text": "A third class of controls acts through the binding of specific Cyclin:Cdk inhibitors, including p16ink4a, p21cip1, p27kip1, and p57kip2. p16ink4a inhibits by binding Cdk4/6 in competition with cycD. p21cip1, p27kip1, and p57kip2 can bind Cyclin complexes of Cdk4/6 and Cdk2. There may be an additional complication, however, because p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound but can inhibit the same activity when a second p21 molecule binds to the complex. p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2. This seemingly paradoxical relationship might be due to intermolecular action of an active CycE:Cdk2 on an inactive CycE:Cdk2:p27 complex.",
+                    "evidence": "p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound."
+                }
+            },
+            {
+                "id": 19,
+                "s": 23,
+                "t": 24,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDKN1A) directlyDecreases act(complex(p(HGNC:CCND1)",
+                    "text": "A third class of controls acts through the binding of specific Cyclin:Cdk inhibitors, including p16ink4a, p21cip1, p27kip1, and p57kip2. p16ink4a inhibits by binding Cdk4/6 in competition with cycD. p21cip1, p27kip1, and p57kip2 can bind Cyclin complexes of Cdk4/6 and Cdk2. There may be an additional complication, however, because p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound but can inhibit the same activity when a second p21 molecule binds to the complex. p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2. This seemingly paradoxical relationship might be due to intermolecular action of an active CycE:Cdk2 on an inactive CycE:Cdk2:p27 complex.",
+                    "evidence": "p21 can inhibit the same activity when a second p21 molecule binds to the complex."
+                }
+            },
+            {
+                "id": 20,
+                "s": 25,
+                "t": 26,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDKN1B) directlyDecreases act(complex(p(HGNC:CCNE1)",
+                    "text": "A third class of controls acts through the binding of specific Cyclin:Cdk inhibitors, including p16ink4a, p21cip1, p27kip1, and p57kip2. p16ink4a inhibits by binding Cdk4/6 in competition with cycD. p21cip1, p27kip1, and p57kip2 can bind Cyclin complexes of Cdk4/6 and Cdk2. There may be an additional complication, however, because p21 can stabilize and enhance the activity of cycD: Cdk4 when a single p21 molecule is bound but can inhibit the same activity when a second p21 molecule binds to the complex. p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2. This seemingly paradoxical relationship might be due to intermolecular action of an active CycE:Cdk2 on an inactive CycE:Cdk2:p27 complex.",
+                    "evidence": "p27 can be phosphorylated by the kinase it inhibits, CycE:Cdk2."
+                }
+            },
+            {
+                "id": 21,
+                "s": 27,
+                "t": 23,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases p(HGNC:CDKN1A)",
+                    "text": "The Cyclin:Cdk system can interact with elements of the DNA replication and repair systems through binding of p21 or Cyclin D to proliferating cell nuclear antigen (PCNA). This action may also involve Gadd45, which can bind simultaneously to p21 and PCNA. p21, PCNA, and Gadd45 are all transcriptionally activated by p53.",
+                    "evidence": "p21, PCNA, and Gadd45 are all transcriptionally activated by p53."
+                }
+            },
+            {
+                "id": 22,
+                "s": 27,
+                "t": 28,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases p(HGNC:PCNA)",
+                    "text": "The Cyclin:Cdk system can interact with elements of the DNA replication and repair systems through binding of p21 or Cyclin D to proliferating cell nuclear antigen (PCNA). This action may also involve Gadd45, which can bind simultaneously to p21 and PCNA. p21, PCNA, and Gadd45 are all transcriptionally activated by p53.",
+                    "evidence": "p21, PCNA, and Gadd45 are all transcriptionally activated by p53."
+                }
+            },
+            {
+                "id": 23,
+                "s": 27,
+                "t": 29,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases p(HGNC:GADD45A)",
+                    "text": "The Cyclin:Cdk system can interact with elements of the DNA replication and repair systems through binding of p21 or Cyclin D to proliferating cell nuclear antigen (PCNA). This action may also involve Gadd45, which can bind simultaneously to p21 and PCNA. p21, PCNA, and Gadd45 are all transcriptionally activated by p53.",
+                    "evidence": "p21, PCNA, and Gadd45 are all transcriptionally activated by p53."
+                }
+            },
+            {
+                "id": 24,
+                "s": 30,
+                "t": 31,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:PCAF) increases p(HGNC:TP53, pmod(Ac, Lys, 320)",
+                    "text": "Some p53 modifications and interactions are especially notable. Ser15 appears to be the site of phosphorylation responses to DNA damage signals communicated by way of the kinases ataxia telangiectasia mutated gene/protein (ATM) and DNA-dependent protein kinase (DNA-PK). Phosphorylation of Ser18 or Ser20 prevents stable binding to Mdm2, thus abrogating the Mdm2-mediated inhibition and degradation of p53. Because these sites are located within the region required for Mdm2 binding, it is plausible that their phosphorylation could inhibit this interaction. p53 forms a stable complex with p300, as a result of which p300 acetylates p53 Lys382. This acetylation, as well as the acetylation of Lys320 by PCAF, enhances the sequence-specific binding of p53 to promoters, probably indirectly by inhibiting nonspecific DNA binding. A similar mechanism of enhanced promoter binding may occur as a result of binding of the p53 C-terminal region to 14-3-3, which requires 14-3-3 to be dimerized.",
+                    "evidence": "This acetylation, as well as the acetylation of Lys320 by PCAF, enhances the sequence-specific binding of p53 to promoters."
+                }
+            },
+            {
+                "id": 25,
+                "s": 32,
+                "t": 27,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:TP53)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "Mdm2 contains a pocket that binds a p53 N-terminal peptide."
+                }
+            },
+            {
+                "id": 26,
+                "s": 32,
+                "t": 33,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:MDM2) directlyDecreases act(p(HGNC:TP53)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation."
+                }
+            },
+            {
+                "id": 27,
+                "s": 27,
+                "t": 34,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases r(HGNC:MDM2)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop."
+                }
+            },
+            {
+                "id": 28,
+                "s": 32,
+                "t": 35,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:MDM2) increases r(HGNC:CCNA2)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "Mdm2 can itself activate some genes, such as Cyclin A."
+                }
+            },
+            {
+                "id": 29,
+                "s": 32,
+                "t": 36,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:E2F1)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 30,
+                "s": 32,
+                "t": 5,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:RB1)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 31,
+                "s": 32,
+                "t": 37,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:TBP)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 32,
+                "s": 32,
+                "t": 38,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:TAF1)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 33,
+                "s": 32,
+                "t": 20,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:CDKN2A)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 34,
+                "s": 32,
+                "t": 39,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:MDM2) binds p(HGNC:EP300)",
+                    "text": "Mdm2 is an intimate part of the p53 control system. Mdm2 contains a pocket that binds a p53 N-terminal peptide. Mdm2 binding blocks the transcriptional activation domain of p53 and is instrumental in p53 degradation. p53, in turn, transcriptionally up-regulates Mdm2, probably forming a negative feedback loop. Mdm2 can itself activate some genes, such as Cyclin A. In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300. Some of these interactions may compete for the same Mdm2 site, as may be the case for p19ARF and p300. Binding to p53 is abrogated by phosphorylation of Mdm2 on Ser17, perhaps through the kinase activity of DNA-PK.",
+                    "evidence": "In addition to binding p53, Mdm2 reportedly binds E2F1:DP1, pRb, TATA-binding protein (TBP), TBP-associated factor II250 (TAFII250), p19ARF, and p300."
+                }
+            },
+            {
+                "id": 35,
+                "s": 20,
+                "t": 32,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:CDKN2A) directlyDecreases p(HGNC:MDM2)",
+                    "text": "p19ARF, an alternate reading frame (ARF) product from the ink4a locus that also codes for p16, has recently emerged as an additional player in the p53-Mdm2 system. p19ARF binds to and inhibits the actions of Mdm2. It also can bind to p53. Moreover, p19ARF is transcriptionally up-regulated by E2F1:DP1. This link between p53 and E2F1 may be crucial to the control of S-phase and apoptosis.",
+                    "evidence": "p19ARF binds to and inhibits the actions of Mdm2."
+                }
+            },
+            {
+                "id": 36,
+                "s": 20,
+                "t": 27,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:CDKN2A) binds p(HGNC:TP53)",
+                    "text": "p19ARF, an alternate reading frame (ARF) product from the ink4a locus that also codes for p16, has recently emerged as an additional player in the p53-Mdm2 system. p19ARF binds to and inhibits the actions of Mdm2. It also can bind to p53. Moreover, p19ARF is transcriptionally up-regulated by E2F1:DP1. This link between p53 and E2F1 may be crucial to the control of S-phase and apoptosis.",
+                    "evidence": "It also can bind to p53."
+                }
+            },
+            {
+                "id": 37,
+                "s": 40,
+                "t": 41,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RPA) binds p(HGNC:XPG)",
+                    "text": "The second phase, excision of a short DNA strand segment containing the lesion, is carried out by an assembly of the XPG and XPF:excision repair cross-complementing 1 (ERCC1) endonucleases, together with XPA, RPA, TFIIH, and PCNA (which can bind XPG). This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA. In going from the recognition to the excision phase, the molecular assembly rearranges as XPC:HR23B is replaced by XPG.",
+                    "evidence": "This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA."
+                }
+            },
+            {
+                "id": 38,
+                "s": 40,
+                "t": 42,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RPA) binds complex(p(HGNC:XPF)",
+                    "text": "The second phase, excision of a short DNA strand segment containing the lesion, is carried out by an assembly of the XPG and XPF:excision repair cross-complementing 1 (ERCC1) endonucleases, together with XPA, RPA, TFIIH, and PCNA (which can bind XPG). This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA. In going from the recognition to the excision phase, the molecular assembly rearranges as XPC:HR23B is replaced by XPG.",
+                    "evidence": "This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA."
+                }
+            },
+            {
+                "id": 39,
+                "s": 40,
+                "t": 43,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RPA) binds p(HGNC:XPA)",
+                    "text": "The second phase, excision of a short DNA strand segment containing the lesion, is carried out by an assembly of the XPG and XPF:excision repair cross-complementing 1 (ERCC1) endonucleases, together with XPA, RPA, TFIIH, and PCNA (which can bind XPG). This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA. In going from the recognition to the excision phase, the molecular assembly rearranges as XPC:HR23B is replaced by XPG.",
+                    "evidence": "This assembly appears to be held together in part through RPA, which binds to single-stranded DNA (ssDNA) regions in the vicinity of lesion, and at the same time may be able to bind XPG and XPF:ERCC1, as well as XPA."
+                }
+            },
+            {
+                "id": 40,
+                "s": 44,
+                "t": 45,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:XRCC1) directlyDecreases act(p(HGNC:PARP1)",
+                    "text": "In the third phase, gap filling, x-ray repair cross-complementing gene/protein 1 (XRCC1) appears to function as a platform for the assembly of DNA polymerase b (DPase b), DNA ligase III, and PARP. This assembly is held together, in part, via breast cancer protein 1 C-terminal module (BRCT) modules in the constituent proteins. The binding of PARP by XRCC1 may function to block the further action of PARP during this phase at a repair site. The assembly of XRCC1 with DPase b and DNA ligase III may also function in the single-nucleotide replacement pathway of base excision repair.",
+                    "evidence": "The binding of PARP by XRCC1 may function to block the further action of PARP during this phase at a repair site."
+                }
+            },
+            {
+                "id": 41,
+                "s": 46,
+                "t": 47,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RPA1) increases p(HGNC:RAD52)",
+                    "text": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage. Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair.",
+                    "evidence": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage."
+                }
+            },
+            {
+                "id": 42,
+                "s": 46,
+                "t": 48,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RPA1) increases p(HGNC:RAD51)",
+                    "text": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage. Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair.",
+                    "evidence": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage."
+                }
+            },
+            {
+                "id": 43,
+                "s": 48,
+                "t": 49,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RAD51) increases bp(GO:\"recombinational repair\")",
+                    "text": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage. Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair.",
+                    "evidence": "Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair."
+                }
+            },
+            {
+                "id": 44,
+                "s": 46,
+                "t": 49,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:RPA1) increases bp(GO:\"recombinational repair\")",
+                    "text": "Through its binding to DNA single-stranded regions, RPA may also recruit Rad52 and Rad51 to sites of DNA damage. Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair.",
+                    "evidence": "Rad51 also binds to ssDNA and, together with RPA, may function in recombinational repair."
+                }
+            },
+            {
+                "id": 45,
+                "s": 48,
+                "t": 50,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RAD51) binds p(HGNC:ABL1)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl."
+                }
+            },
+            {
+                "id": 46,
+                "s": 50,
+                "t": 51,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:ABL1) binds p(HGNC:ATM)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive."
+                }
+            },
+            {
+                "id": 47,
+                "s": 50,
+                "t": 52,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:ABL1) binds p(HGNC:PRKDC)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive."
+                }
+            },
+            {
+                "id": 48,
+                "s": 50,
+                "t": 5,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:ABL1) binds p(HGNC:RB1)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive."
+                }
+            },
+            {
+                "id": 49,
+                "s": 50,
+                "t": 27,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:ABL1) binds p(HGNC:TP53)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive."
+                }
+            },
+            {
+                "id": 50,
+                "s": 48,
+                "t": 53,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RAD51) binds p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region."
+                }
+            },
+            {
+                "id": 51,
+                "s": 51,
+                "t": 53,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:ATM) binds p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region."
+                }
+            },
+            {
+                "id": 52,
+                "s": 52,
+                "t": 53,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:PRKDC) binds p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region."
+                }
+            },
+            {
+                "id": 53,
+                "s": 5,
+                "t": 53,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:RB1) binds p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "pRb and p53 may bind to the c-Abl C-terminal region."
+                }
+            },
+            {
+                "id": 54,
+                "s": 27,
+                "t": 53,
+                "v": {
+                    "interaction": "binds",
+                    "bel_expression": "p(HGNC:TP53) binds p(HGNC:ABL1, loc(FPLX:SH3)",
+                    "text": "Rad51 may also provide links to a network of mutually interacting components via its binding to c-Abl. c-Abl may bind ATM, DNA-PK, pRb, and p53, although it is not fully determined which of these interactions can occur simultaneously and which are mutually exclusive. Rad51, ATM, and DNA-PK bind to a Src homology 3 (SH3) domain in the c-Abl N-terminal region, whereas pRb and p53 may bind to the c-Abl C-terminal region. c-Abl may regulate Rad51 function by phosphorylating Rad51 on Tyr54, thereby abrogating the direct binding of Rad51 to ssDNA.",
+                    "evidence": "pRb and p53 may bind to the c-Abl C-terminal region."
+                }
+            },
+            {
+                "id": 55,
+                "s": 52,
+                "t": 54,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:PRKDC) increases bp(GO:\"DNA replication\")",
+                    "text": "Another set of interactions is implicated in the processing of DNA double-strand breaks. DNA double-strand ends are recognized and bound by the Ku70:Ku80 heterodimer (Ku), which can recruit DNA-PK to the site, thereby activating the kinase. DNA-PK, however, can also bind to RPA. RPA is a heterotrimer that binds ssDNA regions. DNA-PK can thus be recruited to ssDNA regions formed transiently at replication forks. DNA-PK may then be available for interaction with a double-stranded DNA (dsDNA) end, which could appear in the vicinity as a consequence of replication fork encounters with open topoisomerase I DNA complexes trapped by drugs such as camptothecin. It is noteworthy that DNA-PK does not always require Ku for activation, because it can be activated by tethering to DNA via other molecules, such as chromatin constituents of the HMG family.",
+                    "evidence": "DNA-PK can thus be recruited to ssDNA regions formed transiently at replication forks."
+                }
+            },
+            {
+                "id": 56,
+                "s": 52,
+                "t": 55,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:PRKDC) increases bp(GO:\"DNA repair\")",
+                    "text": "Another set of interactions is implicated in the processing of DNA double-strand breaks. DNA double-strand ends are recognized and bound by the Ku70:Ku80 heterodimer (Ku), which can recruit DNA-PK to the site, thereby activating the kinase. DNA-PK, however, can also bind to RPA. RPA is a heterotrimer that binds ssDNA regions. DNA-PK can thus be recruited to ssDNA regions formed transiently at replication forks. DNA-PK may then be available for interaction with a double-stranded DNA (dsDNA) end, which could appear in the vicinity as a consequence of replication fork encounters with open topoisomerase I DNA complexes trapped by drugs such as camptothecin. It is noteworthy that DNA-PK does not always require Ku for activation, because it can be activated by tethering to DNA via other molecules, such as chromatin constituents of the HMG family.",
+                    "evidence": "DNA-PK may then be available for interaction with a double-stranded DNA (dsDNA) end, which could appear in the vicinity as a consequence of replication fork encounters with open topoisomerase I DNA complexes trapped by drugs such as camptothecin."
+                }
+            },
+            {
+                "id": 57,
+                "s": 27,
+                "t": 56,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases bp(GO:\"cell cycle arrest\")",
+                    "text": "p53 appears to be a central focus for the concurrence of signals from many pathways, presumably serving as an integrated information processor. It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis. The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF. It appears to be a logic unit that monitors the state of the cell based on the pattern of a large number of inputs.",
+                    "evidence": "It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis."
+                }
+            },
+            {
+                "id": 58,
+                "s": 27,
+                "t": 57,
+                "v": {
+                    "interaction": "increases",
+                    "bel_expression": "p(HGNC:TP53) increases bp(GO:\"apoptotic process\")",
+                    "text": "p53 appears to be a central focus for the concurrence of signals from many pathways, presumably serving as an integrated information processor. It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis. The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF. It appears to be a logic unit that monitors the state of the cell based on the pattern of a large number of inputs.",
+                    "evidence": "It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis."
+                }
+            },
+            {
+                "id": 59,
+                "s": 32,
+                "t": 27,
+                "v": {
+                    "interaction": "directlyDecreases",
+                    "bel_expression": "p(HGNC:MDM2) directlyDecreases p(HGNC:TP53)",
+                    "text": "p53 appears to be a central focus for the concurrence of signals from many pathways, presumably serving as an integrated information processor. It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis. The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF. It appears to be a logic unit that monitors the state of the cell based on the pattern of a large number of inputs.",
+                    "evidence": "The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF."
+                }
+            },
+            {
+                "id": 60,
+                "s": 20,
+                "t": 27,
+                "v": {
+                    "interaction": "directlyIncreases",
+                    "bel_expression": "p(HGNC:CDKN2A) directlyIncreases p(HGNC:TP53)",
+                    "text": "p53 appears to be a central focus for the concurrence of signals from many pathways, presumably serving as an integrated information processor. It might, for example, function to test the validity of signaling patterns and, depending on the outcome of the test, to initiate cell cycle arrest or apoptosis. The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF. It appears to be a logic unit that monitors the state of the cell based on the pattern of a large number of inputs.",
+                    "evidence": "The test however must first be activated by allowing p53 (which normally is rapidly degraded and thus nearly absent) to accumulate in response to inputs involving Mdm2 and/or p19ARF."
+                }
+            },
+            {
+                "id": 61,
+                "s": 36,
+                "t": 58,
+                "v": {
+                    "interaction": "regulates",
+                    "bel_expression": "p(HGNC:E2F1) regulates g(HGNC:CDK1)",
+                    "text": "Promoter regulation can be very complicated, because transcription factors can have positive or negative effects, depending on their environments and mutual interactions. Genes controlled in part by the same transcription factors sometimes exhibit different regulation patterns. Moreover, the interactions among the different transcription factors are only beginning to be elucidated. It was therefore not feasible, in the present diagrams, to show the full regulation pattern of each individual gene. The regulation of the E2F-dependent S-phase genes and of the p53-dependent genes highlight the difficulties. The major known regulatory actions on these genes are shown, and some of the details regarding effects on individual genes are mentioned in the annotation list.",
+                    "evidence": "The regulation of the E2F-dependent S-phase genes and of the p53-dependent genes highlight the difficulties."
+                }
+            },
+            {
+                "id": 62,
+                "s": 27,
+                "t": 59,
+                "v": {
+                    "interaction": "regulates",
+                    "bel_expression": "p(HGNC:TP53) regulates g(HGNC:CDKN1A)",
+                    "text": "Promoter regulation can be very complicated, because transcription factors can have positive or negative effects, depending on their environments and mutual interactions. Genes controlled in part by the same transcription factors sometimes exhibit different regulation patterns. Moreover, the interactions among the different transcription factors are only beginning to be elucidated. It was therefore not feasible, in the present diagrams, to show the full regulation pattern of each individual gene. The regulation of the E2F-dependent S-phase genes and of the p53-dependent genes highlight the difficulties. The major known regulatory actions on these genes are shown, and some of the details regarding effects on individual genes are mentioned in the annotation list.",
+                    "evidence": "The regulation of the E2F-dependent S-phase genes and of the p53-dependent genes highlight the difficulties."
+                }
+            }
+        ]
+    },
+    {
+        "visualProperties": [
+            {
+                "default": {
+                    "edge": {
+                        "EDGE_SOURCE_ARROW_SIZE": 6.0,
+                        "EDGE_SOURCE_ARROW_SELECTED_PAINT": "#FFFF00",
+                        "EDGE_LABEL_OPACITY": 1.0,
+                        "EDGE_TARGET_ARROW_SELECTED_PAINT": "#FFFF00",
+                        "EDGE_TARGET_ARROW_SHAPE": "triangle",
+                        "EDGE_LABEL_BACKGROUND_OPACITY": 1.0,
+                        "EDGE_LABEL_POSITION": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "EDGE_ANCHOR": "C",
+                            "LABEL_ANCHOR": "C"
+                        },
+                        "EDGE_Z_ORDER": 0.0,
+                        "EDGE_LABEL_MAX_WIDTH": 200.0,
+                        "EDGE_LABEL_BACKGROUND_COLOR": "#B6B6B6",
+                        "EDGE_LABEL_ROTATION": 0.0,
+                        "EDGE_VISIBILITY": "element",
+                        "EDGE_LABEL_FONT_SIZE": 10,
+                        "EDGE_LABEL_COLOR": "#000000",
+                        "EDGE_SELECTED_PAINT": "#FF0000",
+                        "EDGE_SELECTED": "false",
+                        "EDGE_STACKING_DENSITY": 0.5,
+                        "EDGE_SOURCE_ARROW_COLOR": "#404040",
+                        "EDGE_TARGET_ARROW_COLOR": "#404040",
+                        "EDGE_STROKE_SELECTED_PAINT": "#FF0000",
+                        "EDGE_WIDTH": 7.0,
+                        "EDGE_SOURCE_ARROW_SHAPE": "none",
+                        "EDGE_LINE_COLOR": "#404040",
+                        "EDGE_OPACITY": 1.0,
+                        "EDGE_LABEL_BACKGROUND_SHAPE": "NONE",
+                        "EDGE_LABEL_FONT_FACE": {
+                            "FONT_FAMILY": "sans-serif",
+                            "FONT_STYLE": "normal",
+                            "FONT_WEIGHT": "normal",
+                            "FONT_NAME": "Dialog"
+                        },
+                        "EDGE_STACKING": "AUTO_BEND",
+                        "EDGE_LABEL_AUTOROTATE": false,
+                        "EDGE_LINE_STYLE": "solid",
+                        "EDGE_CURVED": true,
+                        "EDGE_TARGET_ARROW_SIZE": 6.0
+                    },
+                    "network": {
+                        "NETWORK_BACKGROUND_COLOR": "#FFFFFF"
+                    },
+                    "node": {
+                        "NODE_Y_LOCATION": 0.0,
+                        "NODE_BACKGROUND_COLOR": "#89D0F5",
+                        "NODE_LABEL_BACKGROUND_COLOR": "#B6B6B6",
+                        "NODE_WIDTH": 35.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_7": 50.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_6": 50.0,
+                        "COMPOUND_NODE_SHAPE": "ROUND_RECTANGLE",
+                        "NODE_Z_LOCATION": 0.0,
+                        "NODE_LABEL_POSITION": {
+                            "HORIZONTAL_ALIGN": "center",
+                            "VERTICAL_ALIGN": "center",
+                            "HORIZONTAL_ANCHOR": "center",
+                            "VERTICAL_ANCHOR": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "JUSTIFICATION": "center"
+                        },
+                        "NODE_CUSTOMGRAPHICS_SIZE_5": 50.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_4": 50.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_3": 50.0,
+                        "NODE_CUSTOMGRAPHICS_SIZE_2": 50.0,
+                        "NODE_VISIBILITY": "element",
+                        "NODE_CUSTOMGRAPHICS_SIZE_1": 50.0,
+                        "NODE_BORDER_STYLE": "solid",
+                        "NODE_BACKGROUND_OPACITY": 1.0,
+                        "NODE_LABEL_COLOR": "#252525",
+                        "NODE_SELECTED": false,
+                        "NODE_BORDER_COLOR": "#CCCCCC",
+                        "NODE_CUSTOMGRAPHICS_POSITION_8": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_9": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_SHAPE": "ellipse",
+                        "NODE_CUSTOMGRAPHICS_POSITION_4": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_5": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_6": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_POSITION_7": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_LABEL_FONT_SIZE": 12,
+                        "NODE_X_LOCATION": 0.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_1": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_BORDER_OPACITY": 1.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_2": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_SIZE_9": 50.0,
+                        "NODE_LABEL_ROTATION": 0.0,
+                        "NODE_CUSTOMGRAPHICS_POSITION_3": {
+                            "JUSTIFICATION": "center",
+                            "MARGIN_X": 0.0,
+                            "MARGIN_Y": 0.0,
+                            "ENTITY_ANCHOR": "C",
+                            "GRAPHICS_ANCHOR": "C"
+                        },
+                        "NODE_CUSTOMGRAPHICS_SIZE_8": 50.0,
+                        "NODE_BORDER_WIDTH": 0.0,
+                        "NODE_LABEL_OPACITY": 1.0,
+                        "NODE_HEIGHT": 35.0,
+                        "NODE_LABEL_BACKGROUND_SHAPE": "NONE",
+                        "COMPOUND_NODE_PADDING": "10.0",
+                        "NODE_LABEL_BACKGROUND_OPACITY": 1.0,
+                        "NODE_LABEL_FONT_FACE": {
+                            "FONT_FAMILY": "sans-serif",
+                            "FONT_STYLE": "normal",
+                            "FONT_WEIGHT": "normal",
+                            "FONT_NAME": "SansSerif"
+                        },
+                        "NODE_SELECTED_PAINT": "#FFFF00",
+                        "NODE_LABEL_MAX_WIDTH": 200.0
+                    }
+                },
+                "edgeMapping": {
+                    "EDGE_TARGET_ARROW_SHAPE": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "positiveCorrelation",
+                                    "vp": "none"
+                                },
+                                {
+                                    "v": "decreases",
+                                    "vp": "tee"
+                                },
+                                {
+                                    "v": "association",
+                                    "vp": "none"
+                                },
+                                {
+                                    "v": "directlyDecreases",
+                                    "vp": "tee"
+                                }
+                            ],
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    },
+                    "EDGE_LABEL": {
+                        "type": "PASSTHROUGH",
+                        "definition": {
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    },
+                    "EDGE_LINE_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "increases",
+                                    "vp": "#CC00FF"
+                                },
+                                {
+                                    "v": "hasComponent",
+                                    "vp": "#0066FF"
+                                },
+                                {
+                                    "v": "positiveCorrelation",
+                                    "vp": "#FF0000"
+                                },
+                                {
+                                    "v": "decreases",
+                                    "vp": "#CCFF00"
+                                },
+                                {
+                                    "v": "directlyDecreases",
+                                    "vp": "#00FF66"
+                                }
+                            ],
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    },
+                    "EDGE_SOURCE_ARROW_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "increases",
+                                    "vp": "#CC00FF"
+                                },
+                                {
+                                    "v": "hasComponent",
+                                    "vp": "#0066FF"
+                                },
+                                {
+                                    "v": "positiveCorrelation",
+                                    "vp": "#FF0000"
+                                },
+                                {
+                                    "v": "decreases",
+                                    "vp": "#CCFF00"
+                                },
+                                {
+                                    "v": "directlyDecreases",
+                                    "vp": "#00FF66"
+                                }
+                            ],
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    },
+                    "EDGE_TARGET_ARROW_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "increases",
+                                    "vp": "#CC00FF"
+                                },
+                                {
+                                    "v": "hasComponent",
+                                    "vp": "#0066FF"
+                                },
+                                {
+                                    "v": "positiveCorrelation",
+                                    "vp": "#FF0000"
+                                },
+                                {
+                                    "v": "decreases",
+                                    "vp": "#CCFF00"
+                                },
+                                {
+                                    "v": "directlyDecreases",
+                                    "vp": "#00FF66"
+                                }
+                            ],
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    },
+                    "EDGE_LINE_STYLE": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "positiveCorrelation",
+                                    "vp": "dashed"
+                                },
+                                {
+                                    "v": "association",
+                                    "vp": "dotted"
+                                },
+                                {
+                                    "v": "directlyDecreases",
+                                    "vp": "solid"
+                                },
+                                {
+                                    "v": "directlyIncreases",
+                                    "vp": "solid"
+                                }
+                            ],
+                            "attribute": "interaction",
+                            "type": "string"
+                        }
+                    }
+                },
+                "nodeMapping": {
+                    "NODE_BORDER_WIDTH": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "complex",
+                                    "vp": 10.0
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL": {
+                        "type": "PASSTHROUGH",
+                        "definition": {
+                            "attribute": "label",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_LABEL_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_BORDER_COLOR": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "complex",
+                                    "vp": "#238B45"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    },
+                    "NODE_SHAPE": {
+                        "type": "DISCRETE",
+                        "definition": {
+                            "map": [
+                                {
+                                    "v": "a",
+                                    "vp": "rectangle"
+                                },
+                                {
+                                    "v": "act",
+                                    "vp": "diamond"
+                                }
+                            ],
+                            "attribute": "type",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "status": [
+            {
+                "error": "",
+                "success": true
+            }
+        ]
+    }
+]

@@ -11,9 +11,7 @@ def load_config(config_path=None):
         try:
             config_path = os.environ['DATABASE_CONFIG_PATH']
         except KeyError:
-            pass
-        # default to the home directory
-        config_path = os.path.expanduser('~/ae_config/config.ini')
+            config_path = os.path.expanduser('~/ae_config/config.ini')
 
     config_files = config.read(config_path)
     if config_files is None or len(config_files) == 0:

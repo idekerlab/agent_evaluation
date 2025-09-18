@@ -93,8 +93,43 @@ def get_link_name(db: SqliteDatabase, obj_id: str) -> str:
 def handle_hypothesis(properties: Dict) -> Dict:
     """Process hypothesis text to validate gene symbols."""
     logger.info("Processing hypothesis text")
+    logger.debug(f"Hypothesis properties received: {properties.keys()}")
+    
     try:
-        hypo_text = properties["hypothesis_text"]
+        # First check if the hypothesis has properties_involved directly
+        if 'proteins_involved' in properties:
+            logger.info("Using proteins_involved field directly")
+            if isinstance(properties['proteins_involved'], str):
+                # If it's a string that might be semicolon separated
+                gene_symbols = [g.strip() for g in properties['proteins_involved'].split(';')]
+                properties['gene_symbols'] = gene_symbols
+                logger.debug(f"Found gene symbols from proteins_involved: {gene_symbols}")
+                return properties
+            elif isinstance(properties['proteins_involved'], list):
+                properties['gene_symbols'] = properties['proteins_involved']
+                logger.debug(f"Found gene symbols from proteins_involved list: {properties['proteins_involved']}")
+                return properties
+        
+        # Get hypothesis text from various possible fields
+        hypo_text = None
+        potential_fields = [
+            "hypothesis_text", 
+            "alternative_hypothesis", 
+            "null_hypothesis", 
+            "rationale"
+        ]
+        
+        for field in potential_fields:
+            if field in properties and properties[field]:
+                logger.debug(f"Using {field} as hypothesis text")
+                hypo_text = properties[field]
+                break
+        
+        if not hypo_text:
+            logger.warning("No hypothesis text found in any expected field")
+            properties['gene_symbols'] = []
+            return properties
+            
         file_path = "data/hgnc_genes.tsv"
 
         # Remove punctuation and parentheses, but keep hyphens
@@ -108,9 +143,16 @@ def handle_hypothesis(properties: Dict) -> Dict:
         properties['gene_symbols'] = result['official_genes']
         logger.debug(f"Found gene symbols: {result['official_genes']}")
         return properties
+    except KeyError as e:
+        logger.warning(f"Missing key in hypothesis: {str(e)}")
+        # Don't fail on missing keys, just return the original properties
+        properties['gene_symbols'] = []
+        return properties
     except Exception as e:
-        logger.error(f"Error processing hypothesis: {str(e)}")
-        raise
+        logger.error(f"Error processing hypothesis: {str(e)}", exc_info=True)
+        # Return the original properties instead of failing
+        properties['gene_symbols'] = []
+        return properties
 
 def generate_judgment_space_visualization(judgment_space: JudgmentSpace) -> Tuple[Optional[str], Optional[str]]:
     """Generate visualization for judgment space data."""

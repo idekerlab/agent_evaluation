@@ -1,0 +1,60 @@
+{
+  "source_network": {
+    "uuid": "0fb9bf21-fa25-11ef-b81d-005056ae3c32",
+    "name": "Copy of dengue_x_string_network"
+  },
+  "propagation_parameters": {
+    "restart_prob": 0.4,
+    "max_score": 200.0,
+    "max_steps": 500,
+    "default_score": 1.0,
+    "allow_revisits": true,
+    "type_scores": {
+      "viral": 0.0,
+      "high_z": 1.0,
+      "med_z": 2.0,
+      "low_z": 3.0,
+      "undefined": 0.0
+    }
+  },
+  "viral_proteins": {
+    "DENV2 16681 NS4A": {
+      "node_id": "379",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS5": {
+      "node_id": "381",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS2B3": {
+      "node_id": "382",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS3": {
+      "node_id": "383",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 Capsid": {
+      "node_id": "385",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS4B": {
+      "node_id": "387",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 Capsid Anchor": {
+      "node_id": "389",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS1": {
+      "node_id": "395",
+      "error": "Edge must have source and target"
+    },
+    "DENV2 16681 NS2A": {
+      "node_id": "398",
+      "error": "Edge must have source and target"
+    }
+  },
+  "ndex_networks": {},
+  "total_execution_time": 0.006339073181152344
+}

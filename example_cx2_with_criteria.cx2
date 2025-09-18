@@ -1,0 +1,81 @@
+{
+  "CXVersion": "2.0",
+  "hasFragments": false,
+  "metaData": [
+    {
+      "elementCount": 1,
+      "name": "networkAttributes"
+    },
+    {
+      "elementCount": 3,
+      "name": "nodes"
+    },
+    {
+      "elementCount": 2,
+      "name": "edges"
+    }
+  ],
+  "networkAttributes": [
+    {
+      "name": "LLM Text to Knowledge Graph for publication: mk002703",
+      "description": "Knowledge graph extracted from publication text",
+      "scoring_criteria": "checkbox: All correct|checkbox: Correct but could be more precise|checkbox: Post-translational modification errors|checkbox: Interaction type errors|checkbox: Identifier database errors|checkbox: Incorrect entities|checkbox: Incorrect order: source and target switched|checkbox: Not a relationship: common upstream cause instead|checkbox: Other errors|textarea: Comments",
+      "display_order": "bel_expression,evidence,text,interaction,source,target"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "v": {
+        "n": "STAT3",
+        "represents": "uniprot:P40763",
+        "type": "protein",
+        "alias": "Signal transducer and activator of transcription 3"
+      }
+    },
+    {
+      "id": 2,
+      "v": {
+        "n": "IL6",
+        "represents": "uniprot:P05231",
+        "type": "protein",
+        "alias": "Interleukin-6"
+      }
+    },
+    {
+      "id": 3,
+      "v": {
+        "n": "JAK2",
+        "represents": "uniprot:O60674",
+        "type": "protein",
+        "alias": "Janus kinase 2"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": 1,
+      "s": 2,
+      "t": 3,
+      "i": "activates",
+      "v": {
+        "interaction": "activates",
+        "text": "IL-6 activates JAK2 signaling",
+        "evidence": "PMID:12345678",
+        "bel_expression": "p(IL6) -> act(p(JAK2))"
+      }
+    },
+    {
+      "id": 2,
+      "s": 3,
+      "t": 1,
+      "i": "phosphorylates",
+      "v": {
+        "interaction": "phosphorylates",
+        "text": "JAK2 phosphorylates STAT3 on tyrosine 705",
+        "evidence": "PMID:87654321",
+        "bel_expression": "act(p(JAK2)) -> p(STAT3, pmod(Ph, Y, 705))"
+      }
+    }
+  ]
+}

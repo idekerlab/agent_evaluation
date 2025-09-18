@@ -1,0 +1,15 @@
+{
+  "object_id": "sample_hypothesis_3",
+  "type": "hypothesis",
+  "name": "Gut Microbiome Influence on Immune Response",
+  "hypothesis_text": "We hypothesize that alterations in gut microbiome composition, specifically decreased Bacteroidetes and increased Firmicutes, lead to chronic low-grade inflammation through increased intestinal permeability and altered immune cell programming, contributing to autoimmune disease development.",
+  "biological_context": "The gut microbiome plays a crucial role in immune system development and function. Changes in microbial composition can affect intestinal barrier function and immune cell differentiation, potentially influencing susceptibility to autoimmune disorders.",
+  "data": "subject_group,bacteroidetes_abundance,firmicutes_abundance,intestinal_permeability,inflammatory_markers,regulatory_t_cells\nHealthy controls,60%,35%,Low,Low,High\nPre-symptomatic,45%,50%,Medium-Low,Medium,Medium\nRecently diagnosed,30%,65%,Medium-High,High,Low\nChronic cases,20%,75%,High,Very High,Very Low\nAfter microbiome therapy,50%,45%,Medium-Low,Medium,Medium-High",
+  "created": "2025-03-08 12:30:00",
+  "_display_types": [
+    {
+      "property_name": "data",
+      "display_type": "csv"
+    }
+  ]
+}

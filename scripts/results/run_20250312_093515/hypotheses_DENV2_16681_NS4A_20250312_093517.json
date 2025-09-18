@@ -1,0 +1,46 @@
+[
+  {
+    "title": "NS4A disrupts ER-Golgi vesicular trafficking via SNARE complex",
+    "null_hypothesis": "H0: DENV2 NS4A does not significantly alter the function of SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB) in ER-Golgi vesicular trafficking during infection.",
+    "alternative_hypothesis": "H1: DENV2 NS4A significantly disrupts ER-Golgi vesicular trafficking by directly interacting with and altering the function of SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB), which contributes to viral replication complex formation.",
+    "rationale": "Multiple SNARE complex proteins (VTI1B, STX12, SEC22C, NAPB) show high propagation weights and elevated Z-scores in the network analysis, suggesting functional alteration during DENV infection. VTI1B has the highest propagation weight (0.0800) among human proteins, indicating a potentially direct interaction with NS4A. These SNARE proteins are critical for vesicular trafficking between ER and Golgi, and their disruption could facilitate the membrane rearrangements required for DENV replication complex formation.",
+    "proteins_involved": [
+      "NS4A",
+      "VTI1B",
+      "STX12",
+      "SEC22C",
+      "NAPB"
+    ],
+    "experimental_data_used": "Propagation weights showing strong network proximity of SNARE proteins to NS4A (VTI1B: 0.0800, STX12: 0.0300, SEC22C: 0.0200, NAPB: 0.0300) and elevated Average_Zscores for all these proteins (>1.1).",
+    "experimental_validation": [
+      "Co-immunoprecipitation assays to detect direct physical interactions between NS4A and identified SNARE proteins in infected cells.",
+      "Fluorescence microscopy to visualize colocalization of NS4A with SNARE proteins during different stages of viral infection.",
+      "siRNA knockdown of VTI1B, STX12, SEC22C, and NAPB to assess effects on viral replication and membrane reorganization."
+    ],
+    "confidence": 4,
+    "id": "H1",
+    "viral_protein": "DENV2 16681 NS4A"
+  },
+  {
+    "title": "NS4A exploits ER quality control via SCFD1-PIGT axis",
+    "null_hypothesis": "H0: DENV2 NS4A does not utilize the SCFD1-PIGT axis to modulate ER quality control mechanisms for viral replication.",
+    "alternative_hypothesis": "H1: DENV2 NS4A specifically exploits the SCFD1-PIGT axis to modulate ER quality control mechanisms, thereby creating a favorable environment for viral replication complex assembly.",
+    "rationale": "SCFD1 and PIGT both show high propagation weights (0.0550 each) and high Average_Zscores (1.3983 and 1.3110 respectively), suggesting significant functional alteration during DENV infection. SCFD1 is involved in ER-to-Golgi transport while PIGT is part of the GPI transamidase complex in the ER. The coordinated exploitation of these ER quality control components by NS4A could facilitate the extensive ER membrane rearrangements required for DENV replication complex formation while evading host defense mechanisms.",
+    "proteins_involved": [
+      "NS4A",
+      "SCFD1",
+      "PIGT",
+      "TMED4",
+      "SEC24B"
+    ],
+    "experimental_data_used": "High propagation weights for SCFD1 (0.0550) and PIGT (0.0550), along with their elevated Average_Zscores (1.3983 and 1.3110). Additional support from network proximity of ER-Golgi transport proteins TMED4 (weight: 0.0600) and SEC24B (weight: 0.0150).",
+    "experimental_validation": [
+      "CRISPR-Cas9 knockout of SCFD1 and PIGT to assess impact on DENV replication efficiency and ER membrane reorganization.",
+      "Proximity ligation assays to detect NS4A interactions with SCFD1 and PIGT in situ during different stages of viral infection.",
+      "Electron microscopy analysis of ER membrane morphology in cells expressing NS4A with and without SCFD1/PIGT depletion."
+    ],
+    "confidence": 3,
+    "id": "H2",
+    "viral_protein": "DENV2 16681 NS4A"
+  }
+]

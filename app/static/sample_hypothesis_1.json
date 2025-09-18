@@ -1,0 +1,15 @@
+{
+  "object_id": "sample_hypothesis_1",
+  "type": "hypothesis",
+  "name": "Increased PKA Activity Leads to Enhanced Neuronal Signaling",
+  "hypothesis_text": "We hypothesize that increased protein kinase A (PKA) activity in neurons leads to enhanced synaptic transmission through phosphorylation of AMPA receptors, resulting in improved memory formation and learning capabilities.",
+  "biological_context": "Protein kinase A is a crucial enzyme in neuronal signaling pathways. It is activated by cAMP and phosphorylates various substrates that contribute to synaptic plasticity and memory formation.",
+  "data": "gene,expression_level,phosphorylation_level,functional_impact\nPKA catalytic,High,N/A,Enhanced signaling\nAMPA receptor,Normal,High,Increased conductance\nCREB,Normal,High,Increased transcription\nPDE4,Low,Low,Reduced cAMP degradation\nAdenylyl cyclase,High,Normal,Increased cAMP production",
+  "created": "2025-03-08 12:00:00",
+  "_display_types": [
+    {
+      "property_name": "data",
+      "display_type": "csv"
+    }
+  ]
+}

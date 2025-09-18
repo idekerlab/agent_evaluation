@@ -1,0 +1,129 @@
+[
+  {
+    "CXVersion": "2.0",
+    "hasFragments": false
+  },
+  {
+    "metaData": [
+      {
+        "elementCount": 1,
+        "name": "attributeDeclarations"
+      },
+      {
+        "elementCount": 1,
+        "name": "networkAttributes"
+      },
+      {
+        "elementCount": 2,
+        "name": "nodes"
+      }
+    ]
+  },
+  {
+    "attributeDeclarations": [
+      {
+        "nodes": {
+          "n": {
+            "d": "string"
+          },
+          "title": {
+            "d": "string"
+          },
+          "null_hypothesis": {
+            "d": "string"
+          },
+          "alternative_hypothesis": {
+            "d": "string"
+          },
+          "rationale": {
+            "d": "string"
+          },
+          "proteins_involved": {
+            "d": "string"
+          },
+          "experimental_data_used": {
+            "d": "string"
+          },
+          "experimental_validation": {
+            "d": "string"
+          },
+          "confidence": {
+            "d": "integer"
+          },
+          "viral_protein": {
+            "d": "string"
+          },
+          "node_type": {
+            "d": "string"
+          },
+          "x": {
+            "d": "double"
+          },
+          "y": {
+            "d": "double"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "networkAttributes": [
+      {
+        "name": "Dengue Virus Protein Hypotheses - 2025-04-08 16:53:35",
+        "description": "Hypotheses generated for dengue virus proteins",
+        "generation_timestamp": "2025-04-08 16:53:35"
+      }
+    ]
+  },
+  {
+    "nodes": [
+      {
+        "id": 1,
+        "v": {
+          "n": "DENV2 NS3 - NS3 Inhibits STAT1 Phosphorylation",
+          "title": "NS3 Inhibits STAT1 Phosphorylation",
+          "null_hypothesis": "NS3 does not inhibit STAT1 phosphorylation during infection",
+          "alternative_hypothesis": "NS3 inhibits STAT1 phosphorylation during infection",
+          "rationale": "STAT1 shows significant propagation weight in the network analysis. This suggests NS3 may interfere with JAK-STAT signaling to suppress antiviral responses.",
+          "proteins_involved": "STAT1; JAK1; IFNAR1",
+          "experimental_data_used": "Phosphorylation levels and propagation weights",
+          "experimental_validation": "Western blot for phospho-STAT1; Co-IP of NS3 with STAT1; siRNA knockdown of NS3",
+          "confidence": 4,
+          "viral_protein": "DENV2 NS3",
+          "node_type": "hypothesis",
+          "x": 280.3989908434177,
+          "y": -413.97633499270574
+        }
+      },
+      {
+        "id": 2,
+        "v": {
+          "n": "DENV2 NS3 - NS3 Upregulates A2M Expression",
+          "title": "NS3 Upregulates A2M Expression",
+          "null_hypothesis": "NS3 does not alter A2M expression in host cells",
+          "alternative_hypothesis": "NS3 increases A2M expression in host cells",
+          "rationale": "A2M showed the highest propagation weight, suggesting a strong connection with NS3. A2M is involved in immune regulation and could be manipulated by the virus.",
+          "proteins_involved": "A2M; NS3",
+          "experimental_data_used": "Propagation weights and gene expression data",
+          "experimental_validation": "qPCR for A2M expression; Reporter assay for A2M promoter; ChIP-seq",
+          "confidence": 3,
+          "viral_protein": "DENV2 NS3",
+          "node_type": "hypothesis",
+          "x": -280.39899084341766,
+          "y": 413.9763349927058
+        }
+      }
+    ]
+  },
+  {
+    "edges": []
+  },
+  {
+    "status": [
+      {
+        "error": "",
+        "success": true
+      }
+    ]
+  }
+]

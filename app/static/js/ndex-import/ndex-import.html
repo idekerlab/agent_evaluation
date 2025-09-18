@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDEx to Deckhard Importer</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <style>
+        /* Additional styles specific to NDEx importer */
+        .uuid-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .uuid-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .preview {
+            background-color: var(--background-light);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .radio-group {
+            margin: 10px 0;
+        }
+        
+        .radio-label {
+            margin-right: 15px;
+        }
+        
+        pre {
+            background-color: var(--background-white);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            overflow: auto;
+            max-height: 300px;
+        }
+        
+        .warning {
+            background-color: #ff9800;
+            color: var(--text-light);
+        }
+        
+        .import-options {
+            background-color: var(--background-white);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .debug-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .file-drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--background-light);
+            margin-bottom: 15px;
+        }
+        .file-drop-zone.dragover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-light);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top menu bar -->
+    <div class="top-bar">
+        <div class="top-bar-title">NDEx to Deckhard Importer</div>
+    </div>
+    
+    <!-- Main content container -->
+    <div class="main-container">
+        <!-- Left panel - Instructions -->
+        <div class="left-panel">
+            <h3 class="panel-header">Instructions</h3>
+            <div class="query-list">
+                <div class="query-item">
+                    <strong>1. Upload CX2 File</strong>
+                    <p>Drag & drop or select a network file ending in '.cx2'</p>
+                </div>
+                <div class="query-item">
+                    <strong>2. Preview Network</strong>
+                    <p>Check network details and verify it's within size limits (max 100 nodes/edges)</p>
+                </div>
+                <div class="query-item">
+                    <strong>3. Set Import Options</strong>
+                    <p>Choose whether to import nodes or edges and specify object type</p>
+                </div>
+                <div class="query-item">
+                    <strong>4. Import</strong>
+                    <p>Creates an object_list with objects in Deckhard</p>
+                </div>
+            </div>
+            
+            <div class="notification" style="margin-top: 20px;">
+                <strong>Size Limits:</strong> Maximum 100 nodes or edges can be imported
+            </div>
+            
+            <div class="debug-section">
+                <h4>Debug Options</h4>
+                <button id="test-fetch-btn" class="search-button" style="margin-top: 10px;">
+                    Test Direct Fetch
+                </button>
+                <button id="test-proxy-btn" class="search-button" style="margin-top: 10px;">
+                    Test Proxy Fetch
+                </button>
+            </div>
+        </div>
+        
+        <!-- Middle panel - Network Import Form -->
+        <div class="middle-panel">
+            <h3 class="panel-header">Import Network from CX2 File</h3>
+            
+            <div id="notification-container"></div>
+            
+            <form id="import-form">
+                <!-- File Upload Input -->
+                <div id="file-drop-zone" class="file-drop-zone">
+                    <p>Drag & drop your CX2 file here, or click to select file</p>
+                    <input type="file" id="cx2-file-input" accept=".cx2" style="display: none;">
+                    <p id="file-name-display" style="margin-top: 10px; font-weight: bold;"></p>
+                </div>
+                
+                <!-- UUID Input (Hidden for now, could be re-enabled later) -->
+                <div class="uuid-input-container hidden">
+                    <input type="text" class="uuid-input" id="ndex-uuid" name="ndex-uuid" placeholder="Enter NDEx UUID">
+                    <button type="button" id="fetch-network-btn" class="search-button">Fetch Network</button>
+                </div>
+                
+                <div id="network-preview" class="hidden preview">
+                    <h3>Network Preview</h3>
+                    <div id="preview-content"></div>
+                </div>
+                
+                <div id="criteria-preview" class="hidden preview">
+                    <h4>Scoring Criteria Found</h4>
+                    <pre id="criteria-content"></pre>
+                </div>
+                
+                <div id="import-options" class="hidden import-options">
+                    <h3>Import Options</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="network-name">Network Name:</label>
+                        <input type="text" class="form-input" id="network-name" name="network-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Import Type:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="import-type" value="nodes" checked>
+                                Nodes
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="import-type" value="edges">
+                                Edges
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="object-type">Deckhard Object Type:</label>
+                        <input type="text" class="form-input" id="object-type" name="object-type" placeholder="e.g., node, edge, etc." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" id="import-btn" class="search-button">Import to Deckhard</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Right panel - Results -->
+        <div class="right-panel">
+            <h3 class="panel-header">Import Results</h3>
+            <div id="results-container">
+                <div class="notification">
+                    Import results will appear here after you complete the import process.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include our JavaScript modules -->
+    <script src="/static/js/ndex-import/deckhard-client.js?v=20240526"></script>
+    <script src="/static/js/ndex-import/ndex-client.js?v=20240526"></script>
+    <script src="/static/js/ndex-import/ndex-import-ui.js?v=20240526"></script>
+</body>
+</html>

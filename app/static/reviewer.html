@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deckhard Reviewer</title>
+  <link rel="stylesheet" href="/static/css/reviewer.css">
+</head>
+<body>
+  <!-- Top menu bar -->
+  <div class="top-bar">
+    <div class="top-bar-title">Deckhard Reviewer</div>
+  </div>
+  
+  <!-- Navigation bar -->
+  <div class="navigation-bar">
+    <div class="nav-controls">
+      <button id="prev-button" class="button">&#9664; Previous</button>
+      <span id="nav-info" class="nav-info">Object 1 of 10</span>
+      <button id="next-button" class="button">Next &#9654;</button>
+    </div>
+    <div class="review-status">
+      <span>Status: </span>
+      <span id="review-status-value">open</span>
+      <button id="export-button" class="button button-export" title="Export review as JSON">Export</button>
+    </div>
+  </div>
+  
+  <!-- Main content container -->
+  <div class="main-container">
+    <!-- Object panel - displays the current object being reviewed -->
+    <div class="object-panel">
+      <h3 class="panel-header">Object Details</h3>
+      <div id="object-container">
+        <div class="notification info">Loading object details...</div>
+      </div>
+    </div>
+    
+    <!-- Scoring panel - contains forms for scoring the current object -->
+    <div class="scoring-panel">
+      <h3 class="panel-header">Scoring</h3>
+      
+      <!-- Review metadata -->
+      <div class="form-group">
+        <label class="form-label" for="reviewer-input">Reviewer Name</label>
+        <input type="text" id="reviewer-input" class="form-input" placeholder="Enter your name">
+      </div>
+      
+      <!-- Scoring form will be inserted here -->
+      <div id="scoring-form-container">
+        <!-- Object-specific scoring criteria will be inserted here -->
+      </div>
+      
+      <div id="scoring-status" class="scoring-status">
+        <span><span id="status-indicator" class="status-indicator status-incomplete"></span> <span id="status-text">Incomplete</span></span>
+        <span id="completion-count">0/0 objects scored</span>
+      </div>
+      
+      <div class="action-buttons">
+        <button id="save-button" class="button">Save</button>
+        <button id="submit-button" class="button button-primary">Submit Review</button>
+      </div>
+      
+      <div id="notification-container">
+        <!-- Notifications will be inserted here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Load JavaScript modules -->
+  <script src="/static/js/reviewer-core.js?v=20240522"></script>
+  <script src="/static/js/reviewer-ui.js?v=20240522"></script>
+  <script src="/static/js/reviewer-data.js?v=20240522"></script>
+</body>
+</html>

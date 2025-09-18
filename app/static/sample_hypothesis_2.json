@@ -1,0 +1,15 @@
+{
+  "object_id": "sample_hypothesis_2",
+  "type": "hypothesis",
+  "name": "Mitochondrial Dysfunction in Neurodegenerative Diseases",
+  "hypothesis_text": "We hypothesize that mitochondrial dysfunction, particularly impaired electron transport chain activity in Complex I and Complex IV, is a primary cause of neuronal death in Alzheimer's disease through increased reactive oxygen species production and reduced ATP generation.",
+  "biological_context": "Mitochondria are essential organelles responsible for energy production through oxidative phosphorylation. Dysfunction in the electron transport chain can lead to decreased ATP production and increased oxidative stress, which may contribute to neurodegeneration.",
+  "data": "patient_group,complex_I_activity,complex_IV_activity,ROS_levels,ATP_levels,neuron_viability\nControl,100%,100%,Low,High,95%\nMild AD,85%,90%,Medium,Medium,80%\nModerate AD,65%,70%,High,Low,60%\nSevere AD,40%,45%,Very High,Very Low,30%\nAD with antioxidant therapy,45%,50%,Medium,Low,45%",
+  "created": "2025-03-08 12:15:00",
+  "_display_types": [
+    {
+      "property_name": "data",
+      "display_type": "csv"
+    }
+  ]
+}

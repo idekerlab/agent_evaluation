@@ -1,0 +1,22 @@
+{
+  "type": "object_list",
+  "name": "Hypothesis Review Sample",
+  "description": "A collection of hypotheses for demonstration of the review interface",
+  "_criteria": [
+    {
+      "label": "Comments",
+      "property_name": "comments",
+      "input_type": "textarea",
+      "display_type": "text",
+      "data_type": "str"
+    },
+    {
+      "label": "Evaluation",
+      "property_name": "evaluation",
+      "input_type": "menu",
+      "display_type": "text",
+      "data_type": "str",
+      "options": ["great!", "good.", "ok.", "needs work.", "unacceptable"]
+    }
+  ]
+}
